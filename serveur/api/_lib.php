@@ -309,12 +309,14 @@ function envoyer_mail(string $to, string $sujet, string $corps): bool {
   $c = cfg();
   $from = $c['mail_from'] ?? 'suivi@gouyerian-tech.fr';
   $reply = $c['mail_reply'] ?? 'gouyerian.tech@gmail.com';
+  /* Message automatique : expéditeur « Gouyerian Tech (ne pas répondre) » et rappel en bas de chaque e-mail */
+  $corps = rtrim($corps) . "\n\n—\nCet e-mail est envoyé automatiquement, merci de ne pas y répondre.\nPour nous joindre : 06 05 79 48 94 ou gouyerian.tech@gmail.com\n";
   if (!empty($c['mail_log'])) {
     file_put_contents($c['mail_log'], json_encode(['to' => $to, 'sujet' => $sujet, 'corps' => $corps], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
     return true;
   }
   $headers = implode("\r\n", [
-    'From: ' . mb_encode_mimeheader('Gouyerian Tech', 'UTF-8') . " <$from>",
+    'From: ' . mb_encode_mimeheader('Gouyerian Tech (ne pas répondre)', 'UTF-8') . " <$from>",
     "Reply-To: $reply",
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8',
