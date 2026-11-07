@@ -1,1 +1,71 @@
-[]
+[
+  {
+    "d": "2026-11-03",
+    "dl": "3 novembre 2026",
+    "sc": "Monde",
+    "th": "Sécurité",
+    "tag": "Chrome",
+    "t": "Chrome 157 corrige 213 failles de sécurité, dont 7 critiques",
+    "s": "Google a publié le 3 novembre la version 157 de son navigateur Chrome, qui corrige 213 failles de sécurité. Sept d’entre elles sont classées « critiques » par Google. Aucune n’est signalée comme déjà exploitée par des pirates. La mise à jour arrive automatiquement au fil des jours et des semaines, mais elle ne s’applique qu’après un redémarrage du navigateur.",
+    "tip": "Ouvrez Chrome, menu ⋮ > Aide > À propos de Google Chrome, puis cliquez sur « Relancer » : la version doit commencer par 157. Si votre ordinateur rame ou que le navigateur affiche des pubs étranges, nous pouvons le vérifier et le nettoyer.",
+    "src": [
+      [
+        "Google Chrome Releases (3 novembre 2026)",
+        "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html"
+      ],
+      [
+        "Malwarebytes (4 novembre 2026)",
+        "https://www.malwarebytes.com/blog/bugs/2026/11/chrome-157-fixes-213-security-issues-including-7-critical-flaws"
+      ]
+    ],
+    "ajoute_le": "7 novembre 2026 à 9h53",
+    "par": "recherche",
+    "verif": "Date, numéros de version (157.0.8103.38/.39), 213 correctifs et 7 failles critiques identiques sur l’annonce officielle de Google et chez Malwarebytes ; aucune exploitation signalée par l’une ou l’autre."
+  },
+  {
+    "d": "2026-11-05",
+    "dl": "5 novembre 2026",
+    "sc": "Monde",
+    "th": "Sécurité",
+    "tag": "Hameçonnage",
+    "t": "Fausses invitations OpenAI ou SpaceX : une arnaque vole les comptes de travail",
+    "s": "Des pirates envoient de fausses invitations à des événements OpenAI, SpaceX ou Anthropic, avec à la clé un faux cadeau comme trois mois de ChatGPT Pro. Pour « s’inscrire », la page demande de se connecter avec son compte Microsoft ou Google professionnel. En réalité, les pirates récupèrent le mot de passe et l’accès au compte, même quand la double authentification est activée. L’arnaque a été découverte par la société de sécurité Push Security.",
+    "tip": "Ne saisissez jamais un code de connexion Microsoft fourni par un site que vous ne connaissez pas, et méfiez-vous des cadeaux qui exigent votre compte de travail. En cas de doute sur un message ou un compte piraté, nous pouvons vous aider à sécuriser vos comptes et votre ordinateur.",
+    "src": [
+      [
+        "BleepingComputer (5 novembre 2026)",
+        "https://www.bleepingcomputer.com/news/security/fake-openai-spacex-events-used-to-steal-microsoft-google-accounts/"
+      ],
+      [
+        "Push Security (5 novembre 2026)",
+        "https://pushsecurity.com/blog/ai-themed-fake-event-campaign-analysis"
+      ]
+    ],
+    "ajoute_le": "7 novembre 2026 à 9h53",
+    "par": "recherche",
+    "verif": "Faux événements OpenAI/SpaceX/Anthropic, offre de 3 mois de ChatGPT Pro, connexion Microsoft ou Google professionnelle et contournement de la double authentification vérifiés chez BleepingComputer et dans le rapport d’origine de Push Security (confirmés aussi par TechRadar et IT-Connect)."
+  },
+  {
+    "d": "2026-11-05",
+    "dl": "5 novembre 2026",
+    "sc": "Monde",
+    "th": "Smartphones",
+    "tag": "Android",
+    "t": "GhostMap : un fichier piégé peut bloquer un téléphone Android en redémarrage",
+    "s": "La société Bitdefender a découvert « GhostMap », un défaut d’Android 10 et des versions suivantes. Une application piégée peut faire redémarrer le téléphone en boucle, même en mode sans échec. Pour en sortir, il faut le plus souvent une réinitialisation complète, qui efface les données stockées sur le téléphone. Aucun correctif n’est disponible pour l’instant, mais Bitdefender précise ne pas avoir vu cette attaque utilisée contre des utilisateurs.",
+    "tip": "N’installez des applications que depuis le Play Store, et sauvegardez régulièrement photos et contacts (Google Photos, Google Drive ou un ordinateur). Si votre téléphone redémarre sans cesse, apportez-le nous avant de tout réinitialiser : nous verrons ce qui peut être sauvé.",
+    "src": [
+      [
+        "Bitdefender (5 novembre 2026)",
+        "https://www.bitdefender.com/en-us/blog/labs/ghostmap-android"
+      ],
+      [
+        "Infosecurity Magazine (5 novembre 2026)",
+        "https://www.infosecurity-magazine.com/news/ghostmap-bug-android-phones-stuck/"
+      ]
+    ],
+    "ajoute_le": "7 novembre 2026 à 9h53",
+    "par": "recherche",
+    "verif": "Android 10 et plus, redémarrage en boucle persistant même en mode sans échec, réinitialisation effaçant les données, absence de correctif et absence d’attaque observée vérifiés dans le rapport d’origine de Bitdefender et chez Infosecurity Magazine (confirmés aussi par Cybernews)."
+  }
+]
