@@ -1,0 +1,49 @@
+# Construit le site à partir de source/gouyerian-tech.html, le teste, puis le publie sur GitHub Pages.
+# Se lance à chaque modification (par exemple une actualité ajoutée par la tâche automatique) et chaque nuit.
+name: Publier le site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 3 * * *"   # chaque nuit : met à jour les dates (« il y a 2 jours », sitemap)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Outils (Playwright + Chromium)
+        run: |
+          pip install playwright==1.48.0 pillow
+          python -m playwright install --with-deps chromium
+      - name: Construire les pages
+        run: python outils/build.py
+      - name: Tester le site (aucune publication si un problème est trouvé)
+        run: python outils/test_dist.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publier:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v4
