@@ -370,7 +370,7 @@ function envoyer_mail(string $to, string $sujet, string $corps): bool {
   $c = cfg();
   $from = $c['mail_from'] ?? 'suivi@gouyerian-tech.fr';
   $reply = $c['mail_reply'] ?? 'contact@gouyerian-tech.fr';
-  /* Message automatique : expéditeur « Gouyerian Tech (ne pas répondre) » et rappel en bas de chaque e-mail */
+  /* Message automatique : expéditeur « Service Client GOUYERIAN TECH » (nom réglable : mail_nom) et rappel « ne pas répondre » en bas de chaque e-mail */
   $corps = rtrim($corps) . "\n\n—\nCet e-mail est envoyé automatiquement, merci de ne pas y répondre.\nPour nous joindre : 06 05 79 48 94 ou contact@gouyerian-tech.fr\n";
   if (!empty($c['mail_log'])) {
     file_put_contents($c['mail_log'], json_encode(['to' => $to, 'sujet' => $sujet, 'corps' => $corps], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
@@ -378,7 +378,8 @@ function envoyer_mail(string $to, string $sujet, string $corps): bool {
   }
   /* Encodage fait à la main : mb_encode_mimeheader() coupait le nom au milieu des parenthèses et l'hébergement refusait l'e-mail */
   $enc = fn(string $t) => preg_match('/[^\x20-\x7e]/', $t) ? '=?UTF-8?B?' . base64_encode($t) . '?=' : $t;
-  $nom = $enc('Gouyerian Tech (ne pas répondre)');
+  $nom = '"' . str_replace(['"', '\\', "\r", "\n"], '', (string)($c['mail_nom'] ?? 'Service Client GOUYERIAN TECH')) . '"';
+  if (preg_match('/[^\x20-\x7e]/', $nom)) $nom = $enc(trim($nom, '"'));
   $sujet_enc = $enc($sujet);
   $domaine = substr(strrchr($from, '@') ?: '@gouyerian-tech.fr', 1);
   $entetes = [
