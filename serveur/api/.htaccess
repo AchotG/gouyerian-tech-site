@@ -1,0 +1,12 @@
+# Gouyerian Tech : le fichier de fonctions communes ne s'ouvre pas depuis Internet
+<Files "_lib.php">
+  Require all denied
+</Files>
+Options -Indexes
+<IfModule mod_headers.c>
+  Header set Cache-Control "no-store"
+  Header set X-Robots-Tag "noindex"
+</IfModule>
+<IfModule mod_expires.c>
+  ExpiresActive Off
+</IfModule>

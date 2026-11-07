@@ -3,6 +3,10 @@
 # Réglages du dépôt (Settings → Secrets and variables → Actions) :
 #   variables : IONOS_SFTP_HOST (ex. access-1234567.webspace-data.io), IONOS_SFTP_USER
 #   secret    : IONOS_SFTP_PASSWORD (mot de passe SFTP créé par Achot chez IONOS)
+# Suivi des réparations (facultatif tant que la base n'existe pas) :
+#   secrets   : SUIVI_DB_HOST, SUIVI_DB_NAME, SUIVI_DB_USER, SUIVI_DB_PASSWORD (base MySQL créée chez IONOS),
+#               GESTION_MOT_DE_PASSE (mot de passe de la page /gestion/ de l'atelier)
+#   variable  : SUIVI_EXPEDITEUR (adresse d'envoi des e-mails, par défaut suivi@gouyerian-tech.fr)
 name: Publier le site
 
 on:
@@ -24,6 +28,8 @@ concurrency:
 jobs:
   publier:
     runs-on: ubuntu-latest
+    env:
+      SUIVI_ACTIF: ${{ secrets.SUIVI_DB_HOST != '' && secrets.GESTION_MOT_DE_PASSE != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34,6 +40,8 @@ jobs:
           pip install playwright==1.48.0 pillow
           python -m playwright install --with-deps chromium
           sudo apt-get install -y lftp
+      - name: Vérifier le code PHP du suivi des réparations
+        run: for f in serveur/api/*.php; do php -l "$f"; done
       - name: Contrôler les illustrations (bords, textes, centrage)
         run: python outils/gen_illus.py --controle
       - name: Construire les pages
@@ -55,3 +63,39 @@ jobs:
           export LFTP_PASSWORD="$MOT_DE_PASSE"
           echo "Connexion à $HOTE avec l'utilisateur $UTILISATEUR (mot de passe de ${#MOT_DE_PASSE} caractères)"
           lftp --env-password -u "$UTILISATEUR" "sftp://$HOTE" -e "set sftp:auto-confirm yes; set net:max-retries 3; set net:timeout 30; mirror --reverse --delete --only-newer --parallel=4 --verbose _site/ /public/; bye"
+      - name: Configuration du suivi des réparations (hors du site, dans /prive)
+        if: env.SUIVI_ACTIF == 'true'
+        env:
+          HOTE: ${{ vars.IONOS_SFTP_HOST }}
+          UTILISATEUR: ${{ vars.IONOS_SFTP_USER }}
+          MOT_DE_PASSE: ${{ secrets.IONOS_SFTP_PASSWORD }}
+          DB_HOST: ${{ secrets.SUIVI_DB_HOST }}
+          DB_NAME: ${{ secrets.SUIVI_DB_NAME }}
+          DB_USER: ${{ secrets.SUIVI_DB_USER }}
+          DB_PASS: ${{ secrets.SUIVI_DB_PASSWORD }}
+          GESTION_MDP: ${{ secrets.GESTION_MOT_DE_PASSE }}
+          EXPEDITEUR: ${{ vars.SUIVI_EXPEDITEUR }}
+        run: |
+          umask 077
+          # Fichier de configuration PHP écrit par PHP lui-même (guillemets et caractères spéciaux sans risque) ;
+          # le mot de passe de la gestion n'y figure que haché.
+          php -r '
+            $c = [
+              "dsn" => "mysql:host=" . getenv("DB_HOST") . ";dbname=" . getenv("DB_NAME") . ";charset=utf8mb4",
+              "db_user" => getenv("DB_USER"), "db_pass" => getenv("DB_PASS"),
+              "admin_hash" => password_hash(getenv("GESTION_MDP"), PASSWORD_DEFAULT),
+              "mail_from" => getenv("EXPEDITEUR") ?: "suivi@gouyerian-tech.fr",
+              "mail_reply" => "gouyerian.tech@gmail.com",
+              "site" => "https://gouyerian-tech.fr",
+            ];
+            file_put_contents("gt-config.php", "<?php\n/* Configuration du suivi des réparations (écrite par GitHub, ne pas modifier à la main) */\nreturn " . var_export($c, true) . ";\n");'
+          php -l gt-config.php >/dev/null
+          printf 'Require all denied\n' > htaccess-prive
+          export LFTP_PASSWORD="$MOT_DE_PASSE"
+          lftp --env-password -u "$UTILISATEUR" "sftp://$HOTE" -e "set sftp:auto-confirm yes; set net:max-retries 3; set net:timeout 30; mkdir -p -f /prive; put gt-config.php -o /prive/gt-config.php; put htaccess-prive -o /prive/.htaccess; chmod 600 /prive/gt-config.php; bye"
+          rm -f gt-config.php htaccess-prive
+          echo "Configuration du suivi envoyée dans /prive."
+      - name: Suivi des réparations pas encore activé
+        if: env.SUIVI_ACTIF != 'true'
+        run: |
+          echo "::notice::Suivi des réparations non activé : ajouter les secrets SUIVI_DB_HOST, SUIVI_DB_NAME, SUIVI_DB_USER, SUIVI_DB_PASSWORD et GESTION_MOT_DE_PASSE."

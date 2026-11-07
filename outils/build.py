@@ -328,6 +328,9 @@ for c in CPG:
 add("/contact/", "contact", VIEW["contact"], "Contact et atelier · Gouyerian Tech",
     "Appelez le 06 05 79 48 94 ou écrivez à gouyerian.tech@gmail.com. Atelier sur rendez-vous : 1 route de Segonzac, 16130 Saint-Fort-sur-le-Né.",
     [HOME, ("Contact", "/contact/")], ld=[BUSINESS], prio="0.8")
+add("/suivi/", "suivi", VIEW["suivi"], "Suivre ma réparation · Gouyerian Tech",
+    "Suivez l’avancée de la réparation de votre téléphone, tablette, ordinateur ou console chez Gouyerian Tech avec le numéro et le code de votre bon de dépôt.",
+    [HOME, ("Suivre ma réparation", "/suivi/")], prio="0.4")
 add("/mentions-legales/", "legal", VIEW["legal"], "Mentions légales et confidentialité · Gouyerian Tech",
     "Éditeur, hébergement, protection des données personnelles et crédits du site Gouyerian Tech, réparateur informatique à Saint-Fort-sur-le-Né.",
     [HOME, ("Mentions légales", "/mentions-legales/")], prio="0.3")
@@ -494,7 +497,12 @@ urls = [pd for pd in PAGES if pd["index"]]
 """, encoding="utf-8")
 # Fichier de validation Google Search Console (ne pas supprimer)
 (DIST / "googlec2ee2d1354c69554.html").write_text("google-site-verification: googlec2ee2d1354c69554.html", encoding="utf-8")
-(DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
+(DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /gestion/\n\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
+# Suivi des réparations : serveur PHP (api/) et page de gestion de l'atelier (gestion/), copiés tels quels
+SRV = B.parent / "serveur"
+for sub in ("api", "gestion"):
+    if (SRV / sub).is_dir():
+        shutil.copytree(SRV / sub, DIST / sub, dirs_exist_ok=True)
 (DIST / "site.webmanifest").write_text(json.dumps({
     "id": "/", "name": "Gouyerian Tech", "short_name": "Gouyerian Tech", "description": "Réparation, maintenance et vente informatique près de Cognac",
     "lang": "fr", "dir": "ltr", "start_url": "/", "scope": "/", "display": "standalone", "orientation": "any",
@@ -516,7 +524,7 @@ const V="gt-{VER}",CORE={json.dumps(CORE)};
 self.addEventListener("install",e=>{{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE.map(u=>new Request(u,{{cache:"reload"}})))).then(()=>self.skipWaiting()))}});
 self.addEventListener("activate",e=>{{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))}});
 self.addEventListener("fetch",e=>{{
-  const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);if(u.origin!==location.origin)return;
+  const r=e.request;if(r.method!=="GET")return;const u=new URL(r.url);if(u.origin!==location.origin||u.pathname.startsWith("/api/")||u.pathname.startsWith("/gestion/"))return;
   if(r.mode==="navigate"){{
     e.respondWith(fetch(r).then(res=>{{if(res.ok){{const c=res.clone();caches.open(V).then(x=>x.put(r,c))}}return res}})
       .catch(()=>caches.match(r,{{ignoreSearch:true}}).then(m=>m||caches.match("/hors-ligne/"))));return}}

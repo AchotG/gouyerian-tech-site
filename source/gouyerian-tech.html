@@ -1418,6 +1418,35 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .btn.ghost,.icon-btn{background:var(--ghost)}
 .card,.rv,.trust,.gar>div,.acard:not(.inv),.ccard,.ctile,.cfacts,.wcard,.ball>div,.pill2,.prod,.cfg,.pro-for>div,.plan,.pro-svc>div,
 .art-card,.nw,.home-news,.hn,.prest,.hub-c,.tk,.panel,.ba,.fbar,.cf-blk,.ok-recap,.hub-mini,.nt,.seg button,.seg a,.nchips button,.faq-chips button,.faq-chips a{box-shadow:var(--elev)}
+
+/* v99 : suivi des réparations (page /suivi/) */
+.trk{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,.85fr);gap:24px;align-items:start}
+.trk-main{display:grid;gap:16px;min-width:0}
+@media (max-width:900px){.trk{grid-template-columns:minmax(0,1fr)}}
+.trk-f .fgrid{margin-bottom:16px}
+.trk-f input{text-transform:uppercase;font-family:var(--f-mono);letter-spacing:.04em}
+.trk-f input::placeholder{text-transform:none;font-family:var(--f-body);letter-spacing:0}
+.trk-r{display:grid;gap:18px}
+.trk-r h2{font-size:clamp(1.4rem,2.6vw,1.9rem)}
+.trk-hd{display:grid;gap:8px}
+.trk-hd small{color:var(--muted);font-size:.86rem}
+.trk-p{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:6px}
+.trk-p li{display:grid;gap:8px;align-content:start;font-size:.82rem;line-height:1.3;color:var(--muted)}
+.trk-p li::before{content:"";height:6px;border-radius:3px;background:var(--line)}
+.trk-p li.done{color:var(--fg)}
+.trk-p li.done::before{background:var(--grad)}
+.trk-p li.cur{color:var(--acc);font-weight:700}
+.trk-p li.cur::before{background:var(--grad);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
+@media (max-width:620px){.trk-p{grid-template-columns:minmax(0,1fr);gap:0}
+  .trk-p li{grid-template-columns:14px minmax(0,1fr);align-items:center;gap:12px;padding:7px 0;font-size:.95rem}
+  .trk-p li::before{width:14px;height:14px;border-radius:50%}}
+.trk-h{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.trk-h li{display:grid;gap:2px;padding-left:14px;border-left:3px solid var(--line)}
+.trk-h li:first-child{border-left-color:var(--acc)}
+.trk-h small{font:500 .78rem/1.3 var(--f-mono);color:var(--muted)}
+.trk-h p{color:var(--fg)}
+.trk-x{border-radius:12px;padding:12px 14px;background:var(--warn-bg);color:var(--warn);font-weight:600}
+.trk-ok{border-radius:12px;padding:12px 14px;background:var(--ok-bg);color:var(--ok);font-weight:600}
 </style>
 
 <a class="skip" href="#main">Aller au contenu</a>
@@ -1498,6 +1527,7 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
         <div class="dd r" id="dd-contact">
           <span class="dd-cap">Nous joindre</span>
           <a class="mi" href="#demande"><span class="mi-ic" data-ic="cal"></span><span><b>Prendre rendez-vous</b><small>Demande de rappel en 3 étapes</small></span></a>
+          <a class="mi" href="#suivi"><span class="mi-ic" data-ic="tool"></span><span><b>Suivre ma réparation</b><small>Avec le numéro de votre bon de dépôt</small></span></a>
           <a class="mi" href="#atelier"><span class="mi-ic" data-ic="tool"></span><span><b>Déposer à l’atelier</b><small>Sur rendez-vous, adresse et itinéraire</small></span></a>
           <a class="mi" href="#zone"><span class="mi-ic" data-ic="pin"></span><span><b>Zone d’intervention</b><small>40 km autour de Saint-Fort-sur-le-Né</small></span></a>
           <a class="mi" href="#secteurs"><span class="mi-ic" data-ic="map"></span><span><b>Communes desservies</b><small>Cognac, Jarnac, Segonzac, Barbezieux…</small></span></a>
@@ -2130,6 +2160,27 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
   </div></section>
 </div>
 <!-- MENTIONS LÉGALES -->
+<div class="view" id="v-suivi" hidden>
+  <header class="phead"><div class="wrap"><span class="crumb"><a href="#home">Accueil</a> / Suivre ma réparation</span><h1>Suivre ma réparation</h1><p class="lead">Entrez le numéro de suivi et le code indiqués sur votre bon de dépôt ou dans l’e-mail reçu : vous voyez où en est votre appareil, à tout moment.</p></div></header>
+  <section class="sec tight"><div class="wrap trk">
+    <div class="trk-main">
+      <form class="wcard trk-f" id="trkf" novalidate>
+        <div class="fgrid">
+          <div class="fld"><label for="trkn">Numéro de suivi</label><input id="trkn" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ex. : GT-2611-042" maxlength="20"></div>
+          <div class="fld"><label for="trkc">Code</label><input id="trkc" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="6 caractères" maxlength="12"></div>
+        </div>
+        <label class="cgv-ok"><input type="checkbox" id="trkr"><span>Se souvenir de ce suivi sur cet appareil</span></label>
+        <p class="msg" id="trkm" role="alert"></p>
+        <div class="w-act"><button class="btn" type="submit" id="trkb">Voir l’avancée</button></div>
+      </form>
+      <div class="wcard trk-r" id="trkres" hidden aria-live="polite"></div>
+    </div>
+    <aside class="aside">
+      <div class="acard inv"><span class="eyebrow">Une question ?</span><b class="num">06 05 79 48 94</b><p>Du lundi au samedi de 9&nbsp;h à 20&nbsp;h, le dimanche de 9&nbsp;h à 13&nbsp;h.</p><div class="row2"><a class="btn sm" data-act="tel" data-ic="handset">Appeler</a></div></div>
+      <div class="acard"><h3>Où trouver mon numéro ?</h3><p>Il est écrit sur le bon de dépôt remis à l’atelier, et dans l’e-mail de suivi si vous avez demandé à être informé de l’avancée de la réparation.</p><p>Vous n’avez rien reçu ? Pensez à regarder dans les courriers indésirables.</p></div>
+    </aside>
+  </div></section>
+</div>
 <div class="view" id="v-legal" hidden>
   <header class="phead"><div class="wrap"><span class="crumb"><a href="#home">Accueil</a> / Mentions légales</span><h1>Mentions légales et confidentialité</h1></div></header>
   <section class="sec tight"><div class="wrap legal">
@@ -2140,10 +2191,13 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
     <p id="hebergeur">Hébergeur : IONOS SARL, 7 place de la Gare, BP 70109, 57201 Sarreguemines Cedex, France. Téléphone : 09 70 80 89 11. Site : <a href="https://www.ionos.fr" target="_blank" rel="noopener">www.ionos.fr</a>.</p>
     <h2>Confidentialité</h2>
     <p>Lorsque vous envoyez une demande de rendez-vous ou le contenu de votre panier, votre nom, votre téléphone, votre e-mail si vous l’indiquez, votre adresse ou commune et le détail de votre demande sont transmis par e-mail à Gouyerian Tech, via le service d’envoi de formulaires FormSubmit (formsubmit.co). Les photos et vidéos que vous joignez sont transmises de la même façon, en pièces jointes. Les photos sont allégées sur votre appareil avant l’envoi, ce qui retire aussi leurs données de localisation. Ces informations servent uniquement à vous répondre et à établir un devis. Elles ne sont ni vendues ni transmises à des tiers, et sont conservées le temps nécessaire au suivi de votre demande.</p>
+    <h3 id="conf-suivi">Suivi des réparations</h3>
+    <p>Lorsque vous confiez un appareil à l’atelier, une fiche de réparation est créée : votre nom, votre téléphone, votre e-mail si vous le donnez, l’appareil, la panne, le prix annoncé et les étapes de la réparation. Elle est enregistrée dans une base de données hébergée par IONOS en Europe, et sert à suivre la réparation et à vous en informer. Sur la page « Suivre ma réparation », le numéro de suivi et le code affichent seulement l’appareil, les étapes et les messages de l’atelier, jamais vos coordonnées.</p>
+    <p>Les e-mails de suivi ne sont envoyés que si vous l’avez demandé (case à cocher lors de la demande ou à l’atelier). Chaque e-mail contient un lien pour ne plus les recevoir. Les fiches sont effacées automatiquement 24 mois après la fin de la réparation, durée utile pour la garantie et le service après-vente. Si vous cochez « Se souvenir de ce suivi », le numéro et le code sont gardés seulement sur votre appareil.</p>
     <p>L’assistant automatique du site utilise des réponses préparées : les messages saisis ne sont ni enregistrés ni transmis.</p>
     <p>Les suggestions de communes, d’adresses et de lieux-dits sont calculées sur votre appareil, à partir des données intégrées au site. Si elles ne suffisent pas, la recherche interroge le service public de géocodage de l’IGN ; seul le texte recherché est alors transmis. La carte de la zone affiche des photographies aériennes de l’IGN.</p>
     <h2 id="cookies">Cookies et localisation</h2>
-    <p>Ce site n’utilise aucun cookie publicitaire ni outil de mesure d’audience. Votre choix de thème clair ou sombre et le contenu de votre panier sont mémorisés sur votre appareil, car ils sont nécessaires au fonctionnement du site. Les polices de caractères sont hébergées avec le site.</p>
+    <p>Ce site n’utilise aucun cookie publicitaire ni outil de mesure d’audience. Votre choix de thème clair ou sombre, le contenu de votre panier et, si vous le demandez, votre numéro de suivi sont mémorisés sur votre appareil, car ils sont nécessaires au fonctionnement du site. Les polices de caractères sont hébergées avec le site.</p>
     <p>Avec votre accord seulement, votre commune (et votre adresse si vous la choisissez) est mémorisée sur votre appareil pendant 6 mois, pour afficher la distance, le prix du déplacement et la livraison, et pour pré-remplir les formulaires. Ces informations restent sur votre appareil et ne sont transmises qu’avec une demande que vous envoyez. Sans votre accord, la commune que vous saisissez dans le panier ou un formulaire n’est gardée que pendant votre visite, le temps que l’onglet reste ouvert, pour calculer la livraison. Votre choix est gardé 6 mois. Si vous fermez le bandeau avec la croix, sans choisir, il ne s’affiche plus de lui-même pendant 6 mois ; il vous est seulement reproposé, une fois par visite, si vous indiquez votre commune. Vous pouvez modifier votre choix à tout moment avec le lien « Localisation et cookies » en bas de chaque page, et oublier votre commune dans la fenêtre « Votre commune ».</p>
     <p>Le bouton « Utiliser ma position actuelle » demande l’autorisation de votre navigateur. Votre position sert seulement à trouver votre adresse : elle est envoyée au service public de géocodage de l’IGN pour retrouver l’adresse correspondante, puis n’est pas conservée, sauf votre commune si vous avez accepté la mémorisation.</p>
     <p>Conformément au RGPD, vous pouvez demander l’accès, la correction ou la suppression de vos données en écrivant à gouyerian.tech@gmail.com. Vous pouvez aussi adresser une réclamation à la CNIL (cnil.fr).</p>
@@ -2164,7 +2218,7 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
     <div><a class="brand" href="#home"><img src="assets/logo.png" alt=""><span class="word">GOUYERIAN<b>TECH</b></span></a><p>Réparation de téléphones, tablettes, ordinateurs et consoles, vente d’appareils et d’accessoires, à Saint-Fort-sur-le-Né, près de Cognac.</p></div>
     <div><h2 class="fh">Réparation</h2><ul><li><a href="#services" data-cat="Téléphones">Téléphones</a></li><li><a href="#services" data-cat="Tablettes">Tablettes</a></li><li><a href="#services" data-cat="Ordinateurs">Ordinateurs</a></li><li><a href="#services" data-cat="Consoles">Consoles de jeux</a></li><li><a href="#services" data-cat="Assistance">Assistance à domicile</a></li><li><a href="#pro">Professionnels</a></li></ul></div>
     <div><h2 class="fh">Boutique</h2><ul><li><a href="#boutique" data-bcat="Appareils">Appareils neufs et reconditionnés</a></li><li><a href="#boutique" data-bcat="Chargeurs et câbles">Chargeurs et adaptateurs</a></li><li><a href="#boutique" data-bcat="Télévision">Télévision</a></li><li><a href="#boutique" data-bcat="Stockage">Stockage</a></li><li><a href="#boutique" data-bcat="Protection">Coques et protections</a></li><li><a href="#boutique" data-bcat="Équipements">Équipements</a></li><li><a href="#demande" data-shopneed="Vendre mon appareil">Rachat de votre appareil</a></li></ul></div>
-    <div><h2 class="fh">Informations</h2><ul><li><a href="#demande">Rendez-vous</a></li><li><a href="#zone">Zone d’intervention</a></li><li><a href="#actus">Actualités tech</a></li><li><a href="#conseils">Infos pratiques</a></li><li><a href="#faq">Questions fréquentes</a></li><li><a href="#avis">Avis clients</a></li><li><a href="#cgv">Conditions générales de vente</a></li></ul></div>
+    <div><h2 class="fh">Informations</h2><ul><li><a href="#demande">Rendez-vous</a></li><li><a href="#suivi">Suivre ma réparation</a></li><li><a href="#zone">Zone d’intervention</a></li><li><a href="#actus">Actualités tech</a></li><li><a href="#conseils">Infos pratiques</a></li><li><a href="#faq">Questions fréquentes</a></li><li><a href="#avis">Avis clients</a></li><li><a href="#cgv">Conditions générales de vente</a></li></ul></div>
     <div><h2 class="fh">Contact</h2><ul><li class="mono"><a href="tel:+33605794894">06 05 79 48 94</a></li><li>gouyerian.tech@gmail.com</li><li>1 route de Segonzac<br>16130 Saint-Fort-sur-le-Né</li><li style="color:var(--muted)">Lun–sam 9h–20h · dim 9h–13h</li><li><button class="fb-btn inst-btn" type="button" data-install hidden data-ic="download">Installer l’application</button></li></ul></div>
   </div>
   <div class="wrap foot-cities"><h2 class="fh">Dépannage informatique dans le secteur</h2><ul id="fcities"></ul><a class="lnk" href="#secteurs">Toutes les communes desservies <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
@@ -2233,7 +2287,7 @@ const $=id=>document.getElementById(id);
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 /* Mode : aperçu (adresses en #) ou site en ligne (vraies adresses, page décrite par window.GT_PAGE) */
 const PG=window.GT_PAGE||null,ASSETS=PG?"/assets/":"assets/",QP=new URLSearchParams(location.search);
-const ROUTES={home:"/",services:"/services/",boutique:"/boutique/",demande:"/rendez-vous/",zone:"/zone-intervention/",secteurs:"/communes/",contact:"/contact/",legal:"/mentions-legales/",faq:"/faq/",pro:"/professionnels/",conseils:"/infos-pratiques/",actus:"/actualites/",cgv:"/cgv/",avis:"/#avis-sec",atelier:"/contact/#atelier-sec","pro-virus":"/professionnels/#pro-virus","pro-reseau":"/professionnels/#pro-reseau","pro-depannage":"/professionnels/#pro-depannage","pro-devis":"/professionnels/#pro-devis"};
+const ROUTES={home:"/",services:"/services/",boutique:"/boutique/",demande:"/rendez-vous/",zone:"/zone-intervention/",secteurs:"/communes/",contact:"/contact/",legal:"/mentions-legales/",suivi:"/suivi/",faq:"/faq/",pro:"/professionnels/",conseils:"/infos-pratiques/",actus:"/actualites/",cgv:"/cgv/",avis:"/#avis-sec",atelier:"/contact/#atelier-sec","pro-virus":"/professionnels/#pro-virus","pro-reseau":"/professionnels/#pro-reseau","pro-depannage":"/professionnels/#pro-depannage","pro-devis":"/professionnels/#pro-devis"};
 const link=h=>{if(!PG)return h;const k=h.replace(/^#/,"");if(k.startsWith("actu-"))return "/actualites/"+k.slice(5)+"/";return ROUTES[k]||(ART_SLUGS.includes(k)?"/infos-pratiques/"+k+"/":"/communes/"+k+"/")};
 function fixLinks(){if(!PG)return;document.querySelectorAll('a[href^="#"]').forEach(a=>{const h=a.getAttribute("href");if(h.length<2||h==="#main")return;let u=link(h);if(a.dataset.cat&&a.dataset.cat!=="Tous"&&h==="#services")u="/services/"+norm(a.dataset.cat)+"/";if(a.dataset.bcat&&a.dataset.bcat!=="Tout")u+="?b="+norm(a.dataset.bcat);if(a.dataset.shopneed)u+="?besoin="+encodeURIComponent(a.dataset.shopneed);if(a.dataset.commune)u+="?commune="+encodeURIComponent(a.dataset.commune);a.setAttribute("href",u)})}
 /* Infos pratiques (articles). Pour ajouter un article : copier un bloc, changer « s » (adresse), le titre et le texte. */
@@ -2873,7 +2927,7 @@ document.addEventListener("dragover",e=>{const d=e.target.closest&&e.target.clos
 document.addEventListener("dragleave",e=>{const d=e.target.closest&&e.target.closest(".att-drop");if(d)d.classList.remove("over")});
 document.addEventListener("drop",e=>{const d=e.target.closest&&e.target.closest(".att-drop");if(!d)return;e.preventDefault();d.classList.remove("over");if(!d.classList.contains("full"))attAdd(d.closest(".att").dataset.att,[...e.dataTransfer.files])});
 /* Demande de rappel */
-const S={d:"",n:"",p:"",nom:"",tel:"",com:"",adr:"",date:"",cr:"",comKm:null,cityCode:""};let st=0;
+const S={d:"",n:"",p:"",nom:"",tel:"",mail:"",suivi:false,com:"",adr:"",date:"",cr:"",comKm:null,cityCode:""};let st=0;
 const DEV=[["Téléphone","mobile"],["Tablette","tablet"],["Ordinateur","laptop"],["Console","gamepad"]];
 const NEED=["Réparer ou dépanner","Vendre mon appareil","Demander un conseil"];
 const STEPN=["Appareil et besoin","Description","Coordonnées"];
@@ -2897,17 +2951,17 @@ function drawW(){
   if(st===0)h=`<fieldset><legend>Quel appareil ?</legend><div class="opts four">${DEV.map(([v,ic])=>opt("d",v,ic)).join("")}</div></fieldset><fieldset><legend>Que souhaitez-vous ?</legend><div class="opts two">${NEED.map(v=>opt("n",v)).join("")}</div></fieldset><p class="note">Pour acheter un appareil ou un accessoire, ajoutez-le au panier depuis la <a href="${link("#boutique")}" data-bcat="Tout">Boutique</a>.</p><div class="w-act"><button type="button" class="btn" id="nx" ${S.d&&S.n?"":"disabled"}>Continuer ${svg("arrow")}</button></div>`;
   if(st===1){const[lb,ph]=DESC[S.n]||DESC[NEED[0]];h=`<div class="fld"><label for="fp">${lb}</label><textarea id="fp" placeholder="${ph}">${esc(S.p)}</textarea><small>${S.n===NEED[0]?"Facultatif, mais cela aide à préparer le devis.":"Facultatif, mais cela aide à vous répondre plus vite."}</small></div>${attHTML("rdv")}<div class="w-act"><button type="button" class="btn ghost" id="bk">Retour</button><button type="button" class="btn" id="nx">Continuer ${svg("arrow")}</button></div>`}
   if(st===2&&!S.locDone){S.locDone=1;const L=locNow();if(L&&!S.com.trim()){S.com=L.com;S.comKm=L.km;if(L.adr&&!S.adr.trim())S.adr=L.adr}}
-  if(st===2)h=`<div class="fgrid"><div class="fld"><label for="fn">Nom</label><input id="fn" autocomplete="name" value="${esc(S.nom)}"></div><div class="fld"><label for="ft">Téléphone</label><input id="ft" type="tel" autocomplete="tel" value="${esc(S.tel)}"></div>${noAdr()?"":`<div class="fld full"><label for="fcm">Commune d’intervention</label><input id="fcm" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="sg-c" aria-expanded="false" placeholder="Ex. : Jarnac" value="${esc(S.com)}"><div class="sugg" id="sg-c" role="listbox" aria-label="Communes suggérées" hidden></div><small id="fcmi">${comInfo()}</small><button type="button" class="geo-btn" data-geo="rdv">${svg("locate")}Utiliser ma position actuelle</button><small class="geo-m" role="status"></small></div><div class="fld full"><label for="fa">Adresse <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label><input id="fa" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="sg-a" aria-expanded="false" placeholder="Commencez à taper : 12 route de Segonzac…" value="${esc(S.adr)}"><div class="sugg" id="sg-a" role="listbox" aria-label="Adresses suggérées" hidden></div><small id="fah">Choisissez une suggestion pour remplir l’adresse et la commune.</small></div>`}<div class="fld"><label for="fd">Jour souhaité pour le rappel</label><input id="fd" type="date" min="${todayISO()}" value="${esc(S.date)}"></div><div class="fld"><label for="fc">Créneau</label><select id="fc">${slotOpts()}</select></div></div><div class="sum" id="sum"></div><p class="msg" id="fm" role="alert"></p><div class="w-act"><button type="button" class="btn ghost" id="bk">Retour</button><button type="button" class="btn ghost" id="cp2">${svg("copy")}Copier la demande</button><button type="button" class="btn" id="ml">${svg("mail")}Envoyer la demande</button></div><input type="text" id="fhp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"><p class="note">La demande est envoyée directement à Gouyerian Tech, qui vous rappelle pour fixer le rendez-vous. Vous pouvez aussi appeler le 06 05 79 48 94.</p>`;
+  if(st===2)h=`<div class="fgrid"><div class="fld"><label for="fn">Nom</label><input id="fn" autocomplete="name" value="${esc(S.nom)}"></div><div class="fld"><label for="ft">Téléphone</label><input id="ft" type="tel" autocomplete="tel" value="${esc(S.tel)}"></div><div class="fld full"><label for="fe">E-mail <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label><input id="fe" type="email" autocomplete="email" value="${esc(S.mail)}"><label class="cgv-ok" style="margin-top:6px"><input type="checkbox" id="fsv"${S.suivi?" checked":""}><span>Je souhaite être informé par e-mail de l’avancée de ma réparation (vous pourrez arrêter à tout moment).</span></label></div>${noAdr()?"":`<div class="fld full"><label for="fcm">Commune d’intervention</label><input id="fcm" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="sg-c" aria-expanded="false" placeholder="Ex. : Jarnac" value="${esc(S.com)}"><div class="sugg" id="sg-c" role="listbox" aria-label="Communes suggérées" hidden></div><small id="fcmi">${comInfo()}</small><button type="button" class="geo-btn" data-geo="rdv">${svg("locate")}Utiliser ma position actuelle</button><small class="geo-m" role="status"></small></div><div class="fld full"><label for="fa">Adresse <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label><input id="fa" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="sg-a" aria-expanded="false" placeholder="Commencez à taper : 12 route de Segonzac…" value="${esc(S.adr)}"><div class="sugg" id="sg-a" role="listbox" aria-label="Adresses suggérées" hidden></div><small id="fah">Choisissez une suggestion pour remplir l’adresse et la commune.</small></div>`}<div class="fld"><label for="fd">Jour souhaité pour le rappel</label><input id="fd" type="date" min="${todayISO()}" value="${esc(S.date)}"></div><div class="fld"><label for="fc">Créneau</label><select id="fc">${slotOpts()}</select></div></div><div class="sum" id="sum"></div><p class="msg" id="fm" role="alert"></p><div class="w-act"><button type="button" class="btn ghost" id="bk">Retour</button><button type="button" class="btn ghost" id="cp2">${svg("copy")}Copier la demande</button><button type="button" class="btn" id="ml">${svg("mail")}Envoyer la demande</button></div><input type="text" id="fhp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"><p class="note">La demande est envoyée directement à Gouyerian Tech, qui vous rappelle pour fixer le rendez-vous. Vous pouvez aussi appeler le 06 05 79 48 94.</p>`;
   if(st===3)h=`<div style="display:grid;gap:12px"><span class="chip ok">${svg("check")}Demande envoyée</span><h3>Merci ${esc(S.nom.trim())}, votre demande est bien partie.</h3><p>Gouyerian Tech vous rappelle au ${esc(S.tel.trim())}${S.date?" le "+S.date.split("-").reverse().join("/")+(isSun()?", entre 9h et 13h":""):""} pour fixer le rendez-vous. Pour une urgence, appelez le 06 05 79 48 94.</p><div class="w-act"><button type="button" class="btn ghost" id="nw">Faire une autre demande</button></div></div>`;
   $("wiz").innerHTML=h;if(st===2)sum();
 }
-function readF(){if(st!==2)return;S.nom=$("fn").value;S.tel=$("ft").value;if($("fcm")){S.com=$("fcm").value;S.adr=$("fa").value}{const mn=todayISO();if($("fd").value&&$("fd").value<mn)$("fd").value=mn}S.date=$("fd").value;S.cr=$("fc").value}
-function msg(){return `Bonjour Gouyerian Tech,\nAppareil : ${S.d}\nBesoin : ${S.n}\nDétail : ${S.p||"-"}\nNom : ${S.nom}\nTéléphone : ${S.tel}${noAdr()?"":`\nCommune : ${S.com||"-"}\nAdresse : ${S.adr||"-"}`}\nRendez-vous : Rappel téléphonique\nDate souhaitée : ${S.date?S.date.split("-").reverse().join("/"):"-"}\nCréneau : ${crTxt()}${ATT.rdv.length?`\nPièces jointes : ${ATT.rdv.map(a=>a.name).join(", ")}`:""}`}
+function readF(){if(st!==2)return;S.nom=$("fn").value;S.tel=$("ft").value;S.mail=$("fe").value;S.suivi=$("fsv").checked;if($("fcm")){S.com=$("fcm").value;S.adr=$("fa").value}{const mn=todayISO();if($("fd").value&&$("fd").value<mn)$("fd").value=mn}S.date=$("fd").value;S.cr=$("fc").value}
+function msg(){return `Bonjour Gouyerian Tech,\nAppareil : ${S.d}\nBesoin : ${S.n}\nDétail : ${S.p||"-"}\nNom : ${S.nom}\nTéléphone : ${S.tel}${S.mail.trim()?"\nE-mail : "+S.mail.trim():""}\nSuivi par e-mail : ${S.suivi?"oui, le client souhaite être informé des étapes":"non"}${noAdr()?"":`\nCommune : ${S.com||"-"}\nAdresse : ${S.adr||"-"}`}\nRendez-vous : Rappel téléphonique\nDate souhaitée : ${S.date?S.date.split("-").reverse().join("/"):"-"}\nCréneau : ${crTxt()}${ATT.rdv.length?`\nPièces jointes : ${ATT.rdv.map(a=>a.name).join(", ")}`:""}`}
 function sum(){$("sum").textContent=msg().replace("Bonjour Gouyerian Tech,\n","")}
 /* Numéro joignable : 10 chiffres (06 12 34 56 78), ou +33 / numéro étranger */
 function telOk(v){const d=String(v||"").replace(/[\s.\-()\/]/g,"");return /^(0[1-9]\d{8}|(\+|00)33[1-9]\d{8}|(\+|00)(?!33)\d{8,14})$/.test(d)}
 var TELMSG="Vérifiez votre numéro de téléphone (10 chiffres, par exemple 06 12 34 56 78).";
-function ok(){const m=!S.nom.trim()||!S.tel.trim()?"Indiquez votre nom et votre téléphone pour être rappelé.":!telOk(S.tel)?TELMSG:!noAdr()&&!S.com.trim()?"Indiquez la commune d’intervention.":S.date&&S.date<todayISO()?"Choisissez un jour de rappel à partir du "+todayISO().split("-").reverse().join("/")+".":"";$("fm").textContent=m;return !m}
+function ok(){const m=!S.nom.trim()||!S.tel.trim()?"Indiquez votre nom et votre téléphone pour être rappelé.":!telOk(S.tel)?TELMSG:S.suivi&&!S.mail.trim()?"Indiquez votre e-mail pour recevoir le suivi de la réparation.":S.mail.trim()&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(S.mail.trim())?"Vérifiez votre adresse e-mail.":!noAdr()&&!S.com.trim()?"Indiquez la commune d’intervention.":S.date&&S.date<todayISO()?"Choisissez un jour de rappel à partir du "+todayISO().split("-").reverse().join("/")+".":"";$("fm").textContent=m;return !m}
 if($("wiz")){
 $("wiz").addEventListener("click",e=>{
   const sg=e.target.closest(".sg");if(sg){pickSg(sg);return}
@@ -2950,7 +3004,7 @@ async function sendForm(data,files){
 async function sendReq(b){
   if($("fhp")&&$("fhp").value)return;
   const t0=b.innerHTML;b.disabled=true;b.textContent="Envoi en cours…";$("fm").textContent="";
-  const subj="Demande : "+S.n+" ("+S.d+")",data={_subject:subj,_template:"table",Appareil:S.d,Besoin:S.n,"Détail":S.p||"-",Nom:S.nom,"Téléphone":S.tel};
+  const subj="Demande : "+S.n+" ("+S.d+")",data={_subject:subj,_template:"table",Appareil:S.d,Besoin:S.n,"Détail":S.p||"-",Nom:S.nom,"Téléphone":S.tel};if(S.mail.trim()){data["E-mail"]=S.mail.trim();data._replyto=S.mail.trim()}data["Suivi par e-mail"]=S.suivi?"Oui : cocher « informé par e-mail » en créant la réparation":"Non";
   if(!noAdr()){data.Commune=S.com||"-";data.Adresse=S.adr||"-"}
   data["Date souhaitée"]=S.date?S.date.split("-").reverse().join("/"):"-";data["Créneau"]=crTxt();
   const F=ATT.rdv;if(F.length){data["Pièces jointes"]=F.length+" : "+F.map(a=>a.name).join(", ");b.textContent="Envoi des fichiers…"}
@@ -3319,8 +3373,46 @@ if($("prof"))$("prof").addEventListener("submit",async e=>{e.preventDefault();co
   finally{b.disabled=false;b.innerHTML=t0}});
 
 /* Routes */
-const VIEWS=["home","services","boutique","demande","zone","contact","legal","secteurs","commune","faq","pro","conseils","article","actus","cgv","actu"],ALIAS={avis:["home","avis-sec"],atelier:["contact","atelier-sec"],"pro-virus":["pro","pro-virus"],"pro-reseau":["pro","pro-reseau"],"pro-depannage":["pro","pro-depannage"],"pro-devis":["pro","pro-devis"]};
-const TITLE={home:"Gouyerian Tech · Réparation informatique à Saint-Fort-sur-le-Né",services:"Services et tarifs · Gouyerian Tech",boutique:"Boutique · Gouyerian Tech",demande:"Prendre rendez-vous · Gouyerian Tech",zone:"Zone d’intervention · Gouyerian Tech",secteurs:"Communes desservies · Gouyerian Tech",contact:"Contact · Gouyerian Tech",legal:"Mentions légales · Gouyerian Tech",faq:"Questions fréquentes · Gouyerian Tech",pro:"Professionnels : virus, réseau et dépannage · Gouyerian Tech",conseils:"Infos pratiques · Gouyerian Tech",actus:"Actualités tech · Gouyerian Tech",cgv:"Conditions générales de vente · Gouyerian Tech"};
+const VIEWS=["home","services","boutique","demande","zone","contact","legal","suivi","secteurs","commune","faq","pro","conseils","article","actus","cgv","actu"],ALIAS={avis:["home","avis-sec"],atelier:["contact","atelier-sec"],"pro-virus":["pro","pro-virus"],"pro-reseau":["pro","pro-reseau"],"pro-depannage":["pro","pro-depannage"],"pro-devis":["pro","pro-devis"]};
+const TITLE={suivi:"Suivre ma réparation · Gouyerian Tech",home:"Gouyerian Tech · Réparation informatique à Saint-Fort-sur-le-Né",services:"Services et tarifs · Gouyerian Tech",boutique:"Boutique · Gouyerian Tech",demande:"Prendre rendez-vous · Gouyerian Tech",zone:"Zone d’intervention · Gouyerian Tech",secteurs:"Communes desservies · Gouyerian Tech",contact:"Contact · Gouyerian Tech",legal:"Mentions légales · Gouyerian Tech",faq:"Questions fréquentes · Gouyerian Tech",pro:"Professionnels : virus, réseau et dépannage · Gouyerian Tech",conseils:"Infos pratiques · Gouyerian Tech",actus:"Actualités tech · Gouyerian Tech",cgv:"Conditions générales de vente · Gouyerian Tech"};
+/* v99 : suivi des réparations (/suivi/) : numéro + code, réponse du serveur PHP (api/suivi.php, base MySQL chez IONOS) */
+var TRK_K="gt-suivi",TRK_P=["recu","diagnostic","devis","reparation","prete","rendu"];
+function trkSaved(){try{const v=JSON.parse(localStorage.getItem(TRK_K)||"null");return v&&v.n&&v.c?v:null}catch(e){return null}}
+function trkFmt(s){if(!s)return"";const d=new Date(String(s).replace(" ","T"));return isNaN(d)?"":d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+" à "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}).replace(":","h")}
+async function trkLoad(n,c,auto){
+  const m=$("trkm"),b=$("trkb");m.textContent="";n=String(n).trim().toUpperCase().replace(/\s+/g,"");c=String(c).trim().toUpperCase().replace(/\s+/g,"");
+  if(!n||!c){m.textContent="Indiquez le numéro de suivi et le code.";return}
+  b.disabled=true;b.textContent="Recherche…";
+  let j=null;
+  try{const r=await fetch("/api/suivi.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({numero:n,code:c})});j=await r.json()}
+  catch(e){j={ok:false,erreur:"Le suivi en ligne est momentanément indisponible. Appelez le 06 05 79 48 94."}}
+  b.disabled=false;b.textContent="Voir l’avancée";
+  if(!j||!j.ok){m.textContent=(j&&j.erreur)||"Erreur, réessayez.";$("trkres").hidden=true;$("trkf").hidden=false;return}
+  try{if($("trkr").checked)localStorage.setItem(TRK_K,JSON.stringify({n,c}));else if(!auto)localStorage.removeItem(TRK_K)}catch(e){}
+  trkShow(j);
+}
+function trkShow(j){
+  const seen=new Set(j.historique.map(h=>h.etape)),steps=TRK_P.slice();
+  if(seen.has("piece")||j.etape==="piece")steps.splice(steps.indexOf("reparation"),0,"piece");
+  const lib=Object.fromEntries(j.parcours.map(p=>[p.etape,p.libelle])),ci=steps.indexOf(j.etape),hist=j.historique.slice().reverse();
+  $("trkres").innerHTML=`<div class="trk-hd"><span class="eyebrow">${esc(j.numero)} · ${esc(j.appareil)}</span><h2>${esc(j.libelle)}</h2><p>${esc(j.phrase)}</p><small>Mis à jour le ${esc(trkFmt(j.maj_le))}</small></div>`
+   +(j.etape==="annule"?`<p class="trk-x">Cette réparation a été annulée. Pour toute question, appelez le 06 05 79 48 94.</p>`:`<ol class="trk-p" style="--n:${steps.length}" aria-label="Étapes de la réparation">${steps.map((e,i)=>`<li class="${i<ci?"done":i===ci?"done cur":""}"${i===ci?' aria-current="step"':""}>${esc(lib[e]||e)}</li>`).join("")}</ol>`)
+   +(j.etape==="prete"?`<p class="trk-ok">Votre appareil vous attend : appelez-nous pour convenir de l’heure de passage ou d’une livraison.</p>`:"")
+   +`<div><h3 style="margin-bottom:12px">Historique</h3><ul class="trk-h">${hist.map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></div>`
+   +`<p class="note">${j.avis_email?"Vous recevez un e-mail à chaque nouvelle étape.":"Vous ne recevez pas d’e-mails pour cette réparation : revenez sur cette page pour voir son avancée."}</p>`
+   +`<div class="row2"><button type="button" class="btn ghost" id="trkx">Suivre une autre réparation</button></div>`;
+  $("trkres").hidden=false;$("trkf").hidden=true;
+  $("trkx").onclick=()=>{try{localStorage.removeItem(TRK_K)}catch(e){}$("trkres").hidden=true;$("trkf").hidden=false;$("trkn").value="";$("trkc").value="";$("trkr").checked=false;$("trkn").focus()};
+}
+window.suiviOpen=function(){
+  if(!$("trkf"))return;
+  let n="",c="";
+  const h=PG?decodeURIComponent(location.hash.slice(1)):"",mm=h.match(/^(GT-\d{4}-\d{3,})\.([A-Za-z0-9]{4,12})$/i);
+  if(mm){n=mm[1];c=mm[2];try{history.replaceState(null,"",location.pathname)}catch(e){}}
+  else{const v=trkSaved();if(v){n=v.n;c=v.c;$("trkr").checked=true}}
+  if(n){$("trkn").value=n.toUpperCase();$("trkc").value=c.toUpperCase();trkLoad(n,c,true)}
+};
+if($("trkf"))$("trkf").addEventListener("submit",e=>{e.preventDefault();trkLoad($("trkn").value,$("trkc").value,false)});
 const ctitle=p=>"Dépannage informatique à "+p.n+" · Gouyerian Tech";
 function route(){
   let h0,h,anc=null,cp0=null;
@@ -3334,7 +3426,8 @@ function route(){
   if(ap)renderArticle(ap);
   if(np)renderNews(np);
   VIEWS.forEach(v=>{const el=$("v-"+v);if(el)el.hidden=v!==h});
-  const grp=h0==="avis"?"infos":({services:"services",boutique:"boutique",demande:"contact",zone:"contact",secteurs:"contact",commune:"contact",contact:"contact",pro:"pro",faq:"infos",conseils:"infos",article:"infos",actus:"infos",actu:"infos"})[h]||h;
+  if(h==="suivi"&&window.suiviOpen)suiviOpen();
+  const grp=h0==="avis"?"infos":({services:"services",boutique:"boutique",demande:"contact",suivi:"contact",zone:"contact",secteurs:"contact",commune:"contact",contact:"contact",pro:"pro",faq:"infos",conseils:"infos",article:"infos",actus:"infos",actu:"infos"})[h]||h;
   document.querySelectorAll("[data-nav]").forEach(el=>{const on=el.dataset.nav===grp;el.classList.toggle("cur",on);if(el.tagName==="A"){if(on)el.setAttribute("aria-current","page");else el.removeAttribute("aria-current")}});
   closeDD();setDrawer(false);
   if(!PG){if(anc)requestAnimationFrame(()=>{const a=$(anc);if(a)a.scrollIntoView({block:"start"})});else scrollTo(0,0)}
