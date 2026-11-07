@@ -8,6 +8,8 @@ name: Publier le site
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "attente/**"   # la file d'attente des actualités n'est pas publiée
   schedule:
     - cron: "17 3 * * *"   # chaque nuit : met à jour les dates (« il y a 2 jours », sitemap)
   workflow_dispatch:
