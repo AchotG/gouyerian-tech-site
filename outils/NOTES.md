@@ -47,6 +47,7 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - Ajouter l'URL du site sur la fiche Google.
 
 ## Illustrations (3 nov.)
+- 7 nov. : gen_illus.py amélioré : 24 éléments de dessin ajoutés (arrow, link, calendar, padlock, envelope, bankcard, gift, cart, pricetag, magnifier, warning, snowflake, thermometer, chip, router, gamepad, headphones, usbkey, clock, hourglass, house, screenlines, badge) ; contrôle automatique de chaque dessin (élément coupé au bord, texte qui chevauche ou trop petit, dessin trop petit ou décentré ; code de sortie 1) ; options `nom…`, `--controle`, `--planche` (grand + vignette téléphone + partage), `--catalogue` (tous les éléments), `--liste`, `--aide`. Sorties de contrôle dans outils/img/ill-src/ (non versionné). Les images existantes sont inchangées.
 - gen_illus.py dessine 14 illustrations originales en SVG (fond bleu nuit, traits blancs et cyan), exportées en WebP 640/1280 px (~5 à 20 Ko) et en JPEG 1200×630 pour le partage des 7 articles.
 - Affichage : `picHTML()` (srcset, sizes, width/height, loading="lazy", decoding="async") ; `[data-pic]` rempli au chargement ; seule l'image d'en-tête d'article est prioritaire.
 - build.py : copie dans assets/img/, og:image par article, images dans le sitemap, cache 30 jours.

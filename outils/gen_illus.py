@@ -135,6 +135,155 @@ def sparkles(pts, col=CY):
     return "".join(f'<path d="M{x} {y-14}v28M{x-14} {y}h28" stroke="{col}" stroke-width="4"/>' for x, y in pts)
 
 
+# ---------------------------------------------------------------- éléments ajoutés (nov. 2026)
+# Tous suivent le même style : trait INK de 6 px, corps BODY, accents CY / GR / AM / RD.
+def arrow(x1, y1, x2, y2, col=CY, w=8, head=22):
+    """Flèche droite de (x1, y1) vers (x2, y2)."""
+    a = math.atan2(y2 - y1, x2 - x1)
+    p1 = (x2 - head * math.cos(a - .5), y2 - head * math.sin(a - .5))
+    p2 = (x2 - head * math.cos(a + .5), y2 - head * math.sin(a + .5))
+    return (f'<path d="M{x1} {y1}L{x2} {y2}" stroke="{col}" stroke-width="{w}"/>'
+            f'<path d="M{p1[0]:.1f} {p1[1]:.1f}L{x2} {y2}L{p2[0]:.1f} {p2[1]:.1f}" stroke="{col}" stroke-width="{w}"/>')
+
+
+def link(x1, y1, x2, y2, bend=-60, col=CY, w=6):
+    """Liaison courbe en pointillés (transfert, connexion sans fil, synchronisation)."""
+    mx, my = (x1 + x2) / 2, (y1 + y2) / 2 + bend
+    return f'<path d="M{x1} {y1}Q{mx} {my} {x2} {y2}" stroke="{col}" stroke-width="{w}" stroke-dasharray="6 16"/>'
+
+
+def calendar(cx, cy, w=300, h=290, big="2027", small="OCT.", col=CY):
+    x, y = cx - w / 2, cy - h / 2
+    return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="22" fill="{BODY}"/><path d="M{x} {y+70}h{w}"/>'
+            f'<path d="M{x+60} {y-30}v54M{x+w-60} {y-30}v54"/>'
+            + label(cx, y + h * .66, big, min(92, w * .3), INK) + label(cx, y + h * .86, small, 34, col))
+
+
+def padlock(cx, cy, s=1.0, open_=False, fill="url(#ac)"):
+    arc = "M-46 -20v-40a46 46 0 0 1 92 0" + ("v-20" if open_ else "v40")
+    return (f'<g transform="translate({cx} {cy}) scale({s})"><path d="{arc}" stroke-width="12"/>'
+            f'<rect x="-76" y="-20" width="152" height="130" rx="18" fill="{fill}"/><circle cy="34" r="14" fill="#071226" stroke="none"/>'
+            f'<path d="M0 40v30" stroke="#071226" stroke-width="10"/></g>')
+
+
+def envelope(cx, cy, w=300, h=200, col=INK, fill=BODY):
+    x, y = cx - w / 2, cy - h / 2
+    return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="16" fill="{fill}" stroke="{col}"/>'
+            f'<path d="M{x+14} {y+16}L{cx} {cy+10}L{x+w-14} {y+16}" stroke="{col}"/>')
+
+
+def bankcard(cx, cy, w=300, rot=0, fill="url(#ac)"):
+    h = w * .63
+    x, y = cx - w / 2, cy - h / 2
+    return (f'<g transform="rotate({rot} {cx} {cy})"><rect x="{x}" y="{y}" width="{w}" height="{h}" rx="18" fill="{fill}"/>'
+            f'<rect x="{x+3}" y="{y+h*.2:.0f}" width="{w-6}" height="{h*.17:.0f}" fill="#071226" stroke="none"/>'
+            f'<rect x="{x+w*.1}" y="{y+h*.55}" width="{w*.18}" height="{h*.2}" rx="6" fill="{AM}" stroke="none"/>'
+            f'<path d="M{x+w*.5} {y+h*.7}h{w*.36}" stroke="#071226" stroke-width="6"/></g>')
+
+
+def gift(cx, cy, s=1.0, col=AM):
+    return (f'<g transform="translate({cx} {cy}) scale({s})"><rect x="-110" y="-30" width="220" height="150" rx="12" fill="{BODY}"/>'
+            f'<rect x="-128" y="-74" width="256" height="50" rx="10" fill="{BODY}"/><path d="M0 -74v194" stroke="{col}" stroke-width="16"/>'
+            f'<path d="M0 -76c-30 -60 -90 -40 -60 -4zM0 -76c30 -60 90 -40 60 -4z" stroke="{col}" stroke-width="8"/></g>')
+
+
+def cart(cx, cy, s=1.0, col=INK):
+    return (f'<g transform="translate({cx} {cy}) scale({s})"><path d="M-130 -80h40l34 130h150l30 -100h-196" fill="{BODY}" stroke="{col}"/>'
+            f'<circle cx="-36" cy="90" r="16" fill="{BODY}" stroke="{col}"/><circle cx="76" cy="90" r="16" fill="{BODY}" stroke="{col}"/></g>')
+
+
+def pricetag(cx, cy, text="-30 %", s=1.0, col=AM, rot=-14):
+    return (f'<g transform="translate({cx} {cy}) rotate({rot}) scale({s})"><path d="M-110 -50h170l50 50 -50 50h-170z" fill="{col}" stroke="none"/>'
+            f'<circle cx="60" r="9" fill="#2a1a00" stroke="none"/>' + label(-28, 13, text, 38, "#2a1a00") + '</g>')
+
+
+def magnifier(cx, cy, r=70, col=INK, fill=BODY):
+    return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{fill}" stroke="{col}" stroke-width="10"/>'
+            f'<path d="M{cx+r*.72:.0f} {cy+r*.72:.0f}l{r*.75:.0f} {r*.75:.0f}" stroke="{col}" stroke-width="18"/>')
+
+
+def warning(cx, cy, s=1.0, col=AM):
+    return (f'<g transform="translate({cx} {cy}) scale({s})"><path d="M-100 85L0 -85L100 85Z" fill="{col}" stroke="{col}"/>'
+            f'<path d="M0 -25v50" stroke="#2a1a00" stroke-width="12"/><circle cy="55" r="8" fill="#2a1a00" stroke="none"/></g>')
+
+
+def snowflake(cx, cy, r=60, col=CY, w=6):
+    out = ""
+    for i in range(6):
+        a = i * math.pi / 3
+        ex, ey = cx + r * math.cos(a), cy + r * math.sin(a)
+        out += f'<path d="M{cx} {cy}L{ex:.1f} {ey:.1f}" stroke="{col}" stroke-width="{w}"/>'
+        for sgn in (-1, 1):
+            bx, by = cx + r * .6 * math.cos(a), cy + r * .6 * math.sin(a)
+            tx, ty = bx + r * .3 * math.cos(a + sgn * .8), by + r * .3 * math.sin(a + sgn * .8)
+            out += f'<path d="M{bx:.1f} {by:.1f}L{tx:.1f} {ty:.1f}" stroke="{col}" stroke-width="{w}"/>'
+    return out
+
+
+def thermometer(cx, cy, s=1.0, lvl=.7, col=RD):
+    top = 30 - 140 * lvl
+    return (f'<g transform="translate({cx} {cy}) scale({s})"><path d="M-22 -110a22 22 0 0 1 44 0v140a46 46 0 1 1 -44 0z" fill="{BODY}"/>'
+            f'<circle r="30" cy="70" fill="{col}" stroke="none"/><path d="M0 70V{top:.0f}" stroke="{col}" stroke-width="12"/></g>')
+
+
+def chip(cx, cy, s=1.0, text="IA", fill="url(#ac)"):
+    legs = "".join(f'<path d="M{v} -96v-26M{v} 96v26M-96 {v}h-26M96 {v}h26" stroke-width="8"/>' for v in (-50, 0, 50))
+    return (f'<g transform="translate({cx} {cy}) scale({s})">{legs}<rect x="-96" y="-96" width="192" height="192" rx="22" fill="{BODY}"/>'
+            f'<rect x="-62" y="-62" width="124" height="124" rx="12" fill="{fill}" stroke="none"/>' + label(0, 20, text, 58, "#071226") + '</g>')
+
+
+def router(cx, cy, w=320, col=CY):
+    x, y = cx - w / 2, cy - 45
+    leds = "".join(f'<circle cx="{x+50+i*36}" cy="{cy}" r="7" fill="{c}" stroke="none"/>' for i, c in enumerate((GR, GR, CY, AM)))
+    return (f'<path d="M{x+50} {y}l-24 -100M{x+w-50} {y}l24 -100" stroke-width="10"/>'
+            f'<rect x="{x}" y="{y}" width="{w}" height="90" rx="22" fill="{BODY}"/>{leds}<path d="M{x+w-80} {cy}h44" stroke-width="5" stroke-opacity=".6"/>')
+
+
+def gamepad(cx, cy, s=1.0, col=INK):
+    """Manette générique (aucune marque)."""
+    return (f'<g transform="translate({cx} {cy}) scale({s})"><path d="M-82 -70h164a52 52 0 0 1 50 64l-18 64a30 30 0 0 1 -52 10l-32 -40h-110l-32 40a30 30 0 0 1 -52 -10l-18 -64a52 52 0 0 1 50 -64z" fill="{BODY}" stroke="{col}"/>'
+            f'<path d="M-64 -30v34M-81 -13h34" stroke-width="7"/><circle cx="58" cy="-25" r="8" fill="{CY}" stroke="none"/><circle cx="80" cy="-4" r="8" fill="{AM}" stroke="none"/></g>')
+
+
+def headphones(cx, cy, s=1.0, col=INK):
+    return (f'<g transform="translate({cx} {cy}) scale({s})"><path d="M-100 30v-30a100 100 0 0 1 200 0v30" stroke="{col}" stroke-width="12"/>'
+            f'<rect x="-124" y="10" width="54" height="100" rx="20" fill="url(#ac)" stroke="{col}"/><rect x="70" y="10" width="54" height="100" rx="20" fill="url(#ac)" stroke="{col}"/></g>')
+
+
+def usbkey(cx, cy, s=1.0, rot=0):
+    return (f'<g transform="translate({cx} {cy}) rotate({rot}) scale({s})"><rect x="-40" y="-90" width="80" height="150" rx="16" fill="url(#ac)"/>'
+            f'<rect x="-26" y="60" width="52" height="50" rx="4" fill="{BODY}"/><path d="M-10 76h6M6 76h6" stroke-width="6"/></g>')
+
+
+def clock(cx, cy, r=70, h=10, m=10, col=INK, fill=BODY):
+    ah, am = math.radians(h % 12 * 30 + m / 2 - 90), math.radians(m * 6 - 90)
+    return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{fill}" stroke="{col}"/>'
+            f'<path d="M{cx} {cy}L{cx+r*.5*math.cos(ah):.1f} {cy+r*.5*math.sin(ah):.1f}" stroke="{col}" stroke-width="9"/>'
+            f'<path d="M{cx} {cy}L{cx+r*.75*math.cos(am):.1f} {cy+r*.75*math.sin(am):.1f}" stroke="{CY}" stroke-width="7"/><circle cx="{cx}" cy="{cy}" r="7" fill="{col}" stroke="none"/>')
+
+
+def hourglass(cx, cy, s=1.0, col=AM):
+    return (f'<g transform="translate({cx} {cy}) scale({s})"><path d="M-50 -70h100M-50 70h100M-40 -70c0 50 80 50 80 70s-80 20 -80 70M40 -70c0 50 -80 50 -80 70s80 20 80 70" fill="{BODY}" stroke="{col}"/>'
+            f'<path d="M-20 50h40l-20 -18z" fill="{col}" stroke="none"/></g>')
+
+
+def house(cx, cy, w=260, h=200, fill=BODY):
+    x, y = cx - w / 2, cy - h / 2 + 40
+    return (f'<path d="M{x-24} {y+6}L{cx} {y-90}L{x+w+24} {y+6}" fill="{fill}"/><rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" fill="{fill}"/>'
+            f'<rect x="{cx-26}" y="{y+h-80}" width="52" height="80" rx="4" stroke-width="4"/>')
+
+
+def screenlines(x, y, n=3, w=160, gap=40):
+    """Lignes de texte sur un écran."""
+    return "".join(f'<path d="M{x} {y+i*gap}h{w*(1, .75, .88, .6)[i % 4]:.0f}" stroke-width="5" stroke-opacity=".6"/>' for i in range(n))
+
+
+def badge(cx, cy, text, r=72, col=GR, ink="#062a1c", sub=""):
+    """Pastille ronde avec un mot court (« 2 ANS », « 80 % »…)."""
+    out = f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{col}" stroke="none"/>' + label(cx, cy + (-4 if sub else 11), text, r * .42, ink)
+    return out + (label(cx, cy + r * .48, sub, r * .3, ink, weight=600) if sub else "")
+
+
 # ---------------------------------------------------------------- scènes
 S = {}
 crack = f'<path d="M560 214l40 46 -22 30 44 36 -10 40M600 260l52 -14M622 326l-40 22" stroke="{INK}" stroke-width="4" stroke-opacity=".9"/>'
@@ -219,17 +368,53 @@ S["reconditionne-ou-neuf"] = frame(
     + f'<circle cx="980" cy="560" r="72" fill="{GR}" stroke="none"/>' + label(980, 556, "2 ANS", 30, "#062a1c") + label(980, 590, "garantie", 22, "#062a1c", weight=600), 640, 360)
 
 
-def render(only=()):
-    """only : noms à dessiner (ex. python outils/gen_illus.py mon-article) ; vide = toutes les illustrations."""
+MARGE = 28          # marge minimale (px) au bord de l'image ; l'aperçu de partage coupe aussi ~22 px en haut et en bas
+CONTROLE_JS = """(m) => {
+  const W = 1280, H = 720, g = document.querySelector('svg').lastElementChild, pb = [];
+  const r0 = document.querySelector('svg').getBoundingClientRect();
+  let L = 1e9, T = 1e9, R = -1e9, B = -1e9;
+  const txt = [];
+  for (const e of g.querySelectorAll('*')) {
+    if (['g', 'defs', 'stop', 'tspan'].includes(e.tagName)) continue;
+    const b = e.getBoundingClientRect(); if (!b.width && !b.height) continue;
+    const sw = parseFloat(getComputedStyle(e).strokeWidth) || 0, st = getComputedStyle(e).stroke !== 'none' ? sw / 2 : 0;
+    const x1 = b.left - r0.left - st, y1 = b.top - r0.top - st, x2 = b.right - r0.left + st, y2 = b.bottom - r0.top + st;
+    L = Math.min(L, x1); T = Math.min(T, y1); R = Math.max(R, x2); B = Math.max(B, y2);
+    const nom = e.tagName === 'text' ? 'texte « ' + e.textContent + ' »' : e.tagName;
+    if (x1 < m || y1 < m || x2 > W - m || y2 > H - m) {
+      if (x2 < 0 || y2 < 0 || x1 > W || y1 > H) pb.push(nom + ' entièrement hors de l\\'image');
+      else if (e.tagName === 'text' || x1 < 0 || y1 < 0 || x2 > W || y2 > H) pb.push(nom + ' coupé ou collé au bord (' + [x1, y1, x2, y2].map(Math.round).join(', ') + ')');
+    }
+    if (e.tagName === 'text') { txt.push([nom, x1, y1, x2, y2]); if (b.height < 18) pb.push(nom + ' trop petit pour être lu en vignette'); }
+  }
+  for (let i = 0; i < txt.length; i++) for (let j = i + 1; j < txt.length; j++) {
+    const a = txt[i], c = txt[j];
+    if (a[1] < c[3] && c[1] < a[3] && a[2] < c[4] && c[2] < a[4]) pb.push(a[0] + ' chevauche ' + c[0]);
+  }
+  if (R - L < W * .4) pb.push('dessin trop petit : il occupe ' + Math.round((R - L) / W * 100) + ' % de la largeur (viser 55 à 80 %)');
+  const dx = (L + R) / 2 - W / 2, dy = (T + B) / 2 - H / 2;
+  if (Math.abs(dx) > 170 || Math.abs(dy) > 110) pb.push('dessin décentré (' + Math.round(dx) + ' px, ' + Math.round(dy) + ' px)');
+  return pb;
+}"""
+
+
+def render(only=(), check_only=False):
+    """only : noms à dessiner (ex. python outils/gen_illus.py mon-article) ; vide = toutes les illustrations.
+    Contrôle chaque dessin (débordements, textes qui se chevauchent ou trop petits, dessin trop petit ou décentré)
+    et renvoie {nom: [problèmes]}. check_only=True : contrôle sans rien écrire."""
+    pbs = {}
     with sync_playwright() as p:
         b = p.chromium.launch()
         pg = b.new_page(viewport={"width": W, "height": H})
         for name, svg in S.items():
             if only and name not in only:
                 continue
-            (SRC / f"{name}.svg").write_text(svg, encoding="utf-8")
             pg.set_content(f"<html><body style='margin:0'>{svg}</body></html>")
             pg.wait_for_timeout(60)
+            pbs[name] = pg.evaluate(CONTROLE_JS, MARGE)
+            if check_only:
+                continue
+            (SRC / f"{name}.svg").write_text(svg, encoding="utf-8")
             im = Image.open(io.BytesIO(pg.screenshot(clip={"x": 0, "y": 0, "width": W, "height": H}))).convert("RGB")
             for w in (640, 1280):
                 (im if w == W else im.resize((w, w * H // W), Image.LANCZOS)).save(OUT / f"{name}-{w}.webp", "WEBP", quality=78, method=6)
@@ -237,15 +422,117 @@ def render(only=()):
                 og = im.resize((1200, 675), Image.LANCZOS).crop((0, 22, 1200, 652))
                 og.save(OUT / f"og-{name}.jpg", "JPEG", quality=84, optimize=True, progressive=True)
         b.close()
+    return pbs
+
+
+def planche(noms, dest):
+    """Planche de contrôle : chaque illustration en grand, puis en vignette (taille d'une carte sur téléphone)
+    et dans le cadrage du partage sur les réseaux sociaux, pour vérifier qu'elle reste lisible partout."""
+    from PIL import ImageDraw, ImageFont
+    try:
+        font = ImageFont.truetype("DejaVuSans.ttf", 15)
+    except OSError:
+        try:
+            font = ImageFont.load_default(size=15)
+        except TypeError:
+            font = ImageFont.load_default()
+    rows = []
+    for n in noms:
+        big = Image.open(OUT / f"{n}-640.webp").convert("RGB")
+        small = big.resize((240, 135), Image.LANCZOS)
+        ogf = OUT / f"og-{n}.jpg"
+        og = Image.open(ogf).convert("RGB").resize((320, 168), Image.LANCZOS) if ogf.exists() else None
+        rows.append((n, big, small, og))
+    sheet = Image.new("RGB", (640 + 360 + 40, len(rows) * 400 + 20), "#ffffff")
+    d = ImageDraw.Draw(sheet)
+    for i, (n, big, small, og) in enumerate(rows):
+        y = 20 + i * 400
+        d.text((10, y), n, fill="#000000", font=font)
+        sheet.paste(big, (10, y + 20))
+        d.text((670, y), "vignette (carte sur téléphone)", fill="#000000", font=font)
+        sheet.paste(small, (670, y + 20))
+        if og:
+            d.text((670, y + 166), "partage réseaux sociaux", fill="#000000", font=font)
+            sheet.paste(og, (670, y + 188))
+    sheet.save(dest)
+    return dest
+
+
+ELEMENTS = ["phone", "tablet", "laptop", "monitor", "shield", "check", "cross", "wifi", "cloud", "battery", "bolt", "drop", "building",
+            "bubble", "gear", "wrench", "sparkles", "arrow", "link", "calendar", "padlock", "envelope", "bankcard", "gift", "cart",
+            "pricetag", "magnifier", "warning", "snowflake", "thermometer", "chip", "router", "gamepad", "headphones", "usbkey",
+            "clock", "hourglass", "house", "screenlines", "badge", "label"]
+
+
+def catalogue(dest):
+    """Image de tous les éléments disponibles, avec leur nom, pour choisir quoi dessiner."""
+    ex = {"phone": phone(0, 0, 120, 230, screen="#14306a"), "tablet": tablet(0, 0, 230, 160), "laptop": laptop(0, -10, 220),
+          "monitor": monitor(0, -20, 220, 150), "shield": shield(0, 0, .8), "check": check(0, 0, 50), "cross": cross(0, 0, 50),
+          "wifi": wifi(0, 40, 110), "cloud": cloud(0, 0, .8, "url(#ac)"), "battery": battery(0, 0, 200, 100, .7), "bolt": bolt(0, 0, 1.2),
+          "drop": drop(0, 0, 1.8), "building": building(-90, -80, 180, 190), "bubble": bubble(-110, -60, 220, 110, AM),
+          "gear": gear(0, 0, 70, CY), "wrench": wrench(0, -20, .8), "sparkles": sparkles([(-60, -40), (40, 30), (70, -60)]),
+          "arrow": arrow(-100, 0, 100, 0), "link": link(-110, 40, 110, 40), "calendar": calendar(0, 10, 220, 210),
+          "padlock": padlock(0, -10, .9), "envelope": envelope(0, 0, 240, 160), "bankcard": bankcard(0, 0, 240, -8),
+          "gift": gift(0, 0, .85), "cart": cart(0, -10, .9), "pricetag": pricetag(0, 0, "-30 %"), "magnifier": magnifier(-20, -20, 60),
+          "warning": warning(0, 0, .9), "snowflake": snowflake(0, 0, 80), "thermometer": thermometer(0, -10, .9),
+          "chip": chip(0, 0, .8), "router": router(0, 40, 260), "gamepad": gamepad(0, 0, 1.0), "headphones": headphones(0, -20, .9),
+          "usbkey": usbkey(0, -10, .9, 20), "clock": clock(0, 0, 80), "hourglass": hourglass(0, 0, 1.1), "house": house(0, 0, 200, 140),
+          "screenlines": screenlines(-80, -40), "badge": badge(0, 0, "2 ANS", 80, sub="garantie"), "label": label(0, 14, "Texte", 46)}
+    cw, ch, cols = 320, 300, 6
+    n = len(ELEMENTS)
+    rows = -(-n // cols)
+    cells = "".join(f'<g transform="translate({(i % cols) * cw + cw / 2} {(i // cols) * ch + 140})">{ex[k]}</g>'
+                    f'<text x="{(i % cols) * cw + cw / 2}" y="{(i // cols) * ch + 285}" font-size="26" fill="{AM}" stroke="none" text-anchor="middle">{k}</text>'
+                    for i, k in enumerate(ELEMENTS))
+    svg = frame(cells).replace(f'viewBox="0 0 {W} {H}" width="{W}" height="{H}"', f'viewBox="0 0 {cols*cw} {rows*ch}" width="{cols*cw}" height="{rows*ch}"')
+    svg = svg.replace(f'<rect width="{W}" height="{H}"', f'<rect width="{cols*cw}" height="{rows*ch}"')
+    with sync_playwright() as p:
+        b = p.chromium.launch()
+        pg = b.new_page(viewport={"width": cols * cw, "height": rows * ch})
+        pg.set_content(f"<html><body style='margin:0'>{svg}</body></html>")
+        pg.wait_for_timeout(80)
+        pg.screenshot(path=str(dest))
+        b.close()
+    return dest
+
+
+AIDE = """Utilisation :
+  python outils/gen_illus.py                  dessine toutes les illustrations
+  python outils/gen_illus.py nom [nom…]       dessine seulement celles-ci (ex. un nouvel article)
+  python outils/gen_illus.py --controle [nom…] contrôle sans rien écrire (débordements, textes, centrage)
+  python outils/gen_illus.py --planche nom…   dessine puis crée outils/img/ill-src/planche.png (grand, vignette, partage)
+  python outils/gen_illus.py --catalogue      crée outils/img/ill-src/catalogue.png : tous les éléments disponibles
+  python outils/gen_illus.py --liste          liste les illustrations
+Sortie : code 1 si un contrôle signale un problème (l'image est quand même écrite, à corriger)."""
 
 
 if __name__ == "__main__":
     import sys
-    manque = [n for n in sys.argv[1:] if n not in S]
+    args = sys.argv[1:]
+    opts = {a for a in args if a.startswith("--")}
+    noms = [a for a in args if not a.startswith("--")]
+    if opts - {"--controle", "--planche", "--catalogue", "--liste", "--aide"} or "--aide" in opts:
+        sys.exit(AIDE)
+    if "--liste" in opts:
+        print("\n".join(S))
+        sys.exit(0)
+    if "--catalogue" in opts:
+        print("catalogue :", catalogue(SRC / "catalogue.png"))
+        sys.exit(0)
+    manque = [n for n in noms if n not in S]
     if manque:
-        sys.exit("Illustration inconnue : " + ", ".join(manque))
-    render(tuple(sys.argv[1:]))
-    tot = sum(f.stat().st_size for f in OUT.iterdir())
-    for f in sorted(OUT.iterdir()):
-        print(f.name, f.stat().st_size // 1024, "Ko")
-    print("total", tot // 1024, "Ko")
+        sys.exit("Illustration inconnue : " + ", ".join(manque) + "\n" + AIDE)
+    pbs = render(tuple(noms), check_only="--controle" in opts)
+    if "--controle" not in opts:
+        for n in (noms or S):
+            for f in sorted(OUT.glob(f"*{n}*")):
+                if f.stem in (f"{n}-640", f"{n}-1280", f"og-{n}"):
+                    print(f.name, f.stat().st_size // 1024, "Ko")
+    if "--planche" in opts:
+        print("planche :", planche(noms or list(S), SRC / "planche.png"))
+    mauvais = {n: v for n, v in pbs.items() if v}
+    for n, v in mauvais.items():
+        for x in v:
+            print(f"À CORRIGER – {n} : {x}")
+    print("contrôle :", "aucun problème" if not mauvais else f"{len(mauvais)} illustration(s) à corriger")
+    sys.exit(1 if mauvais else 0)
