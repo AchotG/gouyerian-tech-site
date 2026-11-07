@@ -180,16 +180,18 @@ switch ($action) {
     $r = fiche((int)($d['id'] ?? 0));
     if (!(int)$r['devis_vu']) $pdo->prepare('UPDATE gt_reparations SET devis_vu = 1 WHERE id = ?')->execute([$r['id']]);
     $v = vue($r, true);  // les messages du client sont affichés comme nouveaux une dernière fois, puis marqués lus
-    $pdo->prepare("UPDATE gt_messages SET lu = 1 WHERE reparation_id = ? AND auteur = 'client' AND lu = 0")->execute([$r['id']]);
+    $pdo->prepare("UPDATE gt_messages SET lu = 1, lu_le = ? WHERE reparation_id = ? AND auteur = 'client' AND lu = 0")->execute([now(), $r['id']]);
     out(['ok' => true, 'fiche' => $v]);
 
   case 'message':
     $r = fiche((int)($d['id'] ?? 0));
     $texte = txt($d['texte'] ?? '', 2000);
-    if ($texte === '') fail('Écrivez un message.');
-    $pdo->prepare("INSERT INTO gt_messages (reparation_id, auteur, texte, pj, le, lu) VALUES (?, 'atelier', ?, '[]', ?, 0)")->execute([$r['id'], $texte, now()]);
-    $pdo->prepare("UPDATE gt_messages SET lu = 1 WHERE reparation_id = ? AND auteur = 'client' AND lu = 0")->execute([$r['id']]);
-    $mail = !empty($d['mail']) ? mail_message($r, $texte) : false;
+    $pj = recevoir_pj(6);
+    if ($texte === '' && !$pj) fail('Écrivez un message ou joignez un fichier.');
+    $mail = !empty($d['mail']) ? mail_message($r, $texte, count($pj)) : false;
+    $pdo->prepare("INSERT INTO gt_messages (reparation_id, auteur, texte, pj, le, lu, mail) VALUES (?, 'atelier', ?, ?, ?, 0, ?)")
+      ->execute([$r['id'], $texte, json_encode($pj, JSON_UNESCAPED_UNICODE), now(), $mail ? 1 : 0]);
+    $pdo->prepare("UPDATE gt_messages SET lu = 1, lu_le = ? WHERE reparation_id = ? AND auteur = 'client' AND lu = 0")->execute([now(), $r['id']]);
     $v = vue(fiche((int)$r['id']), true);
     out(['ok' => true, 'fiche' => $v, 'mail' => $mail]);
 

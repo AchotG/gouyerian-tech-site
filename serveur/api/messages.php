@@ -8,9 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Méthode non autorisée.', 405)
 if (($_SERVER['HTTP_X_GT'] ?? '') !== '1') fail('Demande refusée.', 403);
 if (!https_ok()) fail('Ouvrez la page en https://', 403);
 
-$raw = $_POST['data'] ?? file_get_contents('php://input');
-$d = json_decode((string)$raw, true);
-if (!is_array($d)) fail('Demande illisible.');
+$d = entree();
+if (!$d) fail('Demande illisible.');
 $action = txt($d['action'] ?? 'lire', 20);
 $numero = norm_numero(txt($d['numero'] ?? '', 30));
 if ($numero === '') fail('Numéro de suivi manquant.');
@@ -39,6 +38,22 @@ if (!$ok) {
   fail('Accès refusé à cette réparation.', 403);
 }
 
+/* Ouvrir une pièce jointe de la conversation */
+if ($action === 'pj') {
+  $s = $pdo->prepare('SELECT pj FROM gt_messages WHERE id = ? AND reparation_id = ?');
+  $s->execute([(int)($d['id'] ?? 0), $r['id']]);
+  $f = (json_decode((string)$s->fetchColumn(), true) ?: [])[(int)($d['i'] ?? -1)] ?? null;
+  $path = $f ? prive_dir() . '/pj/' . basename($f['fichier']) : '';
+  if (!$f || !is_file($path)) fail('Fichier introuvable.', 404);
+  header('Content-Type: ' . $f['type']);
+  header('Content-Length: ' . filesize($path));
+  header('Content-Disposition: inline; filename="' . preg_replace('/[^\w.\- ]/u', '_', $f['nom']) . '"');
+  header('Cache-Control: private, no-store');
+  header('X-Content-Type-Options: nosniff');
+  readfile($path);
+  exit;
+}
+
 if ($action === 'envoyer') {
   limite('msg:' . ip(), 30, 60);
   essai('msg:' . ip());
@@ -54,5 +69,7 @@ if ($action === 'envoyer') {
 }
 
 /* Les messages de l'atelier sont marqués comme lus par le client */
-$pdo->prepare("UPDATE gt_messages SET lu = 1 WHERE reparation_id = ? AND auteur = 'atelier' AND lu = 0")->execute([$r['id']]);
+if ($action === 'lire' || $action === 'envoyer') {
+  $pdo->prepare("UPDATE gt_messages SET lu = 1, lu_le = ? WHERE reparation_id = ? AND auteur = 'atelier' AND lu = 0")->execute([now(), $r['id']]);
+}
 out(['ok' => true, 'messages' => messages((int)$r['id'], 'client')]);

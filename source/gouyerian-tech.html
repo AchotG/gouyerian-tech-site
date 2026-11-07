@@ -1499,7 +1499,10 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .msg-b{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .msg-b button[type=submit]{margin-left:auto}
 .msg-pjb{cursor:pointer}
-.msg-pj{font-size:.82rem;color:var(--muted)}
+.msg-pjs{display:flex;flex-wrap:wrap;gap:6px}
+.msg-pjl{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--acc);font:600 .82rem/1.3 var(--f-body);cursor:pointer;overflow-wrap:anywhere;text-align:left}
+.msg-pjl:hover{border-color:var(--acc)}
+.msg-st{justify-self:end;font:600 .72rem/1.2 var(--f-body);color:var(--muted)}
 .msg-nb{display:inline-block;margin-left:6px;padding:2px 9px;border-radius:999px;background:var(--grad);color:#fff;font:700 .72rem/1.5 var(--f-body);vertical-align:middle}
 .acc-g.on{color:var(--ok)}
 .acc-r details summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--acc)}
@@ -2282,7 +2285,7 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
     <h3 id="conf-suivi">Suivi des réparations</h3>
     <p>Lorsque vous confiez un appareil à l’atelier, une fiche de réparation est créée : votre nom, votre téléphone, votre e-mail si vous le donnez, l’appareil, la panne, le prix annoncé et les étapes de la réparation. Elle est enregistrée dans une base de données hébergée par IONOS en Europe, et sert à suivre la réparation et à vous en informer. Sur la page « Suivre ma réparation », le numéro de suivi et le code affichent seulement l’appareil, les étapes et les messages de l’atelier, jamais vos coordonnées.</p>
     <p>Les e-mails de suivi ne sont envoyés que si vous l’avez demandé (case à cocher lors de la demande ou à l’atelier). Chaque e-mail contient un lien pour ne plus les recevoir. Les fiches sont effacées automatiquement 24 mois après la fin de la réparation, durée utile pour la garantie et le service après-vente. Si vous cochez « Se souvenir de ce suivi », le numéro et le code sont gardés seulement sur votre appareil.</p>
-    <p>La messagerie de chaque réparation (sur la page de suivi et dans l’espace client) enregistre vos messages et les photos ou fichiers que vous joignez dans la même base de données et sur le même hébergement privé IONOS ; seul l’atelier peut les lire. Ils sont effacés avec la fiche de réparation.</p>
+    <p>La messagerie de chaque réparation (sur la page de suivi et dans l’espace client) enregistre vos messages et les photos ou fichiers que vous joignez dans la même base de données et sur le même hébergement privé IONOS ; seul l’atelier peut les lire. Quand l’atelier vous écrit, un e-mail vous en prévient si votre adresse est connue. Les messages sont effacés avec la fiche de réparation.</p>
     <h3 id="conf-compte">Espace client</h3>
     <p>Si vous créez votre espace client, votre adresse e-mail, et si vous les indiquez votre nom et votre téléphone, sont enregistrés dans la même base de données hébergée par IONOS, ainsi que le contenu de votre panier. La connexion se fait par un code à usage unique envoyé par e-mail, valable 15 minutes ; un cookie de connexion, strictement nécessaire, garde votre appareil connecté 30 jours. Votre espace affiche les réparations enregistrées avec votre adresse e-mail. Vous pouvez supprimer votre espace à tout moment depuis la page « Mon espace » ; les fiches de réparation restent conservées 24 mois pour la garantie.</p>
     <p>L’assistant automatique du site utilise des réponses préparées : les messages saisis ne sont ni enregistrés ni transmis.</p>
@@ -3492,7 +3495,7 @@ async function trkLoad(n,c,auto){
   TRK_LAST={n,c};trkShow(j);
 }
 /* v103 : messagerie client ↔ atelier, une conversation par réparation (api/messages.php) */
-function msgItems(ms){return ms&&ms.length?ms.map(m=>`<li class="msg-${m.auteur==="atelier"?"a":"c"}${m.auteur==="atelier"&&!m.lu?" new":""}"><small>${m.auteur==="atelier"?"Atelier Gouyerian Tech":"Vous"} · ${esc(trkFmt(m.le))}</small>${m.texte?`<p>${esc(m.texte)}</p>`:""}${m.nb_pj?`<span class="msg-pj">📎 ${m.nb_pj} fichier${m.nb_pj>1?"s":""} joint${m.nb_pj>1?"s":""}</span>`:""}</li>`).join(""):`<li class="msg-0">Une question sur votre réparation ? Écrivez à l’atelier ici : la réponse s’affiche ici.</li>`}
+function msgItems(ms){return ms&&ms.length?ms.map(m=>`<li class="msg-${m.auteur==="atelier"?"a":"c"}${m.auteur==="atelier"&&!m.lu?" new":""}"><small>${m.auteur==="atelier"?"Atelier Gouyerian Tech":"Vous"} · ${esc(trkFmt(m.le))}</small>${m.texte?`<p>${esc(m.texte)}</p>`:""}${(m.pj||[]).length?`<span class="msg-pjs">${m.pj.map(f=>`<button type="button" class="msg-pjl" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}">📎 ${esc(f.nom)}</button>`).join("")}</span>`:""}${m.auteur==="client"?`<span class="msg-st">${m.lu?"✓✓ Lu par l’atelier":"✓ Distribué"}</span>`:""}</li>`).join(""):`<li class="msg-0">Une question sur votre réparation ? Écrivez à l’atelier ici : la réponse s’affiche ici.</li>`}
 function msgUnread(ms){return(ms||[]).filter(m=>m.auteur==="atelier"&&!m.lu).length}
 function msgHTML(ms,n,titre){const u=msgUnread(ms);return `<div class="msgs" data-mn="${esc(n)}"><h3>${titre||"Messages avec l’atelier"}${u?`<span class="msg-nb">${u} nouveau${u>1?"x":""}</span>`:""}</h3><ul class="msg-l" aria-live="polite">${msgItems(ms)}</ul><form class="msg-f" novalidate><label class="sr" for="mt-${esc(n)}">Votre message à l’atelier</label><textarea id="mt-${esc(n)}" maxlength="2000" placeholder="Écrire à l’atelier…"></textarea><div class="msg-b"><label class="btn sm ghost msg-pjb">📎 Photo ou fichier<input type="file" accept="image/*,video/*,application/pdf" multiple hidden></label><span class="msg-fn note"></span><button class="btn sm" type="submit">Envoyer</button></div><p class="msg" role="alert"></p></form></div>`}
 async function msgApi(fd){let r,j;try{r=await fetch("/api/messages.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}})}catch(e){throw new Error("Connexion impossible. Réessayez ou appelez le 06 05 79 48 94.")}
@@ -3501,7 +3504,13 @@ async function msgApi(fd){let r,j;try{r=await fetch("/api/messages.php",{method:
 function msgBind(root,auth,upd){root.querySelectorAll(".msgs").forEach(box=>{const n=box.dataset.mn,f=box.querySelector("form"),ta=f.querySelector("textarea"),fi=f.querySelector("input[type=file]"),fn=f.querySelector(".msg-fn"),er=f.querySelector("p.msg"),bt=f.querySelector("button[type=submit]"),l=box.querySelector(".msg-l");
   l.scrollTop=l.scrollHeight;
   const put=ms=>{l.innerHTML=msgItems(ms);l.scrollTop=l.scrollHeight;if(upd)upd(n,ms)};
-  if(box.querySelector(".msg-a.new")){const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"lire"},auth(n))));msgApi(fd).then(j=>{if(upd)upd(n,j.messages)}).catch(()=>{})}
+  l.addEventListener("click",async e=>{const pb=e.target.closest("[data-mpj]");if(!pb)return;const [id,i]=pb.dataset.mpj.split("-"),w=window.open("","_blank");pb.disabled=true;
+    try{const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"pj",id:+id,i:+i},auth(n))));
+      const r=await fetch("/api/messages.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}});
+      if(!r.ok||(r.headers.get("content-type")||"").includes("json"))throw new Error("Fichier introuvable.");
+      const u=URL.createObjectURL(await r.blob());if(w)w.location.href=u;else{const a=document.createElement("a");a.href=u;a.download=pb.dataset.nom||"fichier";a.click()}setTimeout(()=>URL.revokeObjectURL(u),60000)}
+    catch(err){if(w)w.close();er.textContent=err.message}pb.disabled=false});
+  if(box.querySelector(".msg-a.new")){const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"lire"},auth(n))));msgApi(fd).then(j=>{if(upd)upd(n,j.messages);setTimeout(()=>{const nb=box.querySelector("h3 .msg-nb");if(nb)nb.remove()},4000)}).catch(()=>{})}
   fi.onchange=()=>{const k=fi.files.length;fn.textContent=k?k+" fichier"+(k>1?"s":"")+" prêt"+(k>1?"s":""):""};
   f.onsubmit=async e=>{e.preventDefault();er.textContent="";const t=ta.value.trim(),fs=[...fi.files].slice(0,4);
     if(!t&&!fs.length){er.textContent="Écrivez votre message.";ta.focus();return}

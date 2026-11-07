@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -178,6 +178,8 @@ function schema(PDO $pdo): void {
     lu TINYINT NOT NULL DEFAULT 0" . ($sqlite ? '' : ', INDEX (reparation_id)') . "
   )$opt");
   if ($sqlite) $pdo->exec('CREATE INDEX IF NOT EXISTS gt_m_rep ON gt_messages (reparation_id)');
+  ajouter_colonne($pdo, 'gt_messages', 'mail', 'TINYINT NOT NULL DEFAULT 0');   // v5 : e-mail d'avis envoyé au destinataire
+  ajouter_colonne($pdo, 'gt_messages', 'lu_le', 'DATETIME NULL');               // v5 : date de lecture
   $pdo->prepare('DELETE FROM gt_meta WHERE cle = ?')->execute(['schema']);
   $pdo->prepare('INSERT INTO gt_meta (cle, val) VALUES (?, ?)')->execute(['schema', (string)SCHEMA_VERSION]);
 }
@@ -257,8 +259,10 @@ function messages(int $rid, string $pour): array {
   $s->execute([$rid]);
   return array_map(function ($m) use ($pour) {
     $pj = json_decode((string)$m['pj'], true) ?: [];
-    $v = ['id' => (int)$m['id'], 'auteur' => $m['auteur'], 'texte' => (string)$m['texte'], 'le' => $m['le'], 'lu' => (bool)(int)$m['lu'], 'nb_pj' => count($pj)];
-    if ($pour === 'atelier') $v['pj'] = array_map(fn($f, $i) => ['nom' => $f['nom'], 'type' => $f['type'], 'url' => '/api/gestion.php?mpj=' . $m['id'] . '-' . $i], $pj, array_keys($pj));
+    $v = ['id' => (int)$m['id'], 'auteur' => $m['auteur'], 'texte' => (string)$m['texte'], 'le' => $m['le'], 'lu' => (bool)(int)$m['lu'],
+      'lu_le' => $m['lu_le'] ?? null, 'mail' => (bool)(int)($m['mail'] ?? 0), 'nb_pj' => count($pj),
+      'pj' => array_map(fn($f, $i) => ['i' => $i, 'nom' => $f['nom'], 'type' => $f['type'], 'taille' => (int)($f['taille'] ?? 0)]
+        + ($pour === 'atelier' ? ['url' => '/api/gestion.php?mpj=' . $m['id'] . '-' . $i] : []), $pj, array_keys($pj))];
     return $v;
   }, $s->fetchAll());
 }
@@ -323,6 +327,10 @@ function essai(string $cle): void {
 }
 
 function entree(): array {
+  if (isset($_POST['data'])) {  /* envoi avec fichiers (multipart) : les champs sont dans « data » */
+    $d = json_decode((string)$_POST['data'], true);
+    return is_array($d) ? $d : [];
+  }
   $raw = file_get_contents('php://input') ?: '';
   if (strlen($raw) > 20000) fail('Demande trop longue.', 413);
   $d = json_decode($raw, true);
@@ -429,20 +437,19 @@ function supprimer_reparation(int $id): void {
   $pdo->prepare('DELETE FROM gt_reparations WHERE id = ?')->execute([$id]);
 }
 
-/* E-mail court au client quand l'atelier lui écrit (seulement s'il a demandé le suivi par e-mail) */
-function mail_message(array $r, string $texte): bool {
-  if (!(int)$r['avis_email'] || $r['email'] === '') return false;
+/* E-mail au client quand l'atelier lui écrit (dès qu'une adresse e-mail est connue) */
+function mail_message(array $r, string $texte, int $nb_pj = 0): bool {
+  if ($r['email'] === '') return false;
+  $site = rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/');
   $extrait = mb_substr($texte, 0, 400) . (mb_strlen($texte) > 400 ? '…' : '');
-  $corps = 'Bonjour ' . prenom($r['nom']) . ",
-
-"
-    . "L’atelier vous a écrit au sujet de votre {$r['appareil']} :
-
-« $extrait »
-
-"
-    . 'Pour répondre, utilisez la messagerie de votre suivi (ne répondez pas à cet e-mail) : ' . lien_suivi($r)
-    . pied_mail($r);
+  $corps = 'Bonjour ' . prenom($r['nom']) . ",\n\n"
+    . "L’atelier Gouyerian Tech vous a envoyé un message au sujet de votre {$r['appareil']} (réparation {$r['numero']}) :\n\n"
+    . ($extrait !== '' ? "« $extrait »\n\n" : '')
+    . ($nb_pj ? ($nb_pj > 1 ? "$nb_pj fichiers sont joints" : 'Un fichier est joint') . " au message, à ouvrir sur votre page de suivi.\n\n" : '')
+    . "Lire le message et répondre : " . lien_suivi($r) . "\n(ou depuis votre espace client : $site/mon-espace/)\n"
+    . "Merci de répondre depuis cette page et non à cet e-mail."
+    . "\n\nNuméro de suivi : {$r['numero']} · code : {$r['code']}"
+    . "\n\nGouyerian Tech\n1 route de Segonzac, 16130 Saint-Fort-sur-le-Né\n06 05 79 48 94 · $site\n";
   return envoyer_mail($r['email'], "Nouveau message de l’atelier · réparation {$r['numero']}", $corps);
 }
 

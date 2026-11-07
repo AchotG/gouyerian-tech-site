@@ -60,6 +60,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box
 .mth .c.new{box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 50%,transparent)}
 .mth .vide{max-width:none;color:var(--muted);padding:0}
 .mth .pjs{display:flex;flex-wrap:wrap;gap:6px}.mth .pjs a{font-size:.85rem}
+.mth .st{justify-self:end;font-size:.75rem;font-weight:600;color:var(--muted)}.mth .st.lu{color:var(--ok)}
 .tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:.78rem;font-weight:600;white-space:nowrap;background:var(--sunk);color:var(--fg)}
 .tag.prete{background:var(--ok-bg);color:var(--ok)}.tag.devis,.tag.piece{background:var(--warn-bg);color:var(--warn)}.tag.rendu,.tag.annule{color:var(--muted)}
 .steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -216,6 +217,7 @@ a{color:var(--acc)}
       <h2>Messages avec le client</h2>
       <ul class="mth" id="mth" aria-live="polite"></ul>
       <label><span>Écrire au client <small>(visible dans son suivi et son espace client)</small></span><textarea id="mtxt" maxlength="2000" placeholder="Ex. : La pièce arrive jeudi, je vous rappelle dès que c’est réparé."></textarea></label>
+      <label><span>Pièces jointes <small>(photos, vidéos ou PDF, 6 au plus)</small></span><input type="file" id="mfile" accept="image/*,video/*,application/pdf" multiple></label>
       <label class="chk"><input type="checkbox" id="mmail"><span id="mmail-l">Prévenir le client par e-mail</span></label>
       <button class="btn" type="button" id="msend">Envoyer le message</button>
     </div>
@@ -294,9 +296,9 @@ function rendre(f){
   $("steps").innerHTML=PARCOURS.map(k=>{const e=ETAPES.find(x=>x.etape===k);return `<button type="button" data-e="${k}" aria-pressed="false" class="${k===f.etape?"cur":""}">${esc(e?e.libelle:k)}</button>`}).join("");
   $("snote").value="";$("smail").checked=f.avis_email;$("smail").disabled=!f.avis_email;$("smail-l").textContent=f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Le client n’a pas demandé le suivi par e-mail";$("ssave").disabled=true;
   $("fhist").innerHTML=f.historique.map(h=>`<li><b>${esc(h.libelle)}</b><small>${dt(h.le)}${+h.mail?" · e-mail envoyé":""}</small>${h.note?`<span>${esc(h.note)}</span>`:""}</li>`).join("");
-  $("mth").innerHTML=f.messages.length?f.messages.map(m=>`<li class="${m.auteur==="atelier"?"a":"c"}${m.auteur==="client"&&!m.lu?" new":""}"><small>${m.auteur==="atelier"?"Vous":esc(f.nom||"Client")} · ${dt(m.le)}${m.auteur==="atelier"?(m.lu?" · lu ✓":" · pas encore lu"):!m.lu?" · nouveau":""}</small>${m.texte?`<span>${esc(m.texte)}</span>`:""}${m.pj&&m.pj.length?`<div class="pjs">${m.pj.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener">📎 ${esc(p.nom)}</a>`).join("")}</div>`:""}</li>`).join(""):`<li class="vide">Aucun message pour l’instant. Le client peut vous écrire depuis son suivi ou son espace client.</li>`;
+  $("mth").innerHTML=f.messages.length?f.messages.map(m=>`<li class="${m.auteur==="atelier"?"a":"c"}${m.auteur==="client"&&!m.lu?" new":""}"><small>${m.auteur==="atelier"?"Vous":esc(f.nom||"Client")} · ${dt(m.le)}${m.auteur==="client"&&!m.lu?" · nouveau":""}</small>${m.texte?`<span>${esc(m.texte)}</span>`:""}${m.pj&&m.pj.length?`<div class="pjs">${m.pj.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener">📎 ${esc(p.nom)}</a>`).join("")}</div>`:""}${m.auteur==="atelier"?(m.lu?`<span class="st lu">✓✓ Lu${m.lu_le?" le "+dt(m.lu_le):""}</span>`:`<span class="st">✓ Distribué${m.mail?" · e-mail envoyé":""}</span>`):""}</li>`).join(""):`<li class="vide">Aucun message pour l’instant. Le client peut vous écrire depuis son suivi ou son espace client.</li>`;
   $("mth").scrollTop=$("mth").scrollHeight;$("mtxt").value="";
-  $("mmail").checked=f.avis_email;$("mmail").disabled=!f.avis_email;$("mmail-l").textContent=f.avis_email?"Prévenir le client par e-mail ("+f.email+")":"Le client n’a pas demandé les e-mails : il verra le message dans son suivi";
+  $("mfile").value="";$("mmail").checked=!!f.email;$("mmail").disabled=!f.email;$("mmail-l").textContent=f.email?"Prévenir le client par e-mail ("+f.email+")":"Pas d’e-mail pour ce client : il verra le message dans son suivi";
   $("delc").hidden=true;$("bdel").hidden=false;
   $("bon").innerHTML=`<h2>Gouyerian Tech · Bon de dépôt</h2><p>1 route de Segonzac, 16130 Saint-Fort-sur-le-Né · 06 05 79 48 94</p><div class="box"><p>Numéro de suivi : <b class="code">${esc(f.numero)}</b></p><p>Code : <b class="code">${esc(f.code)}</b></p><p>Suivez votre réparation sur <b>gouyerian-tech.fr/suivi</b></p></div><div class="box"><p>Client : ${esc(f.nom)}${f.telephone?" · "+esc(f.telephone):""}</p><p>Appareil : ${esc(f.appareil)}</p>${f.panne?`<p>Demande : ${esc(f.panne)}</p>`:""}${f.prix?`<p>Prix annoncé : ${esc(f.prix)}</p>`:""}<p>Déposé le ${new Date(f.cree_le.replace(" ","T")).toLocaleDateString("fr-FR")}</p></div><p style="margin-top:12px;font-size:12px">Conservez ce bon : il est demandé pour récupérer l’appareil. Conditions générales de vente : gouyerian-tech.fr/cgv</p>`;
 }
@@ -304,10 +306,16 @@ $("steps").onclick=e=>{const b=e.target.closest("button");if(!b)return;SEL=b.dat
 $("ssave").onclick=async()=>{if(!SEL||!FICHE)return;$("ssave").disabled=true;
   try{const j=await api("etape",{id:FICHE.id,etape:SEL,note:$("snote").value,mail:$("smail").checked});rendre(j.fiche);flash("Étape « "+j.fiche.libelle+" » enregistrée."+(j.mail?" E-mail envoyé au client.":""))}
   catch(err){flash(err.message,false);$("ssave").disabled=false}};
-$("msend").onclick=async()=>{if(!FICHE)return;const t=$("mtxt").value.trim();if(!t){flash("Écrivez le message.",false);$("mtxt").focus();return}
-  $("msend").disabled=true;
-  try{const j=await api("message",{id:FICHE.id,texte:t,mail:$("mmail").checked});rendre(j.fiche);flash("Message envoyé."+(j.mail?" Le client est prévenu par e-mail.":""))}
-  catch(err){flash(err.message,false)}finally{$("msend").disabled=false}};
+$("msend").onclick=async()=>{if(!FICHE)return;const t=$("mtxt").value.trim(),fs=[...$("mfile").files].slice(0,6);
+  if(!t&&!fs.length){flash("Écrivez le message ou joignez un fichier.",false);$("mtxt").focus();return}
+  if(fs.some(x=>x.size>30*1048576)){flash("Un fichier dépasse 30 Mo.",false);return}
+  $("msend").disabled=true;$("msend").textContent=fs.length?"Envoi des fichiers…":"Envoi…";
+  try{const fd=new FormData();fd.append("data",JSON.stringify({action:"message",id:FICHE.id,texte:t,mail:$("mmail").checked}));fs.forEach(x=>fd.append("f[]",x,x.name));
+    let r,j;try{r=await fetch("/api/gestion.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}})}catch(e){throw new Error("Pas de connexion à Internet.")}
+    try{j=await r.json()}catch(e){throw new Error("Le serveur ne répond pas correctement (erreur "+r.status+").")}
+    if(r.status===401){show("login");throw new Error("Connexion nécessaire.")}if(!j.ok)throw new Error(j.erreur||"Erreur.");
+    rendre(j.fiche);flash("Message distribué dans l’espace du client."+(j.mail?" Il est prévenu par e-mail.":""))}
+  catch(err){flash(err.message,false)}finally{$("msend").disabled=false;$("msend").textContent="Envoyer le message"}};
 $("bback").onclick=()=>{show("liste");liste().catch(err=>flash(err.message,false))};
 $("bedit").onclick=()=>formulaire(FICHE);
 $("bprint").onclick=()=>window.print();
