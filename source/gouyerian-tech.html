@@ -2916,7 +2916,8 @@ async function sendForm(data,files){
     catch(e){ifr.remove();rej(e);return}
     document.body.appendChild(f);let done=false;
     const end=ok=>{if(done)return;done=true;clearTimeout(t);setTimeout(()=>{f.remove();ifr.remove()},3000);ok?res():rej(new Error("délai"))};
-    ifr.addEventListener("load",()=>end(true));const t=setTimeout(()=>end(false),120000);f.submit()})}
+    /* Réussite seulement si FormSubmit renvoie vers notre page envoye.html (même site, donc lisible) ; toute autre page (activation, erreur) = échec */
+    ifr.addEventListener("load",()=>{let ok=false;try{ok=/\/envoye\.html$/.test(ifr.contentWindow.location.pathname)}catch(e){ok=false}end(ok)});const t=setTimeout(()=>end(false),120000);f.submit()})}
 async function sendReq(b){
   if($("fhp")&&$("fhp").value)return;
   const t0=b.innerHTML;b.disabled=true;b.textContent="Envoi en cours…";$("fm").textContent="";
