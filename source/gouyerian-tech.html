@@ -1483,6 +1483,9 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .acc-dv{display:grid;gap:10px;padding:14px;border-radius:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 30%,var(--line))}
 .acc-dv b{color:var(--fg)}
 .acc-g{font-size:.88rem;color:var(--muted)}
+.acc-rs{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:8px}
+.acc-rs .btn:disabled{opacity:.6;cursor:default}
+.acc-rsm{color:var(--ok,#17734a);font-weight:600}.acc-rsm:empty{display:none}
 /* v105 : micro-pub espace client sur l’accueil */
 .hacc{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(20px,4vw,48px);align-items:center;padding:clamp(22px,4vw,44px);border-radius:24px;border:1px solid var(--line);overflow:hidden;
   background:radial-gradient(120% 140% at 100% 0,color-mix(in srgb,var(--acc) 16%,transparent),transparent 55%),var(--surface);box-shadow:var(--elev,0 14px 40px -24px rgba(10,30,70,.4))}
@@ -2330,7 +2333,7 @@ details>.msgs{margin-top:10px}
         <h2>Se connecter ou créer son espace</h2>
         <p>Indiquez votre adresse e-mail : vous recevez un code à 6 chiffres pour vous connecter.</p>
         <div class="fld" id="accew"><label for="acce">Adresse e-mail</label><input id="acce" type="email" autocomplete="email" inputmode="email" spellcheck="false"></div>
-        <div class="fld" id="acccw" hidden><label for="accc">Code reçu par e-mail</label><input id="accc" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 chiffres"><small>Envoyé à <b id="accto"></b>, valable 15 minutes. Rien reçu ? Regardez dans les courriers indésirables. <button type="button" class="ci-x" id="accre">Changer d’adresse</button></small></div>
+        <div class="fld" id="acccw" hidden><label for="accc">Code reçu par e-mail</label><input id="accc" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 chiffres"><small>Envoyé à <b id="accto"></b>, valable 15 minutes. Rien reçu ? Regardez dans les courriers indésirables.</small><div class="acc-rs"><button type="button" class="btn sm ghost" id="accrs" disabled>Renvoyer le code</button><button type="button" class="ci-x" id="accre">Changer d’adresse</button></div><small class="acc-rsm" id="accrsm" role="status"></small></div>
         <p class="msg" id="accm" role="alert"></p>
         <div class="w-act"><button class="btn" type="submit" id="accgo">Recevoir mon code</button></div>
         <p class="note">Utilisez l’adresse e-mail donnée à l’atelier : vos réparations apparaissent automatiquement.</p>
@@ -4020,7 +4023,8 @@ showInst();
 if(PG&&"serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
 
 /* v101 : espace client (/mon-espace/) : connexion par code e-mail, réparations, devis, garantie, panier synchronisé (api/compte.php) */
-var ACC=null,ACC_K="gt-compte",accPushT=0,accMail="";
+var ACC=null,ACC_K="gt-compte",accPushT=0,accMail="",accCoolT=0;
+function accCool(){const b=$("accrs");if(!b)return;let n=45;clearInterval(accCoolT);b.disabled=true;const t=()=>{b.textContent=n>0?"Renvoyer le code ("+n+" s)":"Renvoyer le code";if(n<=0){b.disabled=false;clearInterval(accCoolT)}n--};t();accCoolT=setInterval(t,1000)}
 async function accApi(action,data){let r,j;
   try{r=await fetch("/api/compte.php",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-GT":"1"},body:JSON.stringify(Object.assign({action},data||{}))})}catch(e){throw new Error("Connexion impossible. Vérifiez Internet ou appelez le 06 05 79 48 94.")}
   try{j=await r.json()}catch(e){throw new Error("L’espace client est momentanément indisponible. Appelez le 06 05 79 48 94.")}
@@ -4095,11 +4099,15 @@ window.accOpen=async function(){if(!$("accf"))return;if(!ACC&&accHas()){try{cons
 if($("accf")){
   $("accf").addEventListener("submit",async e=>{e.preventDefault();const m=$("accm"),b=$("accgo");m.textContent="";b.disabled=true;
     try{if(!accMail){const em=$("acce").value.trim().toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))throw new Error("Vérifiez votre adresse e-mail.");
-        await accApi("demander_code",{email:em});accMail=em;accView();$("accc").value="";$("accc").focus()}
+        await accApi("demander_code",{email:em});accMail=em;accView();$("accc").value="";$("accrsm").textContent="";accCool();$("accc").focus()}
       else{const code=$("accc").value.replace(/\D/g,"");if(code.length!==6)throw new Error("Le code contient 6 chiffres.");
         const j=await accApi("verifier",{email:accMail,code});accMail="";accSet(j);accCartMerge(j);accView();scrollTo(0,0)}}
     catch(err){m.textContent=err.message}finally{b.disabled=false}});
-  $("accre").onclick=()=>{accMail="";accView();$("acce").focus()};
+  $("accre").onclick=()=>{accMail="";clearInterval(accCoolT);$("accrsm").textContent="";accView();$("acce").focus()};
+  /* Renvoyer le code : possible 45 secondes après chaque envoi (le serveur limite aussi à 5 codes par quart d'heure) */
+  $("accrs").onclick=async()=>{if(!accMail)return;const b=$("accrs"),m=$("accm");m.textContent="";$("accrsm").textContent="";b.disabled=true;b.textContent="Envoi…";
+    try{await accApi("demander_code",{email:accMail});$("accc").value="";$("accrsm").textContent="Nouveau code envoyé à "+accMail+" : seul ce dernier code fonctionne.";accCool();$("accc").focus()}
+    catch(err){m.textContent=err.message;b.disabled=false;b.textContent="Renvoyer le code"}};
   $("accc").addEventListener("input",()=>{if($("accc").value.replace(/\D/g,"").length===6)$("accf").requestSubmit()});
 }
 /* Au chargement : si le client s’est déjà connecté sur cet appareil, on récupère son espace (pastille, panier, coordonnées) */
