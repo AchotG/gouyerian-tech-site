@@ -156,3 +156,9 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - E-mails envoyés par `mail()` d'IONOS (expéditeur `suivi@gouyerian-tech.fr`, réponse vers gouyerian.tech@gmail.com), seulement si le client l'a demandé (case dans le formulaire de rendez-vous, recopiée par Achot à la création de la fiche).
 - Configuration : secrets GitHub SUIVI_DB_HOST, SUIVI_DB_NAME, SUIVI_DB_USER, SUIVI_DB_PASSWORD, GESTION_MOT_DE_PASSE → le workflow écrit `/prive/gt-config.php` (hors du site) à chaque publication. Sans ces secrets, la page /suivi/ indique que le service n'est pas encore activé.
 - Tests locaux : `php -S` + SQLite (`dsn` sqlite, `dev` true, `mail_log`) ; scénario complet vérifié (création, étapes, e-mails, désinscription, limites, déconnexion).
+
+## Espace client (v101, 7 nov.)
+- Page `/mon-espace/` (vue `compte`, noindex) et icône compte dans l'en-tête (pastille verte quand connecté). Connexion sans mot de passe : code à 6 chiffres par e-mail (15 min, 5 essais, 5 demandes / 15 min par adresse, 20 / h par IP), session 30 jours (cookie `gtcli` HttpOnly Secure SameSite=Strict, jeton haché dans `gt_csessions`).
+- L'espace montre les réparations enregistrées avec l'adresse e-mail du client (en cours, terminées avec fin de garantie), les devis à accepter/refuser (aussi depuis la page /suivi/), le panier synchronisé entre appareils (`gt_paniers`), les coordonnées (préremplies dans le rendez-vous et le panier), la suppression de l'espace.
+- Gestion : champ « Garantie après réparation » (mois), état du devis sur la fiche et dans la liste ; e-mail à gouyerian.tech@gmail.com quand un client accepte ou refuse un devis.
+- Base : schéma versionné (`gt_meta`, SCHEMA_VERSION = 2) ; colonnes ajoutées à `gt_reparations` : devis_etat, devis_le, garantie_mois. API `serveur/api/compte.php`.

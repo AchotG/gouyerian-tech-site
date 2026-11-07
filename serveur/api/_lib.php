@@ -79,7 +79,14 @@ function db(): PDO {
   return $pdo;
 }
 
+const SCHEMA_VERSION = 2;
+
 function schema(PDO $pdo): void {
+  /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
+  try {
+    $v = (int)$pdo->query("SELECT val FROM gt_meta WHERE cle = 'schema'")->fetchColumn();
+    if ($v >= SCHEMA_VERSION) return;
+  } catch (Throwable $e) { /* première installation */ }
   $sqlite = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
   $id = $sqlite ? 'INTEGER PRIMARY KEY AUTOINCREMENT' : 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY';
   $opt = $sqlite ? '' : ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
@@ -118,6 +125,88 @@ function schema(PDO $pdo): void {
     $pdo->exec('CREATE INDEX IF NOT EXISTS gt_h_rep ON gt_historique (reparation_id)');
     $pdo->exec('CREATE INDEX IF NOT EXISTS gt_e_cle ON gt_essais (cle, le)');
   }
+  /* v2 : comptes clients, devis en ligne, garantie */
+  $pdo->exec("CREATE TABLE IF NOT EXISTS gt_clients (
+    id $id,
+    email VARCHAR(190) NOT NULL UNIQUE,
+    nom VARCHAR(120) NOT NULL DEFAULT '',
+    telephone VARCHAR(40) NOT NULL DEFAULT '',
+    cree_le DATETIME NOT NULL,
+    vu_le DATETIME NOT NULL
+  )$opt");
+  $pdo->exec("CREATE TABLE IF NOT EXISTS gt_codes (
+    id $id,
+    email VARCHAR(190) NOT NULL,
+    code_hash CHAR(64) NOT NULL,
+    expire DATETIME NOT NULL,
+    essais INT NOT NULL DEFAULT 0" . ($sqlite ? '' : ', INDEX (email)') . "
+  )$opt");
+  $pdo->exec('CREATE TABLE IF NOT EXISTS gt_csessions (jeton CHAR(64) NOT NULL PRIMARY KEY, client_id INT NOT NULL, expire DATETIME NOT NULL)' . $opt);
+  $pdo->exec('CREATE TABLE IF NOT EXISTS gt_paniers (client_id INT NOT NULL PRIMARY KEY, contenu TEXT NOT NULL, maj_le DATETIME NOT NULL)' . $opt);
+  ajouter_colonne($pdo, 'gt_reparations', 'devis_etat', "VARCHAR(10) NOT NULL DEFAULT ''");
+  ajouter_colonne($pdo, 'gt_reparations', 'devis_le', 'DATETIME NULL');
+  ajouter_colonne($pdo, 'gt_reparations', 'garantie_mois', 'INT NOT NULL DEFAULT 0');
+  $pdo->exec('CREATE TABLE IF NOT EXISTS gt_meta (cle VARCHAR(40) NOT NULL PRIMARY KEY, val VARCHAR(190) NOT NULL)' . $opt);
+  $pdo->prepare('DELETE FROM gt_meta WHERE cle = ?')->execute(['schema']);
+  $pdo->prepare('INSERT INTO gt_meta (cle, val) VALUES (?, ?)')->execute(['schema', (string)SCHEMA_VERSION]);
+}
+
+function ajouter_colonne(PDO $pdo, string $table, string $col, string $def): void {
+  $sqlite = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
+  if ($sqlite) {
+    foreach ($pdo->query("PRAGMA table_info($table)")->fetchAll() as $c) if ($c['name'] === $col) return;
+  } else {
+    $s = $pdo->prepare('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?');
+    $s->execute([$table, $col]);
+    if ((int)$s->fetchColumn() > 0) return;
+  }
+  $pdo->exec("ALTER TABLE $table ADD COLUMN $col $def");
+}
+
+/* Garantie : date de fin (réparation rendue + mois de garantie), ou '' */
+function fin_garantie(array $r): string {
+  $m = (int)($r['garantie_mois'] ?? 0);
+  if ($m <= 0 || $r['etape'] !== 'rendu' || empty($r['clos_le'])) return '';
+  return date('Y-m-d', strtotime($r['clos_le'] . " +$m months"));
+}
+
+/* Réponse du client au devis (depuis le suivi ou son espace) ; prévient l'atelier par e-mail. */
+function repondre_devis(array $r, string $rep): array {
+  if (!in_array($rep, ['accepte', 'refuse'], true)) fail('Réponse inconnue.');
+  if ($r['etape'] !== 'devis' || !in_array($r['devis_etat'], ['attente', ''], true)) fail('Ce devis n’attend plus de réponse. Appelez le 06 05 79 48 94 si besoin.');
+  $pdo = db();
+  $pdo->prepare('UPDATE gt_reparations SET devis_etat = ?, devis_le = ?, maj_le = ? WHERE id = ?')->execute([$rep, now(), now(), $r['id']]);
+  $note = $rep === 'accepte' ? 'Devis accepté en ligne par le client.' : 'Devis refusé en ligne par le client.';
+  $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, 0)')->execute([$r['id'], 'devis', $note, now()]);
+  $c = cfg();
+  envoyer_mail($c['mail_reply'] ?? 'gouyerian.tech@gmail.com', ($rep === 'accepte' ? 'Devis ACCEPTÉ' : 'Devis refusé') . " : {$r['numero']} ({$r['appareil']})",
+    "Bonjour,
+
+{$r['nom']} a " . ($rep === 'accepte' ? 'accepté' : 'refusé') . " le devis de la réparation {$r['numero']} ({$r['appareil']}) le " . date('d/m/Y à H:i') . ".
+"
+    . ($r['prix'] ? "Prix annoncé : {$r['prix']}
+" : '') . ($r['telephone'] ? "Téléphone : {$r['telephone']}
+" : '')
+    . "
+Fiche : " . rtrim($c['site'] ?? 'https://gouyerian-tech.fr', '/') . "/gestion/
+");
+  $s = $pdo->prepare('SELECT * FROM gt_reparations WHERE id = ?');
+  $s->execute([$r['id']]);
+  return $s->fetch();
+}
+
+/* Vue d'une réparation pour le client (jamais de coordonnées ni de note interne). */
+function vue_client(array $r): array {
+  return [
+    'numero' => $r['numero'], 'appareil' => $r['appareil'], 'etape' => $r['etape'],
+    'libelle' => ETAPES[$r['etape']][0] ?? $r['etape'], 'phrase' => ETAPES[$r['etape']][1] ?? '',
+    'maj_le' => $r['maj_le'], 'cree_le' => $r['cree_le'], 'prix' => $r['prix'],
+    'devis' => $r['etape'] === 'devis' ? ($r['devis_etat'] ?: 'attente') : (string)$r['devis_etat'],
+    'garantie_mois' => (int)$r['garantie_mois'], 'garantie_fin' => fin_garantie($r),
+    'parcours' => array_map(fn($e) => ['etape' => $e, 'libelle' => ETAPES[$e][0]], PARCOURS),
+    'historique' => array_map(fn($h) => ['etape' => $h['etape'], 'libelle' => ETAPES[$h['etape']][0] ?? $h['etape'], 'note' => (string)$h['note'], 'le' => $h['le']], historique((int)$r['id'])),
+    'avis_email' => (bool)(int)$r['avis_email'],
+  ];
 }
 
 function now(): string { return date('Y-m-d H:i:s'); }
@@ -206,6 +295,7 @@ function mail_etape(array $r, string $etape, string $note): bool {
   $corps = 'Bonjour ' . prenom($r['nom']) . ",\n\n"
     . "Votre {$r['appareil']} : $lib.\n$phrase"
     . ($note !== '' ? "\n\nMessage de l’atelier : $note" : '')
+    . ($etape === 'devis' ? "\n\nAcceptez ou refusez le devis en un clic : " . lien_suivi($r) : '')
     . pied_mail($r);
   return envoyer_mail($r['email'], $sujet, $corps);
 }

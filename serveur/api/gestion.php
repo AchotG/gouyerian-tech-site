@@ -52,6 +52,7 @@ function vue(array $r, bool $complet = false): array {
     'id' => (int)$r['id'], 'numero' => $r['numero'], 'nom' => $r['nom'], 'telephone' => $r['telephone'], 'email' => $r['email'],
     'avis_email' => (bool)(int)$r['avis_email'], 'appareil' => $r['appareil'], 'etape' => $r['etape'],
     'libelle' => ETAPES[$r['etape']][0] ?? $r['etape'], 'prix' => $r['prix'], 'maj_le' => $r['maj_le'], 'cree_le' => $r['cree_le'],
+    'devis_etat' => (string)$r['devis_etat'], 'garantie_mois' => (int)$r['garantie_mois'], 'garantie_fin' => fin_garantie($r),
   ];
   if ($complet) {
     $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
@@ -67,6 +68,7 @@ function champs(array $d): array {
     'nom' => txt($d['nom'] ?? '', 120), 'telephone' => txt($d['telephone'] ?? '', 40), 'email' => $email,
     'avis_email' => !empty($d['avis_email']) && $email !== '' ? 1 : 0, 'appareil' => txt($d['appareil'] ?? '', 160),
     'panne' => txt($d['panne'] ?? '', 2000), 'prix' => txt($d['prix'] ?? '', 60), 'note_interne' => txt($d['note_interne'] ?? '', 2000),
+    'garantie_mois' => max(0, min(36, (int)($d['garantie_mois'] ?? 0))),
   ];
   if ($f['nom'] === '' || $f['appareil'] === '') fail('Le nom du client et l’appareil sont obligatoires.');
   if (!empty($d['avis_email']) && $email === '') fail('Indiquez l’e-mail du client pour lui envoyer le suivi.');
@@ -140,9 +142,9 @@ switch ($action) {
     for ($i = 0; $i < 20 && !$id; $i++, $n++) {
       $numero = sprintf('GT-%s-%03d', $mois, $n);
       try {
-        $pdo->prepare('INSERT INTO gt_reparations (numero, code, nom, telephone, email, avis_email, stop_token, appareil, panne, prix, note_interne, etape, cree_le, maj_le)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')->execute([$numero, code_aleatoire(), $f['nom'], $f['telephone'], $f['email'], $f['avis_email'],
-          bin2hex(random_bytes(24)), $f['appareil'], $f['panne'], $f['prix'], $f['note_interne'], 'recu', now(), now()]);
+        $pdo->prepare('INSERT INTO gt_reparations (numero, code, nom, telephone, email, avis_email, stop_token, appareil, panne, prix, note_interne, garantie_mois, etape, cree_le, maj_le)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')->execute([$numero, code_aleatoire(), $f['nom'], $f['telephone'], strtolower($f['email']), $f['avis_email'],
+          bin2hex(random_bytes(24)), $f['appareil'], $f['panne'], $f['prix'], $f['note_interne'], $f['garantie_mois'], 'recu', now(), now()]);
         $id = (int)$pdo->lastInsertId();
       } catch (PDOException $e) {
         if (!str_contains($e->getMessage(), 'UNIQUE') && !str_contains($e->getMessage(), 'Duplicate')) throw $e;
@@ -161,8 +163,8 @@ switch ($action) {
     if (!isset(ETAPES[$etape])) fail('Étape inconnue.');
     $note = txt($d['note'] ?? '', 1000);
     $mail = !empty($d['mail']) ? mail_etape($r, $etape, $note) : false;
-    $pdo->prepare('UPDATE gt_reparations SET etape = ?, maj_le = ?, clos_le = ? WHERE id = ?')
-      ->execute([$etape, now(), in_array($etape, CLOS, true) ? now() : null, $r['id']]);
+    $pdo->prepare('UPDATE gt_reparations SET etape = ?, maj_le = ?, clos_le = ?, devis_etat = ? WHERE id = ?')
+      ->execute([$etape, now(), in_array($etape, CLOS, true) ? now() : null, $etape === 'devis' ? 'attente' : (string)$r['devis_etat'], $r['id']]);
     $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, ?)')
       ->execute([$r['id'], $etape, $note, now(), $mail ? 1 : 0]);
     out(['ok' => true, 'fiche' => vue(fiche((int)$r['id']), true), 'mail' => $mail]);
@@ -170,8 +172,8 @@ switch ($action) {
   case 'modifier':
     $r = fiche((int)($d['id'] ?? 0));
     $f = champs($d);
-    $pdo->prepare('UPDATE gt_reparations SET nom = ?, telephone = ?, email = ?, avis_email = ?, appareil = ?, panne = ?, prix = ?, note_interne = ?, maj_le = ? WHERE id = ?')
-      ->execute([$f['nom'], $f['telephone'], $f['email'], $f['avis_email'], $f['appareil'], $f['panne'], $f['prix'], $f['note_interne'], now(), $r['id']]);
+    $pdo->prepare('UPDATE gt_reparations SET nom = ?, telephone = ?, email = ?, avis_email = ?, appareil = ?, panne = ?, prix = ?, note_interne = ?, garantie_mois = ?, maj_le = ? WHERE id = ?')
+      ->execute([$f['nom'], $f['telephone'], strtolower($f['email']), $f['avis_email'], $f['appareil'], $f['panne'], $f['prix'], $f['note_interne'], $f['garantie_mois'], now(), $r['id']]);
     $r2 = fiche((int)$r['id']);
     $mail = (!(int)$r['avis_email'] || $r['email'] !== $r2['email']) && (int)$r2['avis_email'] ? mail_bienvenue($r2) : false;
     out(['ok' => true, 'fiche' => vue($r2, true), 'mail' => $mail]);

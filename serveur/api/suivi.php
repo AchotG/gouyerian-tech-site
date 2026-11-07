@@ -50,23 +50,7 @@ if (!$r || !hash_equals($r['code'], $code)) {
   fail('Numéro ou code incorrect. Vérifiez votre bon de dépôt ou l’e-mail reçu.', 404);
 }
 
-$hist = array_map(fn($h) => [
-  'etape' => $h['etape'],
-  'libelle' => ETAPES[$h['etape']][0] ?? $h['etape'],
-  'note' => (string)$h['note'],
-  'le' => $h['le'],
-], historique((int)$r['id']));
-
-out([
-  'ok' => true,
-  'numero' => $r['numero'],
-  'appareil' => $r['appareil'],
-  'etape' => $r['etape'],
-  'libelle' => ETAPES[$r['etape']][0] ?? $r['etape'],
-  'phrase' => ETAPES[$r['etape']][1] ?? '',
-  'maj_le' => $r['maj_le'],
-  'cree_le' => $r['cree_le'],
-  'parcours' => array_map(fn($e) => ['etape' => $e, 'libelle' => ETAPES[$e][0]], PARCOURS),
-  'historique' => $hist,
-  'avis_email' => (bool)(int)$r['avis_email'],
-]);
+if (isset($d['devis'])) {
+  $r = repondre_devis($r, txt($d['devis'], 10));
+}
+out(['ok' => true] + vue_client($r));

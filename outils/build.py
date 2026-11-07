@@ -328,6 +328,9 @@ for c in CPG:
 add("/contact/", "contact", VIEW["contact"], "Contact et atelier · Gouyerian Tech",
     "Appelez le 06 05 79 48 94 ou écrivez à gouyerian.tech@gmail.com. Atelier sur rendez-vous : 1 route de Segonzac, 16130 Saint-Fort-sur-le-Né.",
     [HOME, ("Contact", "/contact/")], ld=[BUSINESS], prio="0.8")
+add("/mon-espace/", "compte", VIEW["compte"], "Mon espace client · Gouyerian Tech",
+    "Espace client Gouyerian Tech : suivez vos réparations, acceptez vos devis, retrouvez vos garanties et votre panier. Connexion par code reçu par e-mail.",
+    [HOME, ("Mon espace", "/mon-espace/")], prio="0.3", index=False)
 add("/suivi/", "suivi", VIEW["suivi"], "Suivre ma réparation · Gouyerian Tech",
     "Suivez l’avancée de la réparation de votre téléphone, tablette, ordinateur ou console chez Gouyerian Tech avec le numéro et le code de votre bon de dépôt.",
     [HOME, ("Suivre ma réparation", "/suivi/")], prio="0.4")

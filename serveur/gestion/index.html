@@ -129,6 +129,7 @@ a{color:var(--acc)}
       <label><span>Prix annoncé <small>(facultatif)</small></span><input id="f-prix" placeholder="Ex. : 89 € ou sur devis" maxlength="60"></label>
       <label id="f-note-l"><span>Message au client <small>(facultatif, visible dans le suivi)</small></span><input id="f-note" maxlength="1000"></label>
     </div>
+    <label><span>Garantie après réparation</span><select id="f-gar"><option value="0">Aucune / à préciser</option><option value="3">3 mois</option><option value="6">6 mois</option><option value="12">12 mois</option><option value="24">24 mois</option></select></label>
     <label><span>Note interne <small>(jamais montrée au client)</small></span><textarea id="f-int" maxlength="2000"></textarea></label>
     <div class="row"><button class="btn" type="submit" id="fsave">Créer la réparation</button><button class="btn g" type="button" id="fcancel">Annuler</button></div>
   </form>
@@ -188,7 +189,7 @@ $("bout").onclick=async()=>{try{await api("deconnexion")}catch(e){}show("login")
 async function liste(){
   const j=await api("liste",{vue:VUE,q:$("q").value});
   const c=j.compte;const sp=$("chips").querySelectorAll("span");sp[0].textContent=c.cours?`(${c.cours})`:"";sp[1].textContent=c.prete?`(${c.prete})`:"";
-  $("items").innerHTML=j.items.length?j.items.map(x=>`<button type="button" class="it" data-id="${x.id}"><span><span class="n">${esc(x.numero)}</span> <b>${esc(x.nom)}</b></span><span class="tag ${esc(x.etape)}">${esc(x.libelle)}</span><small>${esc(x.appareil)}${x.telephone?" · "+esc(x.telephone):""} · ${dt(x.maj_le)}${x.avis_email?" · ✉ suivi":""}</small></button>`).join(""):`<p class="empty">${$("q").value?"Aucun résultat.":VUE==="cours"?"Aucune réparation en cours.":"Rien ici pour le moment."}</p>`;
+  $("items").innerHTML=j.items.length?j.items.map(x=>`<button type="button" class="it" data-id="${x.id}"><span><span class="n">${esc(x.numero)}</span> <b>${esc(x.nom)}</b></span><span class="tag ${esc(x.etape)}${x.etape==="devis"&&x.devis_etat==="accepte"?" prete":""}">${esc(x.etape==="devis"&&x.devis_etat==="accepte"?"Devis accepté ✓":x.etape==="devis"&&x.devis_etat==="refuse"?"Devis refusé":x.libelle)}</span><small>${esc(x.appareil)}${x.telephone?" · "+esc(x.telephone):""} · ${dt(x.maj_le)}${x.avis_email?" · ✉ suivi":""}</small></button>`).join(""):`<p class="empty">${$("q").value?"Aucun résultat.":VUE==="cours"?"Aucune réparation en cours.":"Rien ici pour le moment."}</p>`;
 }
 $("chips").onclick=e=>{const b=e.target.closest("button");if(!b)return;VUE=b.dataset.v;$("chips").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));liste().catch(err=>flash(err.message,false))};
 $("q").oninput=()=>{clearTimeout(tq);tq=setTimeout(()=>liste().catch(err=>flash(err.message,false)),250)};
@@ -199,7 +200,7 @@ $("btest").onclick=async()=>{try{const j=await api("test_mail",{to:$("tmail").va
 function formulaire(f){
   EDIT=f||null;$("ftitle").textContent=f?"Modifier "+f.numero:"Nouvelle réparation";$("fsave").textContent=f?"Enregistrer":"Créer la réparation";
   $("f-nom").value=f?.nom||"";$("f-tel").value=f?.telephone||"";$("f-mail").value=f?.email||"";$("f-avis").checked=!!f?.avis_email;
-  $("f-app").value=f?.appareil||"";$("f-panne").value=f?.panne||"";$("f-prix").value=f?.prix||"";$("f-int").value=f?.note_interne||"";$("f-note").value="";$("f-note-l").hidden=!!f;
+  $("f-app").value=f?.appareil||"";$("f-gar").value=String(f?.garantie_mois||0);$("f-panne").value=f?.panne||"";$("f-prix").value=f?.prix||"";$("f-int").value=f?.note_interne||"";$("f-note").value="";$("f-note-l").hidden=!!f;
   show("form");$("f-nom").focus();
 }
 $("bnew").onclick=()=>formulaire(null);
@@ -207,7 +208,7 @@ $("fcancel").onclick=()=>EDIT?ouvrir(EDIT.id):show("liste");
 $("f-mail").oninput=()=>{if(!$("f-mail").value.trim())$("f-avis").checked=false};
 $("vform").addEventListener("submit",async e=>{e.preventDefault();
   if($("f-avis").checked&&!$("f-mail").value.trim()){flash("Indiquez l’e-mail du client pour lui envoyer le suivi.",false);$("f-mail").focus();return}
-  const d={nom:$("f-nom").value,telephone:$("f-tel").value,email:$("f-mail").value,avis_email:$("f-avis").checked,appareil:$("f-app").value,panne:$("f-panne").value,prix:$("f-prix").value,note_interne:$("f-int").value};
+  const d={nom:$("f-nom").value,telephone:$("f-tel").value,email:$("f-mail").value,avis_email:$("f-avis").checked,appareil:$("f-app").value,panne:$("f-panne").value,prix:$("f-prix").value,note_interne:$("f-int").value,garantie_mois:+$("f-gar").value};
   $("fsave").disabled=true;
   try{const j=EDIT?await api("modifier",{id:EDIT.id,...d}):await api("creer",{...d,note:$("f-note").value});
     rendre(j.fiche);show("fiche");flash((EDIT?"Modifications enregistrées.":"Réparation "+j.fiche.numero+" créée.")+(j.mail?" E-mail de suivi envoyé au client.":""))}
@@ -217,7 +218,7 @@ $("vform").addEventListener("submit",async e=>{e.preventDefault();
 async function ouvrir(id){try{const j=await api("fiche",{id});rendre(j.fiche);show("fiche")}catch(err){flash(err.message,false)}}
 function rendre(f){
   FICHE=f;SEL=null;$("fnum").textContent=f.numero;$("fapp").textContent=f.appareil;$("ftag").className="tag "+f.etape;$("ftag").textContent=f.libelle;
-  $("finfo").innerHTML=`<dt>Client</dt><dd>${esc(f.nom)}</dd>${f.telephone?`<dt>Téléphone</dt><dd><a href="tel:${esc(f.telephone.replace(/[^\d+]/g,""))}">${esc(f.telephone)}</a></dd>`:""}${f.email?`<dt>E-mail</dt><dd>${esc(f.email)}${f.avis_email?" · suivi par e-mail ✓":" · pas d’e-mails"}</dd>`:""}${f.prix?`<dt>Prix</dt><dd>${esc(f.prix)}</dd>`:""}${f.panne?`<dt>Panne</dt><dd>${esc(f.panne)}</dd>`:""}${f.note_interne?`<dt>Note interne</dt><dd>${esc(f.note_interne)}</dd>`:""}<dt>Code client</dt><dd class="code">${esc(f.code)}</dd><dt>Créée</dt><dd>${dt(f.cree_le)}</dd>`;
+  $("finfo").innerHTML=`<dt>Client</dt><dd>${esc(f.nom)}</dd>${f.telephone?`<dt>Téléphone</dt><dd><a href="tel:${esc(f.telephone.replace(/[^\d+]/g,""))}">${esc(f.telephone)}</a></dd>`:""}${f.email?`<dt>E-mail</dt><dd>${esc(f.email)}${f.avis_email?" · suivi par e-mail ✓":" · pas d’e-mails"}</dd>`:""}${f.prix?`<dt>Prix</dt><dd>${esc(f.prix)}</dd>`:""}${f.etape==="devis"?`<dt>Devis</dt><dd>${f.devis_etat==="accepte"?"<b style='color:var(--ok)'>✓ Accepté par le client</b>":f.devis_etat==="refuse"?"<b style='color:var(--bad)'>✗ Refusé par le client</b>":"En attente de la réponse du client"}</dd>`:""}${f.garantie_mois?`<dt>Garantie</dt><dd>${f.garantie_mois} mois${f.garantie_fin?" · jusqu’au "+new Date(f.garantie_fin+"T12:00").toLocaleDateString("fr-FR"):""}</dd>`:""}${f.panne?`<dt>Panne</dt><dd>${esc(f.panne)}</dd>`:""}${f.note_interne?`<dt>Note interne</dt><dd>${esc(f.note_interne)}</dd>`:""}<dt>Code client</dt><dd class="code">${esc(f.code)}</dd><dt>Créée</dt><dd>${dt(f.cree_le)}</dd>`;
   $("bresend").hidden=!f.avis_email;
   $("steps").innerHTML=PARCOURS.map(k=>{const e=ETAPES.find(x=>x.etape===k);return `<button type="button" data-e="${k}" aria-pressed="false" class="${k===f.etape?"cur":""}">${esc(e?e.libelle:k)}</button>`}).join("");
   $("snote").value="";$("smail").checked=f.avis_email;$("smail").disabled=!f.avis_email;$("smail-l").textContent=f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Le client n’a pas demandé le suivi par e-mail";$("ssave").disabled=true;

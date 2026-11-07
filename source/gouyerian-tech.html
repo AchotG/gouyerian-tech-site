@@ -1467,6 +1467,30 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 @media (max-width:1079px){.mega-side .ms-trk{margin:0 0 14px}}
 .mnav-quick{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,1fr)}
 .mnav-quick .btn{padding:0 8px;gap:6px;white-space:nowrap}
+
+/* v101 : espace client (/mon-espace/) */
+.acc-btn{position:relative}
+.acc-dot{position:absolute;right:7px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--ok,#17734a);box-shadow:0 0 0 2px var(--surface)}
+.acc-f{display:grid;gap:14px}.acc-f h2{font-size:1.3rem}
+.acc-why{margin:0;padding-left:18px;display:grid;gap:6px;color:var(--muted);font-size:.94rem}
+.acc-hd{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.acc-hd h2{font-size:clamp(1.3rem,2.4vw,1.7rem)}
+.acc-sec{display:grid;gap:12px}
+.acc-sec>h3{font-size:1.05rem;margin-top:6px}
+.acc-r{display:grid;gap:12px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.acc-r .eyebrow{font-size:.7rem}
+.acc-r h4{margin:0;font:700 1.08rem/1.3 var(--f-disp)}
+.acc-dv{display:grid;gap:10px;padding:14px;border-radius:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 30%,var(--line))}
+.acc-dv b{color:var(--fg)}
+.acc-g{font-size:.88rem;color:var(--muted)}
+.acc-g.on{color:var(--ok)}
+.acc-r details summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--acc)}
+.acc-r details .trk-h{margin-top:10px}
+.acc-pf{display:grid;gap:12px}
+.acc-del{display:grid;gap:10px;padding:14px;border-radius:12px;background:var(--warn-bg);color:var(--warn)}
+.trk-dv{display:grid;gap:10px;padding:16px;border-radius:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 30%,var(--line))}
+@media (max-width:480px){.hdr-act{gap:4px}.hdr-act .icon-btn{width:40px;height:40px}.acc-dot{right:5px;top:5px}}
+@media (max-width:379px){#tg{display:none}}
 </style>
 
 <a class="skip" href="#main">Aller au contenu</a>
@@ -1559,6 +1583,7 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
     <div class="mnav-cta"><button class="btn ghost" type="button" data-install hidden data-ic="download">Installer l’application</button><button class="btn ghost" type="button" data-copy="06 05 79 48 94" data-ic="copy">Copier le numéro</button></div>
   </nav>
   <div class="hdr-act">
+    <a class="icon-btn acc-btn" id="accb" href="#compte" aria-label="Mon espace client" title="Mon espace" data-ic="user"><span class="acc-dot" id="accdot" hidden></span></a>
     <button class="icon-btn cart-btn" id="cartb" type="button" aria-label="Panier, vide" aria-controls="cart" aria-expanded="false" data-ic="bag"><span class="cart-n" id="cartn" hidden></span></button>
     <button class="icon-btn" id="tg" type="button" aria-label="Changer de thème clair ou sombre" data-ic="theme"></button>
     <a class="btn sm hide-m" href="#demande">Prendre rendez-vous</a>
@@ -2180,6 +2205,27 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
   </div></section>
 </div>
 <!-- MENTIONS LÉGALES -->
+<div class="view" id="v-compte" hidden>
+  <header class="phead"><div class="wrap"><span class="crumb"><a href="#home">Accueil</a> / Mon espace</span><h1>Mon espace</h1><p class="lead">Vos réparations, leurs garanties, vos devis et votre panier, sur tous vos appareils. Sans mot de passe : un code par e-mail suffit.</p></div></header>
+  <section class="sec tight"><div class="wrap trk">
+    <div class="trk-main">
+      <form class="wcard acc-f" id="accf" novalidate>
+        <h2>Se connecter ou créer son espace</h2>
+        <p>Indiquez votre adresse e-mail : vous recevez un code à 6 chiffres pour vous connecter.</p>
+        <div class="fld" id="accew"><label for="acce">Adresse e-mail</label><input id="acce" type="email" autocomplete="email" inputmode="email" spellcheck="false"></div>
+        <div class="fld" id="acccw" hidden><label for="accc">Code reçu par e-mail</label><input id="accc" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 chiffres"><small>Envoyé à <b id="accto"></b>, valable 15 minutes. Rien reçu ? Regardez dans les courriers indésirables. <button type="button" class="ci-x" id="accre">Changer d’adresse</button></small></div>
+        <p class="msg" id="accm" role="alert"></p>
+        <div class="w-act"><button class="btn" type="submit" id="accgo">Recevoir mon code</button></div>
+        <p class="note">Utilisez l’adresse e-mail donnée à l’atelier : vos réparations apparaissent automatiquement.</p>
+      </form>
+      <div id="accin" hidden></div>
+    </div>
+    <aside class="aside">
+      <div class="acard"><h3>Dans votre espace</h3><ul class="acc-why"><li>L’avancée de vos réparations, en direct</li><li>Les devis à accepter en un clic</li><li>La fin de garantie de chaque réparation</li><li>Votre panier, sur téléphone comme sur ordinateur</li><li>Vos coordonnées déjà remplies dans les formulaires</li></ul></div>
+      <div class="acard inv"><span class="eyebrow">Une question ?</span><b class="num">06 05 79 48 94</b><div class="row2"><a class="btn sm" data-act="tel" data-ic="handset">Appeler</a></div></div>
+    </aside>
+  </div></section>
+</div>
 <div class="view" id="v-suivi" hidden>
   <header class="phead"><div class="wrap"><span class="crumb"><a href="#home">Accueil</a> / Suivre ma réparation</span><h1>Suivre ma réparation</h1><p class="lead">Entrez le numéro de suivi et le code indiqués sur votre bon de dépôt ou dans l’e-mail reçu : vous voyez où en est votre appareil, à tout moment.</p></div></header>
   <section class="sec tight"><div class="wrap trk">
@@ -2214,6 +2260,8 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
     <h3 id="conf-suivi">Suivi des réparations</h3>
     <p>Lorsque vous confiez un appareil à l’atelier, une fiche de réparation est créée : votre nom, votre téléphone, votre e-mail si vous le donnez, l’appareil, la panne, le prix annoncé et les étapes de la réparation. Elle est enregistrée dans une base de données hébergée par IONOS en Europe, et sert à suivre la réparation et à vous en informer. Sur la page « Suivre ma réparation », le numéro de suivi et le code affichent seulement l’appareil, les étapes et les messages de l’atelier, jamais vos coordonnées.</p>
     <p>Les e-mails de suivi ne sont envoyés que si vous l’avez demandé (case à cocher lors de la demande ou à l’atelier). Chaque e-mail contient un lien pour ne plus les recevoir. Les fiches sont effacées automatiquement 24 mois après la fin de la réparation, durée utile pour la garantie et le service après-vente. Si vous cochez « Se souvenir de ce suivi », le numéro et le code sont gardés seulement sur votre appareil.</p>
+    <h3 id="conf-compte">Espace client</h3>
+    <p>Si vous créez votre espace client, votre adresse e-mail, et si vous les indiquez votre nom et votre téléphone, sont enregistrés dans la même base de données hébergée par IONOS, ainsi que le contenu de votre panier. La connexion se fait par un code à usage unique envoyé par e-mail, valable 15 minutes ; un cookie de connexion, strictement nécessaire, garde votre appareil connecté 30 jours. Votre espace affiche les réparations enregistrées avec votre adresse e-mail. Vous pouvez supprimer votre espace à tout moment depuis la page « Mon espace » ; les fiches de réparation restent conservées 24 mois pour la garantie.</p>
     <p>L’assistant automatique du site utilise des réponses préparées : les messages saisis ne sont ni enregistrés ni transmis.</p>
     <p>Les suggestions de communes, d’adresses et de lieux-dits sont calculées sur votre appareil, à partir des données intégrées au site. Si elles ne suffisent pas, la recherche interroge le service public de géocodage de l’IGN ; seul le texte recherché est alors transmis. La carte de la zone affiche des photographies aériennes de l’IGN.</p>
     <h2 id="cookies">Cookies et localisation</h2>
@@ -2307,7 +2355,7 @@ const $=id=>document.getElementById(id);
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 /* Mode : aperçu (adresses en #) ou site en ligne (vraies adresses, page décrite par window.GT_PAGE) */
 const PG=window.GT_PAGE||null,ASSETS=PG?"/assets/":"assets/",QP=new URLSearchParams(location.search);
-const ROUTES={home:"/",services:"/services/",boutique:"/boutique/",demande:"/rendez-vous/",zone:"/zone-intervention/",secteurs:"/communes/",contact:"/contact/",legal:"/mentions-legales/",suivi:"/suivi/",faq:"/faq/",pro:"/professionnels/",conseils:"/infos-pratiques/",actus:"/actualites/",cgv:"/cgv/",avis:"/#avis-sec",atelier:"/contact/#atelier-sec","pro-virus":"/professionnels/#pro-virus","pro-reseau":"/professionnels/#pro-reseau","pro-depannage":"/professionnels/#pro-depannage","pro-devis":"/professionnels/#pro-devis"};
+const ROUTES={home:"/",services:"/services/",boutique:"/boutique/",demande:"/rendez-vous/",zone:"/zone-intervention/",secteurs:"/communes/",contact:"/contact/",legal:"/mentions-legales/",suivi:"/suivi/",compte:"/mon-espace/",faq:"/faq/",pro:"/professionnels/",conseils:"/infos-pratiques/",actus:"/actualites/",cgv:"/cgv/",avis:"/#avis-sec",atelier:"/contact/#atelier-sec","pro-virus":"/professionnels/#pro-virus","pro-reseau":"/professionnels/#pro-reseau","pro-depannage":"/professionnels/#pro-depannage","pro-devis":"/professionnels/#pro-devis"};
 const link=h=>{if(!PG)return h;const k=h.replace(/^#/,"");if(k.startsWith("actu-"))return "/actualites/"+k.slice(5)+"/";return ROUTES[k]||(ART_SLUGS.includes(k)?"/infos-pratiques/"+k+"/":"/communes/"+k+"/")};
 function fixLinks(){if(!PG)return;document.querySelectorAll('a[href^="#"]').forEach(a=>{const h=a.getAttribute("href");if(h.length<2||h==="#main")return;let u=link(h);if(a.dataset.cat&&a.dataset.cat!=="Tous"&&h==="#services")u="/services/"+norm(a.dataset.cat)+"/";if(a.dataset.bcat&&a.dataset.bcat!=="Tout")u+="?b="+norm(a.dataset.bcat);if(a.dataset.shopneed)u+="?besoin="+encodeURIComponent(a.dataset.shopneed);if(a.dataset.commune)u+="?commune="+encodeURIComponent(a.dataset.commune);a.setAttribute("href",u)})}
 /* Infos pratiques (articles). Pour ajouter un article : copier un bloc, changer « s » (adresse), le titre et le texte. */
@@ -2492,6 +2540,7 @@ const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* Icônes */
 const IC={
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
 track:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 12l2 2 4-4M9 17h6"/>',
 handset:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
 mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
@@ -3394,10 +3443,10 @@ if($("prof"))$("prof").addEventListener("submit",async e=>{e.preventDefault();co
   finally{b.disabled=false;b.innerHTML=t0}});
 
 /* Routes */
-const VIEWS=["home","services","boutique","demande","zone","contact","legal","suivi","secteurs","commune","faq","pro","conseils","article","actus","cgv","actu"],ALIAS={avis:["home","avis-sec"],atelier:["contact","atelier-sec"],"pro-virus":["pro","pro-virus"],"pro-reseau":["pro","pro-reseau"],"pro-depannage":["pro","pro-depannage"],"pro-devis":["pro","pro-devis"]};
-const TITLE={suivi:"Suivre ma réparation · Gouyerian Tech",home:"Gouyerian Tech · Réparation informatique à Saint-Fort-sur-le-Né",services:"Services et tarifs · Gouyerian Tech",boutique:"Boutique · Gouyerian Tech",demande:"Prendre rendez-vous · Gouyerian Tech",zone:"Zone d’intervention · Gouyerian Tech",secteurs:"Communes desservies · Gouyerian Tech",contact:"Contact · Gouyerian Tech",legal:"Mentions légales · Gouyerian Tech",faq:"Questions fréquentes · Gouyerian Tech",pro:"Professionnels : virus, réseau et dépannage · Gouyerian Tech",conseils:"Infos pratiques · Gouyerian Tech",actus:"Actualités tech · Gouyerian Tech",cgv:"Conditions générales de vente · Gouyerian Tech"};
+const VIEWS=["home","services","boutique","demande","zone","contact","legal","suivi","compte","secteurs","commune","faq","pro","conseils","article","actus","cgv","actu"],ALIAS={avis:["home","avis-sec"],atelier:["contact","atelier-sec"],"pro-virus":["pro","pro-virus"],"pro-reseau":["pro","pro-reseau"],"pro-depannage":["pro","pro-depannage"],"pro-devis":["pro","pro-devis"]};
+const TITLE={compte:"Mon espace · Gouyerian Tech",suivi:"Suivre ma réparation · Gouyerian Tech",home:"Gouyerian Tech · Réparation informatique à Saint-Fort-sur-le-Né",services:"Services et tarifs · Gouyerian Tech",boutique:"Boutique · Gouyerian Tech",demande:"Prendre rendez-vous · Gouyerian Tech",zone:"Zone d’intervention · Gouyerian Tech",secteurs:"Communes desservies · Gouyerian Tech",contact:"Contact · Gouyerian Tech",legal:"Mentions légales · Gouyerian Tech",faq:"Questions fréquentes · Gouyerian Tech",pro:"Professionnels : virus, réseau et dépannage · Gouyerian Tech",conseils:"Infos pratiques · Gouyerian Tech",actus:"Actualités tech · Gouyerian Tech",cgv:"Conditions générales de vente · Gouyerian Tech"};
 /* v99 : suivi des réparations (/suivi/) : numéro + code, réponse du serveur PHP (api/suivi.php, base MySQL chez IONOS) */
-var TRK_K="gt-suivi",TRK_P=["recu","diagnostic","devis","reparation","prete","rendu"];
+var TRK_LAST=null,TRK_K="gt-suivi",TRK_P=["recu","diagnostic","devis","reparation","prete","rendu"];
 function trkSaved(){try{const v=JSON.parse(localStorage.getItem(TRK_K)||"null");return v&&v.n&&v.c?v:null}catch(e){return null}}
 function trkFmt(s){if(!s)return"";const d=new Date(String(s).replace(" ","T"));return isNaN(d)?"":d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+" à "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}).replace(":","h")}
 async function trkLoad(n,c,auto){
@@ -3410,7 +3459,7 @@ async function trkLoad(n,c,auto){
   b.disabled=false;b.textContent="Voir l’avancée";
   if(!j||!j.ok){m.textContent=(j&&j.erreur)||"Erreur, réessayez.";$("trkres").hidden=true;$("trkf").hidden=false;return}
   try{if($("trkr").checked)localStorage.setItem(TRK_K,JSON.stringify({n,c}));else if(!auto)localStorage.removeItem(TRK_K)}catch(e){}
-  trkShow(j);
+  TRK_LAST={n,c};trkShow(j);
 }
 function trkShow(j){
   const seen=new Set(j.historique.map(h=>h.etape)),steps=TRK_P.slice();
@@ -3419,10 +3468,15 @@ function trkShow(j){
   $("trkres").innerHTML=`<div class="trk-hd"><span class="eyebrow">${esc(j.numero)} · ${esc(j.appareil)}</span><h2>${esc(j.libelle)}</h2><p>${esc(j.phrase)}</p><small>Mis à jour le ${esc(trkFmt(j.maj_le))}</small></div>`
    +(j.etape==="annule"?`<p class="trk-x">Cette réparation a été annulée. Pour toute question, appelez le 06 05 79 48 94.</p>`:`<ol class="trk-p" style="--n:${steps.length}" aria-label="Étapes de la réparation">${steps.map((e,i)=>`<li class="${i<ci?"done":i===ci?"done cur":""}"${i===ci?' aria-current="step"':""}>${esc(lib[e]||e)}</li>`).join("")}</ol>`)
    +(j.etape==="prete"?`<p class="trk-ok">Votre appareil vous attend : appelez-nous pour convenir de l’heure de passage ou d’une livraison.</p>`:"")
+   +(j.devis==="attente"?`<div class="trk-dv"><b>Votre accord est attendu pour lancer la réparation${j.prix?" : "+esc(j.prix):""}.</b><span>Le détail du devis est dans l’historique ci-dessous.</span><div class="row2"><button type="button" class="btn" data-dv="accepte">J’accepte le devis</button><button type="button" class="btn ghost" data-dv="refuse">Je refuse</button></div><p class="msg" id="trkdm" role="alert"></p></div>`:j.devis==="accepte"&&j.etape==="devis"?`<p class="trk-ok">Devis accepté : merci, la réparation va commencer.</p>`:j.devis==="refuse"&&j.etape==="devis"?`<p class="trk-x">Vous avez refusé le devis. Nous vous rappelons pour la restitution de l’appareil.</p>`:"")
+   +(j.garantie_fin?`<p class="trk-ok">Garantie jusqu’au ${esc(new Date(j.garantie_fin+"T12:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}))}.</p>`:"")
    +`<div><h3 style="margin-bottom:12px">Historique</h3><ul class="trk-h">${hist.map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></div>`
    +`<p class="note">${j.avis_email?"Vous recevez un e-mail à chaque nouvelle étape.":"Vous ne recevez pas d’e-mails pour cette réparation : revenez sur cette page pour voir son avancée."}</p>`
    +`<div class="row2"><button type="button" class="btn ghost" id="trkx">Suivre une autre réparation</button></div>`;
   $("trkres").hidden=false;$("trkf").hidden=true;
+  $("trkres").querySelectorAll("[data-dv]").forEach(b=>b.onclick=async()=>{if(!TRK_LAST)return;const rep=b.dataset.dv;b.disabled=true;let r=null;
+    try{const x=await fetch("/api/suivi.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({numero:TRK_LAST.n,code:TRK_LAST.c,devis:rep})});r=await x.json()}catch(e){r={ok:false,erreur:"Connexion impossible, réessayez ou appelez le 06 05 79 48 94."}}
+    if(r&&r.ok)trkShow(r);else{b.disabled=false;$("trkdm").textContent=(r&&r.erreur)||"Erreur."}});
   $("trkx").onclick=()=>{try{localStorage.removeItem(TRK_K)}catch(e){}$("trkres").hidden=true;$("trkf").hidden=false;$("trkn").value="";$("trkc").value="";$("trkr").checked=false;$("trkn").focus()};
 }
 window.suiviOpen=function(){
@@ -3448,6 +3502,7 @@ function route(){
   if(np)renderNews(np);
   VIEWS.forEach(v=>{const el=$("v-"+v);if(el)el.hidden=v!==h});
   if(h==="suivi"&&window.suiviOpen)suiviOpen();
+  if(h==="compte"&&window.accOpen)accOpen();
   const grp=h0==="avis"?"infos":({services:"services",boutique:"boutique",demande:"contact",suivi:"services",zone:"contact",secteurs:"contact",commune:"contact",contact:"contact",pro:"pro",faq:"infos",conseils:"infos",article:"infos",actus:"infos",actu:"infos"})[h]||h;
   document.querySelectorAll("[data-nav]").forEach(el=>{const on=el.dataset.nav===grp;el.classList.toggle("cur",on);if(el.tagName==="A"){if(on)el.setAttribute("aria-current","page");else el.removeAttribute("aria-current")}});
   closeDD();setDrawer(false);
@@ -3532,7 +3587,7 @@ $("ci").addEventListener("keydown",e=>{if(e.key==="Enter")send()});
 const CK="gt-panier",CF={nom:"",tel:"",mail:"",mode:"atelier",adr:"",com:"",km:null,msg:""};let CART=[],cartFrom=null,cartStep=1,lastN=0;
 const QMAX=100; /* quantité maximale d’un même article */
 function loadCart(){try{const v=JSON.parse(localStorage.getItem(CK)||"[]");CART=Array.isArray(v)?v.filter(x=>x&&typeof x.n==="string"&&x.q>0).map(x=>({n:x.n,p:typeof x.p==="number"?x.p:null,q:Math.min(QMAX,Math.max(1,x.q|0)),note:String(x.note||""),ic:IC[x.ic]?x.ic:"bag"})).slice(0,30):[]}catch(e){CART=[]}}
-function saveCart(){try{localStorage.setItem(CK,JSON.stringify(CART))}catch(e){}}
+function saveCart(){try{localStorage.setItem(CK,JSON.stringify(CART))}catch(e){}if(window.accCartPush)accCartPush()}
 const cartCount=()=>CART.reduce((a,x)=>a+x.q,0),cartTotal=()=>CART.reduce((a,x)=>a+(x.p||0)*x.q,0),cartAsk=()=>CART.some(x=>x.p==null);
 const art=n=>n+" article"+(n>1?"s":"");
 function badge(){const n=cartCount(),b=$("cartn");if(!b)return;b.hidden=!n;b.textContent=n>99?"99+":n;$("cartb").setAttribute("aria-label",n?`Panier, ${art(n)}`:"Panier, vide");
@@ -3792,5 +3847,64 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-inst
 if($("insthok"))$("insthok").onclick=()=>{$("insth").hidden=true;document.body.classList.remove("insth-on")};
 showInst();
 if(PG&&"serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
+
+/* v101 : espace client (/mon-espace/) : connexion par code e-mail, réparations, devis, garantie, panier synchronisé (api/compte.php) */
+var ACC=null,ACC_K="gt-compte",accPushT=0,accMail="";
+async function accApi(action,data){let r,j;
+  try{r=await fetch("/api/compte.php",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-GT":"1"},body:JSON.stringify(Object.assign({action},data||{}))})}catch(e){throw new Error("Connexion impossible. Vérifiez Internet ou appelez le 06 05 79 48 94.")}
+  try{j=await r.json()}catch(e){throw new Error("L’espace client est momentanément indisponible. Appelez le 06 05 79 48 94.")}
+  if(r.status===401&&action!=="verifier"){accSet(null)}
+  if(!j.ok)throw new Error(j.erreur||"Erreur, réessayez.");return j}
+function accFlag(on){try{if(on)localStorage.setItem(ACC_K,"1");else localStorage.removeItem(ACC_K)}catch(e){}}
+function accHas(){try{return localStorage.getItem(ACC_K)==="1"}catch(e){return false}}
+function accSet(p){ACC=p&&p.connecte?p:null;accFlag(!!ACC);if($("accdot"))$("accdot").hidden=!ACC;
+  if($("accb"))$("accb").setAttribute("aria-label",ACC?"Mon espace client (connecté)":"Mon espace client");
+  if(ACC){const c=ACC.client;/* coordonnées pré-remplies, sans écraser ce que le client a déjà tapé */
+    if(!S.nom)S.nom=c.nom;if(!S.tel)S.tel=c.telephone;if(!S.mail)S.mail=c.email;
+    if(!CF.nom)CF.nom=c.nom;if(!CF.tel)CF.tel=c.telephone;if(!CF.mail)CF.mail=c.email}}
+function accCartMerge(p){if(!p||!Array.isArray(p.panier))return;
+  if(!CART.length&&p.panier.length){CART=p.panier.filter(x=>x&&typeof x.n==="string"&&x.q>0).map(x=>({n:x.n,p:x.p==null?null:+x.p,q:Math.min(QMAX,+x.q||1),ic:IC[x.ic]?x.ic:"bag",note:x.note||""})).slice(0,30);
+    try{localStorage.setItem(CK,JSON.stringify(CART))}catch(e){}badge();if(!$("cart").hidden)drawCart()}
+  else if(CART.length)accCartPush(true)}
+window.accCartPush=function(now){if(!ACC)return;clearTimeout(accPushT);accPushT=setTimeout(()=>{accApi("panier",{items:CART}).catch(()=>{})},now?0:800)};
+const fdate=s=>s?new Date(String(s).replace(" ","T")).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}):"";
+function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==="piece")||r.etape==="piece")steps.splice(steps.indexOf("reparation"),0,"piece");
+  const lib=Object.fromEntries(r.parcours.map(p=>[p.etape,p.libelle])),ci=steps.indexOf(r.etape),clos=r.etape==="rendu"||r.etape==="annule";
+  const g=r.garantie_fin?(new Date(r.garantie_fin+"T23:59")>new Date()?`<p class="acc-g on">✓ Garantie jusqu’au ${fdate(r.garantie_fin)}</p>`:`<p class="acc-g">Garantie terminée le ${fdate(r.garantie_fin)}</p>`):(r.garantie_mois&&!clos?`<p class="acc-g">Garantie de ${r.garantie_mois} mois à partir de la restitution</p>`:"");
+  return `<article class="acc-r"><div><span class="eyebrow">${esc(r.numero)} · ${clos?"le "+fdate(r.maj_le):"mis à jour le "+fdate(r.maj_le)}</span><h4>${esc(r.appareil)}</h4><p>${esc(r.libelle)}${clos?"":" · "+esc(r.phrase)}</p></div>`
+   +(clos||r.etape==="annule"?"":`<ol class="trk-p" style="--n:${steps.length}">${steps.map((e,k)=>`<li class="${k<ci?"done":k===ci?"done cur":""}">${esc(lib[e]||e)}</li>`).join("")}</ol>`)
+   +(r.devis==="attente"?`<div class="acc-dv"><b>Votre accord est attendu${r.prix?" : "+esc(r.prix):""}.</b><span>Voir le détail dans l’historique.</span><div class="row2"><button type="button" class="btn sm" data-adv="accepte" data-n="${esc(r.numero)}">J’accepte le devis</button><button type="button" class="btn sm ghost" data-adv="refuse" data-n="${esc(r.numero)}">Je refuse</button></div></div>`:r.devis==="accepte"&&r.etape==="devis"?`<p class="acc-g on">✓ Devis accepté</p>`:"")
+   +g+`<details${i===0&&!clos?" open":""}><summary>Historique</summary><ul class="trk-h">${r.historique.slice().reverse().map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></details></article>`}
+function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,cours=rs.filter(r=>r.etape!=="rendu"&&r.etape!=="annule"),fin=rs.filter(r=>r.etape==="rendu"||r.etape==="annule");
+  $("accin").innerHTML=`<div class="wcard acc-sec"><div class="acc-hd"><div><span class="eyebrow">Connecté</span><h2>Bonjour${c.nom?" "+esc(c.nom.split(" ")[0]):""}</h2><p class="note">${esc(c.email)}</p></div><button type="button" class="btn ghost sm" id="accout">Se déconnecter</button></div></div>`
+   +`<div class="wcard acc-sec"><h3>Réparations en cours</h3>${cours.length?cours.map(accRep).join(""):`<p>Aucune réparation en cours avec l’adresse ${esc(c.email)}. Une réparation déposée sous une autre adresse se suit avec son numéro sur la page <a href="${link("#suivi")}">Suivre ma réparation</a>.</p>`}<p class="msg" id="accdm" role="alert"></p></div>`
+   +(fin.length?`<div class="wcard acc-sec"><h3>Réparations terminées et garanties</h3>${fin.map((r,i)=>accRep(r,i+1)).join("")}</div>`:"")
+   +`<div class="wcard acc-sec"><h3>Mon panier</h3><p>${CART.length?`${cartCount()} article${cartCount()>1?"s":""} : votre panier est enregistré dans votre espace, vous le retrouvez sur tous vos appareils.`:"Votre panier est vide. Les articles ajoutés depuis la boutique sont gardés dans votre espace."}</p><div class="row2">${CART.length?`<button type="button" class="btn sm" id="acccart">Voir mon panier</button>`:`<a class="btn sm ghost" href="${link("#boutique")}">Voir la boutique</a>`}</div></div>`
+   +`<form class="wcard acc-sec acc-pf" id="accpf"><h3>Mes coordonnées</h3><p class="note">Elles sont remplies automatiquement dans les demandes de rendez-vous et le panier.</p><div class="fgrid"><div class="fld"><label for="accn">Nom</label><input id="accn" autocomplete="name" value="${esc(c.nom)}" maxlength="120"></div><div class="fld"><label for="acct">Téléphone</label><input id="acct" type="tel" autocomplete="tel" value="${esc(c.telephone)}" maxlength="40"></div></div><div class="row2"><button class="btn sm" type="submit">Enregistrer</button><span class="note" id="accpm" role="status"></span></div></form>`
+   +`<div class="wcard acc-sec"><h3>Supprimer mon espace</h3><p class="note">Votre espace, votre panier enregistré et vos coordonnées sont effacés. Les fiches de réparation restent à l’atelier pour la garantie (24 mois).</p><div class="row2"><button type="button" class="btn sm ghost" id="accdel">Supprimer mon espace</button></div><div class="acc-del" id="accdelc" hidden><b>Supprimer définitivement votre espace ?</b><div class="row2"><button type="button" class="btn sm" id="accdel2">Oui, supprimer</button><button type="button" class="btn sm ghost" id="accdel0">Non</button></div></div></div>`;
+  $("accf").hidden=true;$("accin").hidden=false;
+  $("accout").onclick=async()=>{try{await accApi("deconnexion")}catch(e){}accSet(null);accView()};
+  if($("acccart"))$("acccart").onclick=()=>$("cartb").click();
+  $("accpf").onsubmit=async e=>{e.preventDefault();try{const j=await accApi("profil",{nom:$("accn").value,telephone:$("acct").value});ACC.client=j.client;S.nom=CF.nom=j.client.nom;S.tel=CF.tel=j.client.telephone;$("accpm").textContent="Enregistré."}catch(err){$("accpm").textContent=err.message}};
+  $("accdel").onclick=()=>{$("accdelc").hidden=false;$("accdel").hidden=true};$("accdel0").onclick=()=>{$("accdelc").hidden=true;$("accdel").hidden=false};
+  $("accdel2").onclick=async()=>{try{await accApi("supprimer");accSet(null);accView()}catch(err){$("accdelc").querySelector("b").textContent=err.message}};
+  $("accin").querySelectorAll("[data-adv]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{const j=await accApi("devis",{numero:b.dataset.n,reponse:b.dataset.adv});accSet(j);accDraw()}catch(err){b.disabled=false;$("accdm").textContent=err.message}})}
+function accView(){if(!$("accf"))return;if(ACC){accDraw();return}
+  $("accin").hidden=true;$("accf").hidden=false;$("accm").textContent="";
+  const step2=!!accMail;$("accew").hidden=step2;$("acccw").hidden=!step2;$("accgo").textContent=step2?"Me connecter":"Recevoir mon code";if(step2)$("accto").textContent=accMail}
+window.accOpen=async function(){if(!$("accf"))return;if(!ACC&&accHas()){try{const j=await accApi("etat");accSet(j);if(ACC)accCartMerge(j)}catch(e){}}accView()};
+if($("accf")){
+  $("accf").addEventListener("submit",async e=>{e.preventDefault();const m=$("accm"),b=$("accgo");m.textContent="";b.disabled=true;
+    try{if(!accMail){const em=$("acce").value.trim().toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))throw new Error("Vérifiez votre adresse e-mail.");
+        await accApi("demander_code",{email:em});accMail=em;accView();$("accc").value="";$("accc").focus()}
+      else{const code=$("accc").value.replace(/\D/g,"");if(code.length!==6)throw new Error("Le code contient 6 chiffres.");
+        const j=await accApi("verifier",{email:accMail,code});accMail="";accSet(j);accCartMerge(j);accView();scrollTo(0,0)}}
+    catch(err){m.textContent=err.message}finally{b.disabled=false}});
+  $("accre").onclick=()=>{accMail="";accView();$("acce").focus()};
+  $("accc").addEventListener("input",()=>{if($("accc").value.replace(/\D/g,"").length===6)$("accf").requestSubmit()});
+}
+/* Au chargement : si le client s’est déjà connecté sur cet appareil, on récupère son espace (pastille, panier, coordonnées) */
+if($("v-compte")&&!$("v-compte").hidden)accOpen();
+if(PG&&accHas())accApi("etat").then(j=>{accSet(j);if(ACC){accCartMerge(j);if(!$("v-compte").hidden)accView()}}).catch(()=>{});
 </script>
 
