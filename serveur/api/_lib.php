@@ -512,10 +512,10 @@ function mail_pro(string $to, string $sujet, array $m): bool {
   }
   if (!empty($m['note'])) $c .= '<p style="margin:18px 0 0;' . $font . ';font-size:13px;line-height:1.5;color:' . $mut . '">' . nl2br($h($m['note'])) . '</p>';
   $pre = $h($m['pre'] ?? ($m['paras'][0] ?? ''));
-  $bandeau = !empty($m['atelier']) ? 'Espace atelier' : 'Réparation · Vente · Assistance';
+  $bandeau = !empty($m['atelier']) ? 'Espace atelier' : 'Service Client';
   $html = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>' . $h($sujet) . '</title></head>'
     . '<body style="margin:0;padding:0;background:#eef2f8;-webkit-text-size-adjust:100%">'
-    . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">' . $pre . str_repeat('&#8199;&#65279;&#847; ', 40) . '</div>'
+    . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">' . $pre . '</div>'
     . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef2f8"><tr><td align="center" style="padding:28px 12px">'
     . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px">'
     /* en-tête */
