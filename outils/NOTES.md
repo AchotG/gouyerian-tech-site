@@ -162,3 +162,9 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - L'espace montre les réparations enregistrées avec l'adresse e-mail du client (en cours, terminées avec fin de garantie), les devis à accepter/refuser (aussi depuis la page /suivi/), le panier synchronisé entre appareils (`gt_paniers`), les coordonnées (préremplies dans le rendez-vous et le panier), la suppression de l'espace.
 - Gestion : champ « Garantie après réparation » (mois), état du devis sur la fiche et dans la liste ; e-mail à gouyerian.tech@gmail.com quand un client accepte ou refuse un devis.
 - Base : schéma versionné (`gt_meta`, SCHEMA_VERSION = 2) ; colonnes ajoutées à `gt_reparations` : devis_etat, devis_le, garantie_mois. API `serveur/api/compte.php`.
+
+## Demandes centralisées (v102, 7 nov.)
+- Tous les formulaires du site (rendez-vous, panier, devis pro, assistant) passent d'abord par `api/demande.php` : enregistrés dans `gt_demandes` (référence D-AAMM-NNN), pièces jointes dans `/prive/pj` (hors du site, 6 fichiers, 30 Mo chacun, photos/vidéos/PDF). Si le serveur ne répond pas, repli automatique sur FormSubmit (`sendFormFS`).
+- Espace client : formulaire « Demander un devis » prérempli (avec photos) et liste « Mes demandes » (Reçue / En cours / Traitée).
+- Gestion : onglets Demandes / Réparations ; « Réponses aux devis » (devis acceptés/refusés pas encore vus, colonne `devis_vu`) ; fiche demande (appeler, SMS, répondre par e-mail, pièces jointes, note interne, statuts, « Créer la réparation » préremplie qui rattache et clôt la demande) ; garantie libre en mois (0 à 120).
+- E-mails à l'atelier : une ligne + lien vers /gestion/, réglage dans la gestion (`gt_meta` notif = chaque [défaut] / regroupe [au plus 1 toutes les 3 h] / jamais). Schéma v3.

@@ -6,6 +6,22 @@ declare(strict_types=1);
 require __DIR__ . '/_lib.php';
 $GLOBALS['GT_DIAG'] = true;
 
+/* Pièce jointe d'une demande : lien direct (GET) ouvert depuis la page de gestion, réservé à l'atelier connecté */
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['pj'])) {
+  if (!preg_match('/^(\d+)-(\d+)$/', (string)$_GET['pj'], $m) || !connecte('gtadm')) { http_response_code(403); exit('Accès refusé.'); }
+  $s = db()->prepare('SELECT pj FROM gt_demandes WHERE id = ?');
+  $s->execute([(int)$m[1]]);
+  $f = (json_decode((string)$s->fetchColumn(), true) ?: [])[(int)$m[2]] ?? null;
+  $path = $f ? prive_dir() . '/pj/' . basename($f['fichier']) : '';
+  if (!$f || !is_file($path)) { http_response_code(404); exit('Fichier introuvable.'); }
+  header('Content-Type: ' . $f['type']);
+  header('Content-Length: ' . filesize($path));
+  header('Content-Disposition: inline; filename="' . preg_replace('/[^\w.\- ]/u', '_', $f['nom']) . '"');
+  header('Cache-Control: private, no-store');
+  header('X-Content-Type-Options: nosniff');
+  readfile($path);
+  exit;
+}
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Méthode non autorisée.', 405);
 if (($_SERVER['HTTP_X_GT'] ?? '') !== '1') fail('Demande refusée.', 403);
 if (!https_ok()) fail('Ouvrez la page en https://', 403);
@@ -52,7 +68,7 @@ function vue(array $r, bool $complet = false): array {
     'id' => (int)$r['id'], 'numero' => $r['numero'], 'nom' => $r['nom'], 'telephone' => $r['telephone'], 'email' => $r['email'],
     'avis_email' => (bool)(int)$r['avis_email'], 'appareil' => $r['appareil'], 'etape' => $r['etape'],
     'libelle' => ETAPES[$r['etape']][0] ?? $r['etape'], 'prix' => $r['prix'], 'maj_le' => $r['maj_le'], 'cree_le' => $r['cree_le'],
-    'devis_etat' => (string)$r['devis_etat'], 'garantie_mois' => (int)$r['garantie_mois'], 'garantie_fin' => fin_garantie($r),
+    'devis_etat' => (string)$r['devis_etat'], 'devis_vu' => (bool)(int)$r['devis_vu'], 'garantie_mois' => (int)$r['garantie_mois'], 'garantie_fin' => fin_garantie($r),
   ];
   if ($complet) {
     $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
@@ -68,11 +84,32 @@ function champs(array $d): array {
     'nom' => txt($d['nom'] ?? '', 120), 'telephone' => txt($d['telephone'] ?? '', 40), 'email' => $email,
     'avis_email' => !empty($d['avis_email']) && $email !== '' ? 1 : 0, 'appareil' => txt($d['appareil'] ?? '', 160),
     'panne' => txt($d['panne'] ?? '', 2000), 'prix' => txt($d['prix'] ?? '', 60), 'note_interne' => txt($d['note_interne'] ?? '', 2000),
-    'garantie_mois' => max(0, min(36, (int)($d['garantie_mois'] ?? 0))),
+    'garantie_mois' => max(0, min(120, (int)($d['garantie_mois'] ?? 0))),
   ];
   if ($f['nom'] === '' || $f['appareil'] === '') fail('Le nom du client et l’appareil sont obligatoires.');
   if (!empty($d['avis_email']) && $email === '') fail('Indiquez l’e-mail du client pour lui envoyer le suivi.');
   return $f;
+}
+
+function demande(int $id): array {
+  $s = db()->prepare('SELECT * FROM gt_demandes WHERE id = ?');
+  $s->execute([$id]);
+  $r = $s->fetch();
+  if (!$r) fail('Demande introuvable.', 404);
+  return $r;
+}
+
+function vue_demande(array $r, bool $complet = false): array {
+  $pj = json_decode((string)$r['pj'], true) ?: [];
+  $v = ['id' => (int)$r['id'], 'ref' => $r['ref'], 'type' => $r['type'], 'statut' => $r['statut'], 'nom' => $r['nom'], 'telephone' => $r['telephone'],
+    'email' => $r['email'], 'sujet' => $r['sujet'], 'cree_le' => $r['cree_le'], 'maj_le' => $r['maj_le'], 'nb_pj' => count($pj),
+    'client' => $r['client_id'] !== null, 'reparation_id' => $r['reparation_id'] !== null ? (int)$r['reparation_id'] : null];
+  if ($complet) {
+    $v['details'] = json_decode((string)$r['details'], true) ?: [];
+    $v['note_interne'] = (string)$r['note_interne'];
+    $v['pj'] = array_map(fn($f, $i) => ['nom' => $f['nom'], 'type' => $f['type'], 'taille' => $f['taille'], 'url' => '/api/gestion.php?pj=' . $r['id'] . '-' . $i], $pj, array_keys($pj));
+  }
+  return $v;
 }
 
 /* ---------- Sans connexion : état, connexion ---------- */
@@ -96,6 +133,7 @@ if ($action === 'connexion') {
   db()->prepare('INSERT INTO gt_sessions (jeton, expire) VALUES (?, ?)')->execute([hash('sha256', $j), date('Y-m-d H:i:s', $exp)]);
   set_cookie($COOKIE, $j, $exp);
   nettoyer();
+  nettoyer_demandes();
   out(['ok' => true]);
 }
 
@@ -130,7 +168,51 @@ switch ($action) {
     out(['ok' => true, 'items' => array_map('vue', $s->fetchAll()), 'compte' => ['cours' => (int)$c['cours'], 'prete' => (int)$c['prete']]]);
 
   case 'fiche':
-    out(['ok' => true, 'fiche' => vue(fiche((int)($d['id'] ?? 0)), true)]);
+    $r = fiche((int)($d['id'] ?? 0));
+    if (!(int)$r['devis_vu']) $pdo->prepare('UPDATE gt_reparations SET devis_vu = 1 WHERE id = ?')->execute([$r['id']]);
+    out(['ok' => true, 'fiche' => vue($r, true)]);
+
+  case 'a_traiter':
+    $n = (int)$pdo->query("SELECT COUNT(*) FROM gt_demandes WHERE statut IN ('nouvelle','en_cours')")->fetchColumn();
+    $dv = $pdo->query("SELECT * FROM gt_reparations WHERE devis_vu = 0 ORDER BY maj_le DESC")->fetchAll();
+    out(['ok' => true, 'demandes' => $n, 'devis' => array_map('vue', $dv), 'notif' => meta('notif', 'chaque')]);
+
+  case 'demandes':
+    $vue = txt($d['vue'] ?? 'a_traiter', 12);
+    $q = txt($d['q'] ?? '', 80);
+    $sql = 'SELECT * FROM gt_demandes WHERE 1=1';
+    $args = [];
+    if ($vue === 'a_traiter') $sql .= " AND statut IN ('nouvelle','en_cours')";
+    elseif ($vue === 'traitee') $sql .= " AND statut IN ('traitee','archivee')";
+    if ($q !== '') { $sql .= ' AND (ref LIKE ? OR nom LIKE ? OR telephone LIKE ? OR email LIKE ? OR sujet LIKE ?)'; $l = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $q) . '%'; array_push($args, $l, $l, $l, $l, $l); }
+    $s = $pdo->prepare($sql . ' ORDER BY cree_le DESC LIMIT 200');
+    $s->execute($args);
+    out(['ok' => true, 'items' => array_map('vue_demande', $s->fetchAll())]);
+
+  case 'demande':
+    out(['ok' => true, 'demande' => vue_demande(demande((int)($d['id'] ?? 0)), true)]);
+
+  case 'demande_maj':
+    $dm = demande((int)($d['id'] ?? 0));
+    $statut = txt($d['statut'] ?? $dm['statut'], 12);
+    if (!isset(STATUTS_DEMANDE[$statut])) fail('Statut inconnu.');
+    $note = array_key_exists('note_interne', $d) ? txt($d['note_interne'], 2000) : (string)$dm['note_interne'];
+    $pdo->prepare('UPDATE gt_demandes SET statut = ?, note_interne = ?, maj_le = ? WHERE id = ?')->execute([$statut, $note, now(), $dm['id']]);
+    out(['ok' => true, 'demande' => vue_demande(demande((int)$dm['id']), true)]);
+
+  case 'demande_supprimer':
+    $dm = demande((int)($d['id'] ?? 0));
+    foreach (json_decode((string)$dm['pj'], true) ?: [] as $f) { $p = prive_dir() . '/pj/' . basename($f['fichier']); if (is_file($p)) @unlink($p); }
+    $pdo->prepare('DELETE FROM gt_demandes WHERE id = ?')->execute([$dm['id']]);
+    out(['ok' => true]);
+
+  case 'reglages':
+    if (isset($d['notif'])) {
+      $n = txt($d['notif'], 10);
+      if (!in_array($n, ['chaque', 'regroupe', 'jamais'], true)) fail('Réglage inconnu.');
+      meta_set('notif', $n);
+    }
+    out(['ok' => true, 'notif' => meta('notif', 'chaque')]);
 
   case 'creer':
     $f = champs($d);
@@ -152,6 +234,9 @@ switch ($action) {
     }
     if (!$id) fail('Impossible de créer le numéro de suivi, réessayez.', 500);
     $r = fiche($id);
+    if (!empty($d['demande_id'])) {  /* réparation créée depuis une demande : la demande est rattachée et traitée */
+      $pdo->prepare("UPDATE gt_demandes SET reparation_id = ?, statut = 'traitee', maj_le = ? WHERE id = ?")->execute([$id, now(), (int)$d['demande_id']]);
+    }
     $mail = mail_bienvenue($r);
     $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, ?)')
       ->execute([$id, 'recu', txt($d['note'] ?? '', 1000), now(), $mail ? 1 : 0]);

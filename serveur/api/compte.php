@@ -45,8 +45,13 @@ function profil(array $c): array {
   $p = $pdo->prepare('SELECT contenu, maj_le FROM gt_paniers WHERE client_id = ?');
   $p->execute([$c['id']]);
   $pan = $p->fetch();
+  $dq = $pdo->prepare('SELECT ref, type, statut, sujet, cree_le, maj_le FROM gt_demandes WHERE client_id = ? OR (email <> \'\' AND LOWER(email) = ?) ORDER BY cree_le DESC LIMIT 30');
+  $dq->execute([$c['id'], strtolower($c['email'])]);
+  $dem = array_map(fn($x) => ['ref' => $x['ref'], 'type' => $x['type'], 'sujet' => $x['sujet'], 'statut' => STATUTS_DEMANDE[$x['statut']] ?? 'Reçue',
+    'traitee' => in_array($x['statut'], ['traitee', 'archivee'], true), 'cree_le' => $x['cree_le']], $dq->fetchAll());
   return [
     'ok' => true,
+    'demandes' => $dem,
     'client' => ['email' => $c['email'], 'nom' => $c['nom'], 'telephone' => $c['telephone'], 'cree_le' => $c['cree_le']],
     'reparations' => $reps,
     'panier' => $pan ? (json_decode($pan['contenu'], true) ?: []) : [],

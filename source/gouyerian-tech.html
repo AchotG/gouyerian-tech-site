@@ -1491,6 +1491,10 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .trk-dv{display:grid;gap:10px;padding:16px;border-radius:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 30%,var(--line))}
 @media (max-width:480px){.hdr-act{gap:4px}.hdr-act .icon-btn{width:40px;height:40px}.acc-dot{right:5px;top:5px}}
 @media (max-width:379px){#tg{display:none}}
+.acc-dl{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.acc-dl li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.acc-dl b{display:block;font-size:.95rem}.acc-dl small{color:var(--muted);font:500 .78rem var(--f-mono)}
+.acc-dl .chip{flex:none}
 </style>
 
 <a class="skip" href="#main">Aller au contenu</a>
@@ -2256,7 +2260,7 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
     <h2>Hébergement</h2>
     <p id="hebergeur">Hébergeur : IONOS SARL, 7 place de la Gare, BP 70109, 57201 Sarreguemines Cedex, France. Téléphone : 09 70 80 89 11. Site : <a href="https://www.ionos.fr" target="_blank" rel="noopener">www.ionos.fr</a>.</p>
     <h2>Confidentialité</h2>
-    <p>Lorsque vous envoyez une demande de rendez-vous ou le contenu de votre panier, votre nom, votre téléphone, votre e-mail si vous l’indiquez, votre adresse ou commune et le détail de votre demande sont transmis par e-mail à Gouyerian Tech, via le service d’envoi de formulaires FormSubmit (formsubmit.co). Les photos et vidéos que vous joignez sont transmises de la même façon, en pièces jointes. Les photos sont allégées sur votre appareil avant l’envoi, ce qui retire aussi leurs données de localisation. Ces informations servent uniquement à vous répondre et à établir un devis. Elles ne sont ni vendues ni transmises à des tiers, et sont conservées le temps nécessaire au suivi de votre demande.</p>
+    <p>Lorsque vous envoyez une demande de rendez-vous ou le contenu de votre panier, votre nom, votre téléphone, votre e-mail si vous l’indiquez, votre adresse ou commune et le détail de votre demande sont enregistrés dans la base de données de Gouyerian Tech hébergée par IONOS, avec les photos et vidéos que vous joignez (rangées hors du site, accessibles seulement à l’atelier). Si ce serveur ne répond pas, la demande est transmise par e-mail via le service d’envoi de formulaires FormSubmit (formsubmit.co). Les demandes sont effacées 24 mois après leur traitement. Les photos sont allégées sur votre appareil avant l’envoi, ce qui retire aussi leurs données de localisation. Ces informations servent uniquement à vous répondre et à établir un devis. Elles ne sont ni vendues ni transmises à des tiers, et sont conservées le temps nécessaire au suivi de votre demande.</p>
     <h3 id="conf-suivi">Suivi des réparations</h3>
     <p>Lorsque vous confiez un appareil à l’atelier, une fiche de réparation est créée : votre nom, votre téléphone, votre e-mail si vous le donnez, l’appareil, la panne, le prix annoncé et les étapes de la réparation. Elle est enregistrée dans une base de données hébergée par IONOS en Europe, et sert à suivre la réparation et à vous en informer. Sur la page « Suivre ma réparation », le numéro de suivi et le code affichent seulement l’appareil, les étapes et les messages de l’atelier, jamais vos coordonnées.</p>
     <p>Les e-mails de suivi ne sont envoyés que si vous l’avez demandé (case à cocher lors de la demande ou à l’atelier). Chaque e-mail contient un lien pour ne plus les recevoir. Les fiches sont effacées automatiquement 24 mois après la fin de la réparation, durée utile pour la garantie et le service après-vente. Si vous cochez « Se souvenir de ce suivi », le numéro et le code sont gardés seulement sur votre appareil.</p>
@@ -3055,8 +3059,15 @@ drawW()}
 /* Envoi direct de la demande (FormSubmit). Si l’envoi échoue, la messagerie s’ouvre avec la demande rédigée. */
 const FORM="https://formsubmit.co/ajax/"+C.mail;
 /* Envoi : sans fichier, en direct (réponse lue) ; avec fichiers, en envoi classique avec pièces jointes, dans un cadre invisible */
+/* v102 : les demandes arrivent d’abord dans la page de gestion de l’atelier (api/demande.php, base IONOS, pièces jointes comprises).
+   Si le serveur ne répond pas, la demande part comme avant par e-mail (FormSubmit) : aucune demande perdue. */
 async function sendForm(data,files){
   if([...document.querySelectorAll(".hp")].some(i=>i.value))return; /* rempli = robot : rien n’est envoyé */
+  if(PG){try{const fd=new FormData();fd.append("data",JSON.stringify(data));(files||[]).forEach(a=>fd.append("f[]",new File([a.blob],a.name,{type:a.type})));
+      const r=await fetch("/api/demande.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"},signal:AbortSignal.timeout(files&&files.length?180000:15000)});
+      const j=await r.json();if(j&&j.ok){window.GT_LAST_REF=j.ref||"";return}}catch(e){}}
+  return sendFormFS(data,files)}
+async function sendFormFS(data,files){
   if(!files.length){const r=await fetch(FORM,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(data),signal:AbortSignal.timeout(12000)});
     const j=await r.json().catch(()=>({}));if(!r.ok||String(j.success)!=="true")throw new Error(j.message||"envoi");return}
   if(!PG||typeof DataTransfer!=="function")throw new Error("pièces jointes");
@@ -3878,11 +3889,36 @@ function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==
 function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,cours=rs.filter(r=>r.etape!=="rendu"&&r.etape!=="annule"),fin=rs.filter(r=>r.etape==="rendu"||r.etape==="annule");
   $("accin").innerHTML=`<div class="wcard acc-sec"><div class="acc-hd"><div><span class="eyebrow">Connecté</span><h2>Bonjour${c.nom?" "+esc(c.nom.split(" ")[0]):""}</h2><p class="note">${esc(c.email)}</p></div><button type="button" class="btn ghost sm" id="accout">Se déconnecter</button></div></div>`
    +`<div class="wcard acc-sec"><h3>Réparations en cours</h3>${cours.length?cours.map(accRep).join(""):`<p>Aucune réparation en cours avec l’adresse ${esc(c.email)}. Une réparation déposée sous une autre adresse se suit avec son numéro sur la page <a href="${link("#suivi")}">Suivre ma réparation</a>.</p>`}<p class="msg" id="accdm" role="alert"></p></div>`
+   +`<div class="wcard acc-sec" id="accdq"><h3>Demander un devis</h3><p class="note">Vos coordonnées sont déjà remplies : décrivez simplement votre appareil et la panne. Réponse rapide, devis gratuit.</p>
+     <form class="acc-pf" id="accdf" novalidate><div class="fgrid">
+       <div class="fld"><label for="adq-a">Appareil</label><select id="adq-a"><option>Téléphone</option><option>Tablette</option><option>Ordinateur</option><option>Console</option><option>Autre</option></select></div>
+       <div class="fld"><label for="adq-m">Marque et modèle</label><input id="adq-m" maxlength="120" placeholder="Ex. : iPhone 13, PC HP Pavilion…"></div>
+       <div class="fld full"><label for="adq-p">Panne ou besoin</label><textarea id="adq-p" maxlength="2000" placeholder="Ex. : écran fissuré après une chute, l’appareil fonctionne encore."></textarea></div>
+       <div class="fld"><label for="adq-l">Où ?</label><select id="adq-l"><option>À l’atelier (Saint-Fort-sur-le-Né)</option><option>À domicile</option><option>Je ne sais pas encore</option></select></div>
+       <div class="fld"><label for="adq-c">Commune <span class="opt-l">(si à domicile)</span></label><input id="adq-c" maxlength="80" placeholder="Ex. : Cognac"></div>
+       <div class="fld"><label for="adq-n">Nom</label><input id="adq-n" autocomplete="name" maxlength="120" value="${esc(c.nom)}"></div>
+       <div class="fld"><label for="adq-t">Téléphone</label><input id="adq-t" type="tel" autocomplete="tel" maxlength="40" value="${esc(c.telephone)}"></div>
+       <div class="fld full"><label for="adq-f">Photos ou vidéo <span class="opt-l">(facultatif, 6 au plus)</span></label><input id="adq-f" type="file" accept="image/*,video/*" multiple></div>
+     </div><p class="msg" id="adq-m2" role="alert"></p><div class="row2"><button class="btn" type="submit" id="adq-go">Envoyer ma demande</button></div></form></div>`
+   +(p.demandes&&p.demandes.length?`<div class="wcard acc-sec"><h3>Mes demandes</h3><ul class="acc-dl">${p.demandes.map(x=>`<li><span><b>${esc(x.sujet.replace(/^Demande de devis \(espace client\) : /,"Devis : "))}</b><small>${esc(x.ref)} · ${fdate(x.cree_le)}</small></span><span class="chip ${x.traitee?"ok":"warn"}">${esc(x.statut)}</span></li>`).join("")}</ul></div>`:"")
    +(fin.length?`<div class="wcard acc-sec"><h3>Réparations terminées et garanties</h3>${fin.map((r,i)=>accRep(r,i+1)).join("")}</div>`:"")
    +`<div class="wcard acc-sec"><h3>Mon panier</h3><p>${CART.length?`${cartCount()} article${cartCount()>1?"s":""} : votre panier est enregistré dans votre espace, vous le retrouvez sur tous vos appareils.`:"Votre panier est vide. Les articles ajoutés depuis la boutique sont gardés dans votre espace."}</p><div class="row2">${CART.length?`<button type="button" class="btn sm" id="acccart">Voir mon panier</button>`:`<a class="btn sm ghost" href="${link("#boutique")}">Voir la boutique</a>`}</div></div>`
    +`<form class="wcard acc-sec acc-pf" id="accpf"><h3>Mes coordonnées</h3><p class="note">Elles sont remplies automatiquement dans les demandes de rendez-vous et le panier.</p><div class="fgrid"><div class="fld"><label for="accn">Nom</label><input id="accn" autocomplete="name" value="${esc(c.nom)}" maxlength="120"></div><div class="fld"><label for="acct">Téléphone</label><input id="acct" type="tel" autocomplete="tel" value="${esc(c.telephone)}" maxlength="40"></div></div><div class="row2"><button class="btn sm" type="submit">Enregistrer</button><span class="note" id="accpm" role="status"></span></div></form>`
    +`<div class="wcard acc-sec"><h3>Supprimer mon espace</h3><p class="note">Votre espace, votre panier enregistré et vos coordonnées sont effacés. Les fiches de réparation restent à l’atelier pour la garantie (24 mois).</p><div class="row2"><button type="button" class="btn sm ghost" id="accdel">Supprimer mon espace</button></div><div class="acc-del" id="accdelc" hidden><b>Supprimer définitivement votre espace ?</b><div class="row2"><button type="button" class="btn sm" id="accdel2">Oui, supprimer</button><button type="button" class="btn sm ghost" id="accdel0">Non</button></div></div></div>`;
   $("accf").hidden=true;$("accin").hidden=false;
+  $("accdf").onsubmit=async e=>{e.preventDefault();const m=$("adq-m2"),b=$("adq-go");m.textContent="";
+    const nom=$("adq-n").value.trim(),tel=$("adq-t").value.trim(),pan=$("adq-p").value.trim(),fs=[...$("adq-f").files].slice(0,6);
+    if(!nom||!tel){m.textContent="Indiquez votre nom et votre téléphone pour être rappelé.";return}
+    if(!pan){m.textContent="Décrivez la panne ou votre besoin.";$("adq-p").focus();return}
+    if(fs.some(f=>f.size>30*1048576)){m.textContent="Un fichier dépasse 30 Mo : choisissez une photo plus légère.";return}
+    const ap=$("adq-a").value,data={_subject:"Demande de devis (espace client) : "+ap+($("adq-m").value.trim()?" "+$("adq-m").value.trim():""),Nom:nom,"Téléphone":tel,"E-mail":ACC.client.email,Appareil:ap,"Marque et modèle":$("adq-m").value.trim()||"-","Panne":pan,"Lieu":$("adq-l").value,"Commune":$("adq-c").value.trim()||"-"};
+    b.disabled=true;b.textContent=fs.length?"Envoi des fichiers…":"Envoi…";
+    try{const fd=new FormData();fd.append("data",JSON.stringify(data));fs.forEach(f=>fd.append("f[]",f,f.name));
+      const r=await fetch("/api/demande.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}});const j=await r.json().catch(()=>({ok:false,erreur:"Envoi impossible, réessayez ou appelez le 06 05 79 48 94."}));
+      if(!j.ok)throw new Error(j.erreur||"Envoi impossible.");
+      if(!ACC.client.nom||!ACC.client.telephone)accApi("profil",{nom,telephone:tel}).catch(()=>{});
+      const k=await accApi("moi");accSet(k);accDraw();const z=$("accdq");z.insertAdjacentHTML("afterbegin",`<p class="trk-ok">Demande ${esc(j.ref||"")} envoyée : nous vous rappelons rapidement avec le devis.</p>`);z.scrollIntoView({block:"start"})}
+    catch(err){m.textContent=err.message;b.disabled=false;b.textContent="Envoyer ma demande"}};
   $("accout").onclick=async()=>{try{await accApi("deconnexion")}catch(e){}accSet(null);accView()};
   if($("acccart"))$("acccart").onclick=()=>$("cartb").click();
   $("accpf").onsubmit=async e=>{e.preventDefault();try{const j=await accApi("profil",{nom:$("accn").value,telephone:$("acct").value});ACC.client=j.client;S.nom=CF.nom=j.client.nom;S.tel=CF.tel=j.client.telephone;$("accpm").textContent="Enregistré."}catch(err){$("accpm").textContent=err.message}};

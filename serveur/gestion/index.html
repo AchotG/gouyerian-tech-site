@@ -72,6 +72,17 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box
 .confirm{display:grid;gap:10px;padding:14px;border-radius:12px;background:var(--bad-bg);color:var(--bad)}
 a{color:var(--acc)}
 #bon{display:none}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--elev)}
+.tabs button{min-height:46px;border:0;border-radius:10px;background:transparent;color:var(--fg);font:600 .98rem system-ui,sans-serif;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--acc);color:var(--on-acc)}
+.cnt{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-left:4px;border-radius:999px;background:var(--bad);color:#fff;font-size:.78rem}
+.cnt:empty{display:none}
+.tabs button[aria-pressed="true"] .cnt{background:#fff;color:var(--acc)}
+.tag.nouvelle{background:var(--bad-bg);color:var(--bad)}.tag.en_cours{background:var(--warn-bg);color:var(--warn)}.tag.traitee,.tag.archivee{background:var(--ok-bg);color:var(--ok)}
+.pjs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.pjs a{display:grid;gap:6px;text-decoration:none;color:var(--fg);font-size:.82rem;overflow-wrap:anywhere}
+.pjs img,.pjs video{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--sunk)}
+.pjs .file{display:grid;place-items:center;aspect-ratio:4/3;border-radius:10px;border:1px solid var(--line);background:var(--sunk);font-weight:700}
 @media print{
   body{background:#fff;color:#000}
   .top,.wrap>*:not(#bon){display:none!important}
@@ -95,6 +106,49 @@ a{color:var(--acc)}
     <label>Mot de passe<input id="mdp" type="password" autocomplete="current-password" required></label>
     <button class="btn" type="submit">Se connecter</button>
   </form>
+
+  <!-- Onglets -->
+  <nav class="tabs" id="tabs" hidden><button type="button" data-t="dem" aria-pressed="true">Demandes <span class="cnt" id="ndem"></span></button><button type="button" data-t="rep" aria-pressed="false">Réparations <span class="cnt" id="nrep"></span></button></nav>
+
+  <!-- Demandes à traiter -->
+  <section id="vdem" hidden>
+    <div class="card" id="dvrep" hidden><h2>Réponses aux devis</h2><div class="list" id="dvitems"></div></div>
+    <div class="card" style="margin-top:14px">
+      <div class="chips" id="dchips">
+        <button type="button" data-v="a_traiter" aria-pressed="true">À traiter</button>
+        <button type="button" data-v="traitee" aria-pressed="false">Traitées</button>
+        <button type="button" data-v="toutes" aria-pressed="false">Toutes</button>
+      </div>
+      <input id="dq" type="search" placeholder="Rechercher : nom, téléphone, référence…" autocomplete="off" aria-label="Rechercher une demande">
+    </div>
+    <div class="list" id="ditems" style="margin-top:14px"></div>
+    <details class="card" style="margin-top:14px"><summary style="cursor:pointer;font-weight:600">Réglages des e-mails</summary>
+      <label><span>Me prévenir par e-mail des nouvelles demandes et réponses aux devis</span><select id="notif"><option value="chaque">À chaque nouvelle demande (e-mail court)</option><option value="regroupe">Au plus un e-mail toutes les 3 heures</option><option value="jamais">Jamais : je regarde la page de gestion</option></select></label>
+      <p class="muted">Les e-mails de l’atelier ne contiennent qu’une ligne et le lien vers cette page : tout le détail est ici.</p>
+    </details>
+  </section>
+
+  <!-- Fiche d'une demande -->
+  <section id="vdfiche" hidden>
+    <div class="row" style="justify-content:space-between"><button class="btn g" type="button" id="dback">← Demandes</button><span class="tag" id="dtag"></span></div>
+    <div class="card" style="margin-top:14px">
+      <div><span class="muted" style="font:600 .85rem ui-monospace,monospace" id="dref"></span><h1 id="dsujet"></h1><p class="muted" id="ddate"></p></div>
+      <div class="row" id="dcontact"></div>
+      <dl class="kv" id="ddet"></dl>
+      <div id="dpj"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2>Traiter</h2>
+      <div class="row"><button class="btn" type="button" id="dmkrep">Créer la réparation</button><button class="btn g" type="button" data-st="en_cours">En cours</button><button class="btn g" type="button" data-st="traitee">Traitée</button><button class="btn g" type="button" data-st="nouvelle">À traiter</button></div>
+      <label><span>Note interne <small>(jamais montrée au client)</small></span><textarea id="dnote" maxlength="2000" placeholder="Ex. : rappelé le 7/11, devis 89 € envoyé par SMS."></textarea></label>
+      <div class="row"><button class="btn g" type="button" id="dnsave">Enregistrer la note</button></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <button class="btn bad" type="button" id="ddel">Supprimer cette demande</button>
+      <div class="confirm" id="ddelc" hidden><b>Supprimer définitivement ?</b><span>La demande et ses pièces jointes sont effacées.</span>
+        <div class="row"><button class="btn bad" type="button" id="ddel2" style="background:var(--bad);color:#fff">Oui, supprimer</button><button class="btn g" type="button" id="ddel0">Non</button></div></div>
+    </div>
+  </section>
 
   <!-- Liste -->
   <section id="vliste" hidden>
@@ -129,7 +183,7 @@ a{color:var(--acc)}
       <label><span>Prix annoncé <small>(facultatif)</small></span><input id="f-prix" placeholder="Ex. : 89 € ou sur devis" maxlength="60"></label>
       <label id="f-note-l"><span>Message au client <small>(facultatif, visible dans le suivi)</small></span><input id="f-note" maxlength="1000"></label>
     </div>
-    <label><span>Garantie après réparation</span><select id="f-gar"><option value="0">Aucune / à préciser</option><option value="3">3 mois</option><option value="6">6 mois</option><option value="12">12 mois</option><option value="24">24 mois</option></select></label>
+    <label><span>Garantie après réparation <small>(en mois, 0 = pas de garantie)</small></span><span class="row" style="flex-wrap:nowrap"><input id="f-gar" type="number" min="0" max="120" step="1" value="0" inputmode="numeric" style="max-width:110px"><span class="row" id="f-garq"><button class="btn g" type="button" data-g="3">3</button><button class="btn g" type="button" data-g="6">6</button><button class="btn g" type="button" data-g="12">12</button><button class="btn g" type="button" data-g="24">24</button></span></span></label>
     <label><span>Note interne <small>(jamais montrée au client)</small></span><textarea id="f-int" maxlength="2000"></textarea></label>
     <div class="row"><button class="btn" type="submit" id="fsave">Créer la réparation</button><button class="btn g" type="button" id="fcancel">Annuler</button></div>
   </form>
@@ -179,10 +233,11 @@ async function api(action,data={}){
   return j;
 }
 function flash(t,ok=true){$("flash").innerHTML=t?`<div class="msg ${ok?"ok":"err"}">${esc(t)}</div>`:"";if(t)setTimeout(()=>{if($("flash").textContent===t)$("flash").innerHTML=""},6000)}
-function show(v){["login","liste","form","fiche"].forEach(x=>$("v"+x).hidden=x!==v);$("bnew").hidden=$("bout").hidden=v==="login";scrollTo(0,0)}
+function show(v){["login","liste","form","fiche","dem","dfiche"].forEach(x=>$("v"+x).hidden=x!==v);$("bnew").hidden=$("bout").hidden=v==="login";$("tabs").hidden=!(v==="liste"||v==="dem");
+  $("tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.t==="dem")===(v==="dem")));scrollTo(0,0)}
 
 /* Connexion */
-$("vlogin").addEventListener("submit",async e=>{e.preventDefault();try{await api("connexion",{mdp:$("mdp").value});$("mdp").value="";flash("");await liste();show("liste")}catch(err){flash(err.message,false)}});
+$("vlogin").addEventListener("submit",async e=>{e.preventDefault();try{await api("connexion",{mdp:$("mdp").value});$("mdp").value="";flash("");await accueil()}catch(err){flash(err.message,false)}});
 $("bout").onclick=async()=>{try{await api("deconnexion")}catch(e){}show("login")};
 
 /* Liste */
@@ -198,17 +253,17 @@ $("btest").onclick=async()=>{try{const j=await api("test_mail",{to:$("tmail").va
 
 /* Formulaire */
 function formulaire(f){
-  EDIT=f||null;$("ftitle").textContent=f?"Modifier "+f.numero:"Nouvelle réparation";$("fsave").textContent=f?"Enregistrer":"Créer la réparation";
+  EDIT=f||null;DEMSRC=null;$("ftitle").textContent=f?"Modifier "+f.numero:"Nouvelle réparation";$("fsave").textContent=f?"Enregistrer":"Créer la réparation";
   $("f-nom").value=f?.nom||"";$("f-tel").value=f?.telephone||"";$("f-mail").value=f?.email||"";$("f-avis").checked=!!f?.avis_email;
   $("f-app").value=f?.appareil||"";$("f-gar").value=String(f?.garantie_mois||0);$("f-panne").value=f?.panne||"";$("f-prix").value=f?.prix||"";$("f-int").value=f?.note_interne||"";$("f-note").value="";$("f-note-l").hidden=!!f;
   show("form");$("f-nom").focus();
 }
 $("bnew").onclick=()=>formulaire(null);
-$("fcancel").onclick=()=>EDIT?ouvrir(EDIT.id):show("liste");
+$("fcancel").onclick=()=>EDIT?ouvrir(EDIT.id):DEMSRC?show("dfiche"):show("liste");
 $("f-mail").oninput=()=>{if(!$("f-mail").value.trim())$("f-avis").checked=false};
 $("vform").addEventListener("submit",async e=>{e.preventDefault();
   if($("f-avis").checked&&!$("f-mail").value.trim()){flash("Indiquez l’e-mail du client pour lui envoyer le suivi.",false);$("f-mail").focus();return}
-  const d={nom:$("f-nom").value,telephone:$("f-tel").value,email:$("f-mail").value,avis_email:$("f-avis").checked,appareil:$("f-app").value,panne:$("f-panne").value,prix:$("f-prix").value,note_interne:$("f-int").value,garantie_mois:+$("f-gar").value};
+  const d={nom:$("f-nom").value,telephone:$("f-tel").value,email:$("f-mail").value,avis_email:$("f-avis").checked,appareil:$("f-app").value,panne:$("f-panne").value,prix:$("f-prix").value,note_interne:$("f-int").value,garantie_mois:Math.max(0,Math.min(120,parseInt($("f-gar").value,10)||0)),demande_id:EDIT?undefined:DEMSRC||undefined};
   $("fsave").disabled=true;
   try{const j=EDIT?await api("modifier",{id:EDIT.id,...d}):await api("creer",{...d,note:$("f-note").value});
     rendre(j.fiche);show("fiche");flash((EDIT?"Modifications enregistrées.":"Réparation "+j.fiche.numero+" créée.")+(j.mail?" E-mail de suivi envoyé au client.":""))}
@@ -239,8 +294,44 @@ $("bdel").onclick=()=>{$("delc").hidden=false;$("bdel").hidden=true};
 $("bdel0").onclick=()=>{$("delc").hidden=true;$("bdel").hidden=false};
 $("bdel2").onclick=async()=>{try{await api("supprimer",{id:FICHE.id});flash("Réparation supprimée.");show("liste");liste()}catch(err){flash(err.message,false)}};
 
+
+/* Demandes (formulaires du site et espace client) */
+let DVUE="a_traiter",DEM=null,DEMSRC=null,tdq=null;
+const TYPES={rdv:"Rendez-vous",devis:"Devis (espace client)",commande:"Commande",pro:"Devis pro",autre:"Demande"};
+const STATUT={nouvelle:"À traiter",en_cours:"En cours",traitee:"Traitée",archivee:"Traitée"};
+async function compteurs(){const j=await api("a_traiter");$("ndem").textContent=(j.demandes+j.devis.length)||"";$("notif").value=j.notif;
+  $("dvrep").hidden=!j.devis.length;$("dvitems").innerHTML=j.devis.map(x=>`<button type="button" class="it" data-rid="${x.id}"><span><span class="n">${esc(x.numero)}</span> <b>${esc(x.nom)}</b></span><span class="tag ${x.devis_etat==="accepte"?"prete":"annule"}">${x.devis_etat==="accepte"?"Devis accepté ✓":"Devis refusé"}</span><small>${esc(x.appareil)}${x.prix?" · "+esc(x.prix):""} · ${dt(x.maj_le)}</small></button>`).join("");return j}
+async function demandes(){const j=await api("demandes",{vue:DVUE,q:$("dq").value});
+  $("ditems").innerHTML=j.items.length?j.items.map(x=>`<button type="button" class="it" data-did="${x.id}"><span><span class="n">${esc(x.ref)}</span> <b>${esc(x.nom||"Sans nom")}</b></span><span class="tag ${esc(x.statut)}">${esc(STATUT[x.statut]||x.statut)}</span><small>${esc(TYPES[x.type]||"Demande")} · ${esc(x.sujet)}${x.telephone?" · "+esc(x.telephone):""} · ${dt(x.cree_le)}${x.nb_pj?" · 📎 "+x.nb_pj:""}${x.client?" · espace client":""}</small></button>`).join(""):`<p class="empty">${DVUE==="a_traiter"?"Aucune demande à traiter. 👍":"Rien ici pour le moment."}</p>`}
+async function accueil(){await Promise.all([compteurs(),demandes(),liste()]);show("dem")}
+$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.t==="dem"){compteurs().catch(()=>{});demandes().then(()=>show("dem")).catch(err=>flash(err.message,false))}else{liste().then(()=>show("liste")).catch(err=>flash(err.message,false))}};
+$("dchips").onclick=e=>{const b=e.target.closest("button");if(!b)return;DVUE=b.dataset.v;$("dchips").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));demandes().catch(err=>flash(err.message,false))};
+$("dq").oninput=()=>{clearTimeout(tdq);tdq=setTimeout(()=>demandes().catch(err=>flash(err.message,false)),250)};
+$("ditems").onclick=e=>{const b=e.target.closest(".it");if(b)ouvrirDemande(+b.dataset.did)};
+$("dvitems").onclick=e=>{const b=e.target.closest(".it");if(b)ouvrir(+b.dataset.rid).then(()=>compteurs().catch(()=>{}))};
+async function ouvrirDemande(id){try{const j=await api("demande",{id});rendreDemande(j.demande);show("dfiche")}catch(err){flash(err.message,false)}}
+function rendreDemande(d){DEM=d;$("dref").textContent=d.ref+" · "+(TYPES[d.type]||"Demande");$("dsujet").textContent=d.nom||"Sans nom";$("ddate").textContent="Reçue le "+dt(d.cree_le)+" · "+d.sujet;
+  $("dtag").className="tag "+d.statut;$("dtag").textContent=STATUT[d.statut]||d.statut;
+  const tel=d.telephone.replace(/[^\d+]/g,"");
+  $("dcontact").innerHTML=(tel?`<a class="btn" href="tel:${esc(tel)}">Appeler ${esc(d.telephone)}</a><a class="btn g" href="sms:${esc(tel)}">SMS</a>`:"")+(d.email?`<a class="btn g" href="mailto:${esc(d.email)}?subject=${encodeURIComponent("Votre demande "+d.ref+" · Gouyerian Tech")}">Répondre par e-mail</a>`:"");
+  $("ddet").innerHTML=Object.entries(d.details).filter(([k,v])=>v&&v!=="-").map(([k,v])=>`<dt>${esc(k)}</dt><dd style="white-space:pre-line">${esc(v)}</dd>`).join("");
+  $("dpj").innerHTML=d.pj.length?`<h2 style="margin:8px 0">Pièces jointes</h2><div class="pjs">${d.pj.map(f=>`<a href="${esc(f.url)}" target="_blank" rel="noopener">${f.type.startsWith("image/")?`<img src="${esc(f.url)}" alt="" loading="lazy">`:f.type.startsWith("video/")?`<video src="${esc(f.url)}" preload="metadata" muted></video>`:`<span class="file">PDF</span>`}<span>${esc(f.nom)} · ${Math.max(1,Math.round(f.taille/1024))} Ko</span></a>`).join("")}</div>`:"";
+  $("dnote").value=d.note_interne||"";$("dmkrep").hidden=!!d.reparation_id;$("ddelc").hidden=true;$("ddel").hidden=false;
+  if(d.reparation_id)$("dcontact").insertAdjacentHTML("beforeend",`<button class="btn g" type="button" id="dgorep">Voir la réparation</button>`);
+  if($("dgorep"))$("dgorep").onclick=()=>ouvrir(d.reparation_id)}
+$("dback").onclick=()=>{compteurs().catch(()=>{});demandes().then(()=>show("dem")).catch(err=>flash(err.message,false))};
+document.querySelectorAll("#vdfiche [data-st]").forEach(b=>b.onclick=async()=>{try{const j=await api("demande_maj",{id:DEM.id,statut:b.dataset.st,note_interne:$("dnote").value});rendreDemande(j.demande);flash("Demande « "+(STATUT[j.demande.statut]||"")+" ».");compteurs().catch(()=>{})}catch(err){flash(err.message,false)}});
+$("dnsave").onclick=async()=>{try{const j=await api("demande_maj",{id:DEM.id,note_interne:$("dnote").value});rendreDemande(j.demande);flash("Note enregistrée.")}catch(err){flash(err.message,false)}};
+$("dmkrep").onclick=()=>{const d=DEM,x=d.details,app=[x["Appareil"],x["Marque et modèle"]&&x["Marque et modèle"]!=="-"?x["Marque et modèle"]:""].filter(Boolean).join(" ")||"";
+  formulaire(null);DEMSRC=d.id;$("ftitle").textContent="Réparation depuis "+d.ref;$("f-nom").value=d.nom;$("f-tel").value=d.telephone;$("f-mail").value=d.email;
+  $("f-avis").checked=/oui/i.test(x["Suivi par e-mail"]||"")||d.type==="devis";$("f-app").value=app;$("f-panne").value=[x["Besoin"],x["Détail"],x["Panne"]].filter(v=>v&&v!=="-").join(" · ")};
+$("ddel").onclick=()=>{$("ddelc").hidden=false;$("ddel").hidden=true};$("ddel0").onclick=()=>{$("ddelc").hidden=true;$("ddel").hidden=false};
+$("ddel2").onclick=async()=>{try{await api("demande_supprimer",{id:DEM.id});flash("Demande supprimée.");await compteurs();await demandes();show("dem")}catch(err){flash(err.message,false)}};
+$("notif").onchange=async()=>{try{const j=await api("reglages",{notif:$("notif").value});flash(j.notif==="jamais"?"Plus d’e-mails : pensez à ouvrir cette page.":j.notif==="regroupe"?"Au plus un e-mail toutes les 3 heures.":"Un e-mail court à chaque nouvelle demande.")}catch(err){flash(err.message,false)}};
+$("f-garq").onclick=e=>{const b=e.target.closest("button");if(b)$("f-gar").value=b.dataset.g};
+setInterval(()=>{if(!$("vdem").hidden||!$("vliste").hidden)compteurs().then(()=>{if(!$("vdem").hidden)demandes()}).catch(()=>{})},120000);
 /* Démarrage */
-(async()=>{try{const j=await api("etat");ETAPES=j.etapes;if(j.connecte){await liste();show("liste")}else show("login")}catch(err){show("login");flash(err.message,false)}})();
+(async()=>{try{const j=await api("etat");ETAPES=j.etapes;if(j.connecte){await accueil()}else show("login")}catch(err){show("login");flash(err.message,false)}})();
 </script>
 </body>
 </html>

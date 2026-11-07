@@ -25,7 +25,7 @@ function cfg(): array {
   $paths = array_filter([getenv('GT_CONFIG') ?: null, __DIR__ . '/../../prive/gt-config.php',
     !empty($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../prive/gt-config.php' : null]);
   foreach ($paths as $p) {
-    if (is_file($p)) { $c = require $p; return $c; }
+    if (is_file($p)) { $c = require $p; $GLOBALS['GT_CFG_DIR'] = dirname($p); return $c; }
   }
   $c = [];
   return $c;
@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -147,6 +147,26 @@ function schema(PDO $pdo): void {
   ajouter_colonne($pdo, 'gt_reparations', 'devis_le', 'DATETIME NULL');
   ajouter_colonne($pdo, 'gt_reparations', 'garantie_mois', 'INT NOT NULL DEFAULT 0');
   $pdo->exec('CREATE TABLE IF NOT EXISTS gt_meta (cle VARCHAR(40) NOT NULL PRIMARY KEY, val VARCHAR(190) NOT NULL)' . $opt);
+  /* v3 : demandes centralisées (formulaires du site, espace client), pièces jointes, devis vus */
+  $pdo->exec("CREATE TABLE IF NOT EXISTS gt_demandes (
+    id $id,
+    ref VARCHAR(20) NOT NULL UNIQUE,
+    type VARCHAR(20) NOT NULL,
+    statut VARCHAR(12) NOT NULL DEFAULT 'nouvelle',
+    client_id INT NULL,
+    nom VARCHAR(120) NOT NULL DEFAULT '',
+    telephone VARCHAR(40) NOT NULL DEFAULT '',
+    email VARCHAR(190) NOT NULL DEFAULT '',
+    sujet VARCHAR(250) NOT NULL DEFAULT '',
+    details TEXT,
+    pj TEXT,
+    note_interne TEXT,
+    reparation_id INT NULL,
+    ip VARCHAR(60) NOT NULL DEFAULT '',
+    cree_le DATETIME NOT NULL,
+    maj_le DATETIME NOT NULL
+  )$opt");
+  ajouter_colonne($pdo, 'gt_reparations', 'devis_vu', 'TINYINT NOT NULL DEFAULT 1');
   $pdo->prepare('DELETE FROM gt_meta WHERE cle = ?')->execute(['schema']);
   $pdo->prepare('INSERT INTO gt_meta (cle, val) VALUES (?, ?)')->execute(['schema', (string)SCHEMA_VERSION]);
 }
@@ -170,6 +190,40 @@ function fin_garantie(array $r): string {
   return date('Y-m-d', strtotime($r['clos_le'] . " +$m months"));
 }
 
+/* Réglages simples de l'atelier (table gt_meta) */
+function meta(string $cle, string $defaut = ''): string {
+  try { $s = db()->prepare('SELECT val FROM gt_meta WHERE cle = ?'); $s->execute([$cle]); $v = $s->fetchColumn(); return $v === false ? $defaut : (string)$v; }
+  catch (Throwable $e) { return $defaut; }
+}
+function meta_set(string $cle, string $val): void {
+  $pdo = db();
+  $pdo->prepare('DELETE FROM gt_meta WHERE cle = ?')->execute([$cle]);
+  $pdo->prepare('INSERT INTO gt_meta (cle, val) VALUES (?, ?)')->execute([$cle, $val]);
+}
+
+/* Prévient l'atelier qu'une demande ou une réponse attend dans la gestion (e-mail court, sans les détails).
+   Réglage « notif » : chaque (défaut, un e-mail par demande), regroupe (au plus un e-mail toutes les 3 h), jamais. */
+function notifier_atelier(string $titre, string $ligne): bool {
+  $mode = meta('notif', 'chaque');
+  if ($mode === 'jamais') return false;
+  if ($mode === 'regroupe') {
+    $last = (int)meta('notif_le', '0');
+    if (time() - $last < 3 * 3600) return false;
+    $titre = 'Nouvelles demandes à traiter';
+  }
+  meta_set('notif_le', (string)time());
+  $c = cfg();
+  $site = rtrim($c['site'] ?? 'https://gouyerian-tech.fr', '/');
+  return envoyer_mail($c['mail_reply'] ?? 'gouyerian.tech@gmail.com', "Gouyerian Tech : $titre",
+    "Bonjour,\n\n$ligne\n\nTout est à traiter dans votre espace gestion :\n$site/gestion/\n\n(Réglage des e-mails : en bas de la page de gestion.)\n");
+}
+
+/* Dossier privé (hors du site) : configuration et pièces jointes */
+function prive_dir(): string {
+  cfg();
+  return $GLOBALS['GT_CFG_DIR'] ?? (__DIR__ . '/../../prive');
+}
+
 /* Réponse du client au devis (depuis le suivi ou son espace) ; prévient l'atelier par e-mail. */
 function repondre_devis(array $r, string $rep): array {
   if (!in_array($rep, ['accepte', 'refuse'], true)) fail('Réponse inconnue.');
@@ -178,18 +232,9 @@ function repondre_devis(array $r, string $rep): array {
   $pdo->prepare('UPDATE gt_reparations SET devis_etat = ?, devis_le = ?, maj_le = ? WHERE id = ?')->execute([$rep, now(), now(), $r['id']]);
   $note = $rep === 'accepte' ? 'Devis accepté en ligne par le client.' : 'Devis refusé en ligne par le client.';
   $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, 0)')->execute([$r['id'], 'devis', $note, now()]);
-  $c = cfg();
-  envoyer_mail($c['mail_reply'] ?? 'gouyerian.tech@gmail.com', ($rep === 'accepte' ? 'Devis ACCEPTÉ' : 'Devis refusé') . " : {$r['numero']} ({$r['appareil']})",
-    "Bonjour,
-
-{$r['nom']} a " . ($rep === 'accepte' ? 'accepté' : 'refusé') . " le devis de la réparation {$r['numero']} ({$r['appareil']}) le " . date('d/m/Y à H:i') . ".
-"
-    . ($r['prix'] ? "Prix annoncé : {$r['prix']}
-" : '') . ($r['telephone'] ? "Téléphone : {$r['telephone']}
-" : '')
-    . "
-Fiche : " . rtrim($c['site'] ?? 'https://gouyerian-tech.fr', '/') . "/gestion/
-");
+  $pdo->prepare('UPDATE gt_reparations SET devis_vu = 0 WHERE id = ?')->execute([$r['id']]);
+  notifier_atelier(($rep === 'accepte' ? 'devis accepté' : 'devis refusé') . " ({$r['numero']})",
+    "{$r['nom']} a " . ($rep === 'accepte' ? 'ACCEPTÉ' : 'refusé') . " le devis de la réparation {$r['numero']} ({$r['appareil']}).");
   $s = $pdo->prepare('SELECT * FROM gt_reparations WHERE id = ?');
   $s->execute([$r['id']]);
   return $s->fetch();
@@ -321,6 +366,19 @@ function nettoyer(): void {
     $pdo->prepare('DELETE FROM gt_reparations WHERE id = ?')->execute([$id]);
   }
 }
+
+function nettoyer_demandes(): void {
+  $pdo = db();
+  $lim = date('Y-m-d H:i:s', strtotime('-' . CONSERVATION_MOIS . ' months'));
+  $s = $pdo->prepare('SELECT id, pj FROM gt_demandes WHERE maj_le < ?');
+  $s->execute([$lim]);
+  foreach ($s->fetchAll() as $d) {
+    foreach (json_decode((string)$d['pj'], true) ?: [] as $f) { $p = prive_dir() . '/pj/' . basename($f['fichier'] ?? ''); if (is_file($p)) @unlink($p); }
+    $pdo->prepare('DELETE FROM gt_demandes WHERE id = ?')->execute([$d['id']]);
+  }
+}
+
+const STATUTS_DEMANDE = ['nouvelle' => 'Reçue', 'en_cours' => 'En cours de traitement', 'traitee' => 'Traitée', 'archivee' => 'Traitée'];
 
 function historique(int $id): array {
   $s = db()->prepare('SELECT etape, note, le, mail FROM gt_historique WHERE reparation_id = ? ORDER BY le, id');
