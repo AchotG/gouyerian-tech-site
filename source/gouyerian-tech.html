@@ -1483,27 +1483,62 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .acc-dv{display:grid;gap:10px;padding:14px;border-radius:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 30%,var(--line))}
 .acc-dv b{color:var(--fg)}
 .acc-g{font-size:.88rem;color:var(--muted)}
-/* v103 : messagerie par réparation */
-.msgs{display:grid;gap:10px;min-width:0}
-.msgs h3{margin:0;font-size:1.05rem}
-.msg-l{list-style:none;margin:0;padding:4px 2px;display:grid;gap:8px;max-height:360px;overflow-y:auto;overscroll-behavior:contain}
-.msg-l li{max-width:85%;padding:9px 13px;border-radius:14px;display:grid;gap:3px;font-size:.94rem;line-height:1.45;overflow-wrap:anywhere}
-.msg-l li p{margin:0;white-space:pre-wrap}
-.msg-l li small{font:500 .72rem/1.3 var(--f-mono);color:var(--muted)}
-.msg-c{justify-self:end;background:color-mix(in srgb,var(--acc) 13%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 30%,var(--line));border-bottom-right-radius:4px!important}
-.msg-a{justify-self:start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px!important}
-.msg-a.new{box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 45%,transparent)}
-.msg-l li.msg-0{max-width:none;color:var(--muted);font-size:.9rem;padding:0}
-.msg-f{display:grid;gap:8px}
-.msg-f textarea{min-height:70px}
-.msg-b{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.msg-b button[type=submit]{margin-left:auto}
-.msg-pjb{cursor:pointer}
+/* v104 : messagerie par réparation, design « console » */
+.msgs{--mr:18px;display:grid;min-width:0;border:1px solid var(--line);border-radius:var(--mr);background:var(--surface);overflow:hidden;box-shadow:var(--elev,0 10px 30px -18px rgba(10,30,70,.35))}
+.msg-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:linear-gradient(120deg,color-mix(in srgb,var(--acc) 10%,var(--surface)),var(--surface) 70%)}
+.msg-av{position:relative;flex:none;width:40px;height:40px;border-radius:12px;background:var(--grad);color:#fff;display:grid;place-items:center;font:800 .8rem/1 var(--f-disp);letter-spacing:.04em;box-shadow:0 6px 16px -8px color-mix(in srgb,var(--acc) 70%,transparent)}
+.msg-av::after{content:"";position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2px solid var(--surface)}
+.msg-hd div{min-width:0;display:grid;gap:1px}
+.msg-hd b{font:700 .98rem/1.25 var(--f-disp)}
+.msg-hd small{font:500 .72rem/1.3 var(--f-mono);color:var(--muted);letter-spacing:.02em}
+.msg-nb{margin-left:auto;flex:none;padding:4px 10px;border-radius:999px;background:var(--grad);color:#fff;font:700 .72rem/1.3 var(--f-body);animation:msgpulse 2s ease-in-out infinite}
+@keyframes msgpulse{50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--acc) 18%,transparent)}}
+.msg-l{list-style:none;margin:0;padding:16px 14px;display:flex;flex-direction:column;gap:6px;max-height:440px;min-height:120px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  background-color:var(--bg);background-image:radial-gradient(color-mix(in srgb,var(--fg) 9%,transparent) 1px,transparent 1.2px);background-size:18px 18px}
+.msg-l>li{animation:msgin .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes msgin{from{opacity:0;transform:translateY(6px)}}
+.msg-day{align-self:center;margin:6px 0 4px;padding:3px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font:600 .66rem/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.msg-r{display:flex;align-items:flex-end;gap:8px;max-width:88%}
+.msg-r.c{align-self:flex-end;flex-direction:row-reverse}
+.msg-r .msg-av{width:28px;height:28px;border-radius:9px;font-size:.62rem;box-shadow:none}
+.msg-r .msg-av::after{display:none}
+.msg-r.cont .msg-av{visibility:hidden}
+.msg-bu{position:relative;min-width:0;display:grid;gap:6px;padding:10px 13px 7px;border-radius:16px;font-size:.94rem;line-height:1.45;overflow-wrap:anywhere}
+.msg-r.a .msg-bu{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:5px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.msg-r.c .msg-bu{background:var(--grad);color:#fff;border-bottom-right-radius:5px;box-shadow:0 8px 20px -12px color-mix(in srgb,var(--acc) 80%,transparent)}
+.msg-r.a.new .msg-bu{border-color:color-mix(in srgb,var(--acc) 55%,var(--line));box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 14%,transparent)}
+.msg-bu p{margin:0;white-space:pre-wrap;color:inherit;font-size:inherit;line-height:inherit;max-width:none}
+.msg-r.a .msg-bu{color:var(--fg)}.msg-r.c .msg-bu{color:#fff}
+.msg-mt{justify-self:end;display:flex;gap:6px;align-items:center;font:500 .66rem/1.2 var(--f-mono);opacity:.72}
+.msg-mt svg{width:16px;height:12px;flex:none}
+.msg-mt .lu svg{color:#c6ffd9}
+.msg-r.a .msg-mt{color:var(--muted);opacity:1}
 .msg-pjs{display:flex;flex-wrap:wrap;gap:6px}
-.msg-pjl{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--acc);font:600 .82rem/1.3 var(--f-body);cursor:pointer;overflow-wrap:anywhere;text-align:left}
-.msg-pjl:hover{border-color:var(--acc)}
-.msg-st{justify-self:end;font:600 .72rem/1.2 var(--f-body);color:var(--muted)}
-.msg-nb{display:inline-block;margin-left:6px;padding:2px 9px;border-radius:999px;background:var(--grad);color:#fff;font:700 .72rem/1.5 var(--f-body);vertical-align:middle}
+.msg-img{padding:0;border:0;border-radius:10px;overflow:hidden;cursor:zoom-in;background:color-mix(in srgb,var(--fg) 8%,transparent);width:132px;height:100px;display:grid;place-items:center}
+.msg-img img{width:100%;height:100%;object-fit:cover;display:block}
+.msg-img span{font-size:1.3rem;opacity:.5}
+.msg-pjl{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:6px 10px;border-radius:10px;border:1px solid color-mix(in srgb,currentColor 25%,transparent);background:color-mix(in srgb,currentColor 7%,transparent);color:inherit;font:600 .8rem/1.3 var(--f-body);cursor:pointer;text-align:left;overflow-wrap:anywhere}
+.msg-pjl svg{flex:none;width:15px;height:15px}
+.msg-0{align-self:center;max-width:320px;margin:auto;text-align:center;display:grid;gap:8px;justify-items:center;color:var(--muted);font-size:.9rem;padding:14px 0}
+.msg-0 .msg-av{width:46px;height:46px;border-radius:14px}
+.msg-0 .msg-av::after{display:none}
+.msg-f{display:grid;gap:8px;padding:10px 12px 12px;border-top:1px solid var(--line);background:var(--surface)}
+.msg-sel{display:flex;flex-wrap:wrap;gap:6px}
+.msg-sel span{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:4px 4px 4px 10px;border-radius:999px;background:var(--sunk);font:600 .78rem/1.3 var(--f-body);overflow-wrap:anywhere}
+.msg-sel button{width:22px;height:22px;border:0;border-radius:50%;background:var(--surface);color:var(--fg);cursor:pointer;font:700 .8rem/1 var(--f-body)}
+.msg-bar{display:flex;align-items:flex-end;gap:6px;padding:5px;border:1px solid var(--line);border-radius:16px;background:var(--bg);transition:border-color .2s,box-shadow .2s}
+.msg-bar:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+.msg-bar textarea,.msg-bar textarea:focus{flex:1;min-width:0;min-height:40px;max-height:160px;padding:9px 6px;border:0;border-radius:0;background:transparent;box-shadow:none;resize:none;line-height:1.4}
+.msg-ib{flex:none;width:40px;height:40px;border-radius:12px;border:0;display:grid;place-items:center;cursor:pointer;background:transparent;color:var(--muted);transition:background .2s,color .2s,transform .15s}
+.msg-ib:hover{background:var(--sunk);color:var(--fg)}
+.msg-ib svg{width:20px;height:20px}
+.msg-ib.go{background:var(--grad);color:#fff;box-shadow:0 6px 16px -8px color-mix(in srgb,var(--acc) 80%,transparent)}
+.msg-ib.go:hover{transform:translateY(-1px);color:#fff}
+.msg-ib.go:disabled{opacity:.55;cursor:wait;transform:none}
+.msg-tip{font:500 .7rem/1.3 var(--f-mono);color:var(--muted);padding:0 4px}
+.msg-f p.msg:empty{display:none}
+details>.msgs{margin-top:10px}
+@media (max-width:520px){.msg-r{max-width:94%}.msg-l{max-height:60vh}.msg-tip{display:none}}
 .acc-g.on{color:var(--ok)}
 .acc-r details summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--acc)}
 .acc-r details .trk-h{margin-top:10px}
@@ -3495,31 +3530,48 @@ async function trkLoad(n,c,auto){
   TRK_LAST={n,c};trkShow(j);
 }
 /* v103 : messagerie client ↔ atelier, une conversation par réparation (api/messages.php) */
-function msgItems(ms){return ms&&ms.length?ms.map(m=>`<li class="msg-${m.auteur==="atelier"?"a":"c"}${m.auteur==="atelier"&&!m.lu?" new":""}"><small>${m.auteur==="atelier"?"Atelier Gouyerian Tech":"Vous"} · ${esc(trkFmt(m.le))}</small>${m.texte?`<p>${esc(m.texte)}</p>`:""}${(m.pj||[]).length?`<span class="msg-pjs">${m.pj.map(f=>`<button type="button" class="msg-pjl" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}">📎 ${esc(f.nom)}</button>`).join("")}</span>`:""}${m.auteur==="client"?`<span class="msg-st">${m.lu?"✓✓ Lu par l’atelier":"✓ Distribué"}</span>`:""}</li>`).join(""):`<li class="msg-0">Une question sur votre réparation ? Écrivez à l’atelier ici : la réponse s’affiche ici.</li>`}
+const MSG_IC={clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>',
+  send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>',
+  ok:'<svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6.5 3 3 6-7"/></svg>',
+  lu:'<svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m1 6.5 3 3 6-7M7.5 8.8 8.2 9.5l6-7"/></svg>',
+  file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>'};
+const MSG_THUMB=new Map();
+function msgDay(s){const d=new Date(String(s).replace(" ","T")),t=new Date();if(isNaN(d))return"";const k=x=>x.toDateString();const y=new Date(t);y.setDate(t.getDate()-1);
+  return k(d)===k(t)?"Aujourd’hui":k(d)===k(y)?"Hier":d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}
+function msgTime(s){const d=new Date(String(s).replace(" ","T"));return isNaN(d)?"":d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}).replace(":","h")}
+function msgItems(ms){if(!ms||!ms.length)return `<li class="msg-0"><span class="msg-av">GT</span><b>Une question sur votre réparation ?</b><span>Écrivez directement à l’atelier : vous pouvez joindre des photos, la réponse s’affiche ici.</span></li>`;
+  let day="",prev="";return ms.map(m=>{const dd=msgDay(m.le),a=m.auteur==="atelier"?"a":"c",cont=prev===a&&day===dd;let h="";if(dd!==day){h+=`<li class="msg-day">${esc(dd)}</li>`;day=dd}prev=a;
+    const pj=(m.pj||[]).map(f=>/^image\//.test(f.type)?`<button type="button" class="msg-img" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}" aria-label="Ouvrir ${esc(f.nom)}"><span>🖼</span></button>`:`<button type="button" class="msg-pjl" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}">${MSG_IC.file}${esc(f.nom)}</button>`).join("");
+    return h+`<li class="msg-r ${a}${cont?" cont":""}${a==="a"&&!m.lu?" new":""}">${a==="a"?'<span class="msg-av" aria-hidden="true">GT</span>':""}<div class="msg-bu"><span class="sr">${a==="a"?"Atelier":"Vous"} :</span>${m.texte?`<p>${esc(m.texte)}</p>`:""}${pj?`<span class="msg-pjs">${pj}</span>`:""}<span class="msg-mt">${esc(msgTime(m.le))}${a==="c"?(m.lu?`<span class="lu" title="Lu par l’atelier">${MSG_IC.lu}</span><span>Lu</span>`:`<span title="Distribué">${MSG_IC.ok}</span><span>Distribué</span>`):""}</span></div></li>`}).join("")}
 function msgUnread(ms){return(ms||[]).filter(m=>m.auteur==="atelier"&&!m.lu).length}
-function msgHTML(ms,n,titre){const u=msgUnread(ms);return `<div class="msgs" data-mn="${esc(n)}"><h3>${titre||"Messages avec l’atelier"}${u?`<span class="msg-nb">${u} nouveau${u>1?"x":""}</span>`:""}</h3><ul class="msg-l" aria-live="polite">${msgItems(ms)}</ul><form class="msg-f" novalidate><label class="sr" for="mt-${esc(n)}">Votre message à l’atelier</label><textarea id="mt-${esc(n)}" maxlength="2000" placeholder="Écrire à l’atelier…"></textarea><div class="msg-b"><label class="btn sm ghost msg-pjb">📎 Photo ou fichier<input type="file" accept="image/*,video/*,application/pdf" multiple hidden></label><span class="msg-fn note"></span><button class="btn sm" type="submit">Envoyer</button></div><p class="msg" role="alert"></p></form></div>`}
+function msgHTML(ms,n){const u=msgUnread(ms);return `<section class="msgs" data-mn="${esc(n)}" aria-label="Messages avec l’atelier"><header class="msg-hd"><span class="msg-av" aria-hidden="true">GT</span><div><b>Atelier Gouyerian Tech</b><small>Réparation ${esc(n)} · réponse sous 24 h ouvrées</small></div>${u?`<span class="msg-nb">${u} nouveau${u>1?"x":""}</span>`:""}</header><ul class="msg-l" aria-live="polite">${msgItems(ms)}</ul><form class="msg-f" novalidate><div class="msg-sel" hidden></div><div class="msg-bar"><label class="msg-ib" title="Joindre des photos ou un PDF">${MSG_IC.clip}<span class="sr">Joindre des fichiers</span><input type="file" accept="image/*,video/*,application/pdf" multiple hidden></label><label class="sr" for="mt-${esc(n)}">Votre message à l’atelier</label><textarea id="mt-${esc(n)}" rows="1" maxlength="2000" placeholder="Écrire à l’atelier…"></textarea><button class="msg-ib go" type="submit" aria-label="Envoyer">${MSG_IC.send}</button></div><span class="msg-tip">Ctrl + Entrée pour envoyer · photos, vidéos ou PDF, 4 au plus</span><p class="msg" role="alert"></p></form></section>`}
 async function msgApi(fd){let r,j;try{r=await fetch("/api/messages.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}})}catch(e){throw new Error("Connexion impossible. Réessayez ou appelez le 06 05 79 48 94.")}
   try{j=await r.json()}catch(e){throw new Error("La messagerie est momentanément indisponible. Appelez le 06 05 79 48 94.")}
   if(!j.ok)throw new Error(j.erreur||"Envoi impossible.");return j}
-function msgBind(root,auth,upd){root.querySelectorAll(".msgs").forEach(box=>{const n=box.dataset.mn,f=box.querySelector("form"),ta=f.querySelector("textarea"),fi=f.querySelector("input[type=file]"),fn=f.querySelector(".msg-fn"),er=f.querySelector("p.msg"),bt=f.querySelector("button[type=submit]"),l=box.querySelector(".msg-l");
-  l.scrollTop=l.scrollHeight;
-  const put=ms=>{l.innerHTML=msgItems(ms);l.scrollTop=l.scrollHeight;if(upd)upd(n,ms)};
-  l.addEventListener("click",async e=>{const pb=e.target.closest("[data-mpj]");if(!pb)return;const [id,i]=pb.dataset.mpj.split("-"),w=window.open("","_blank");pb.disabled=true;
-    try{const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"pj",id:+id,i:+i},auth(n))));
-      const r=await fetch("/api/messages.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}});
-      if(!r.ok||(r.headers.get("content-type")||"").includes("json"))throw new Error("Fichier introuvable.");
-      const u=URL.createObjectURL(await r.blob());if(w)w.location.href=u;else{const a=document.createElement("a");a.href=u;a.download=pb.dataset.nom||"fichier";a.click()}setTimeout(()=>URL.revokeObjectURL(u),60000)}
-    catch(err){if(w)w.close();er.textContent=err.message}pb.disabled=false});
-  if(box.querySelector(".msg-a.new")){const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"lire"},auth(n))));msgApi(fd).then(j=>{if(upd)upd(n,j.messages);setTimeout(()=>{const nb=box.querySelector("h3 .msg-nb");if(nb)nb.remove()},4000)}).catch(()=>{})}
-  fi.onchange=()=>{const k=fi.files.length;fn.textContent=k?k+" fichier"+(k>1?"s":"")+" prêt"+(k>1?"s":""):""};
-  f.onsubmit=async e=>{e.preventDefault();er.textContent="";const t=ta.value.trim(),fs=[...fi.files].slice(0,4);
-    if(!t&&!fs.length){er.textContent="Écrivez votre message.";ta.focus();return}
-    if(fs.some(x=>x.size>30*1048576)){er.textContent="Un fichier dépasse 30 Mo : choisissez une photo plus légère.";return}
-    bt.disabled=true;bt.textContent="Envoi…";
-    try{const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"envoyer",texte:t},auth(n))));fs.forEach(x=>fd.append("f[]",x,x.name));
-      const j=await msgApi(fd);put(j.messages);ta.value="";fi.value="";fn.textContent=""}
+async function msgFile(auth,n,key){if(MSG_THUMB.has(key))return MSG_THUMB.get(key);const [id,i]=key.split("-"),fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"pj",id:+id,i:+i},auth(n))));
+  const p=fetch("/api/messages.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}}).then(async r=>{if(!r.ok||(r.headers.get("content-type")||"").includes("json"))throw new Error("Fichier introuvable.");return URL.createObjectURL(await r.blob())});
+  MSG_THUMB.set(key,p);p.catch(()=>MSG_THUMB.delete(key));return p}
+function msgBind(root,auth,upd){root.querySelectorAll(".msgs").forEach(box=>{const n=box.dataset.mn,f=box.querySelector("form"),ta=f.querySelector("textarea"),fi=f.querySelector("input[type=file]"),sl=f.querySelector(".msg-sel"),er=f.querySelector("p.msg"),bt=f.querySelector("button[type=submit]"),l=box.querySelector(".msg-l");let sel=[];
+  const thumbs=()=>l.querySelectorAll(".msg-img:not([data-ok])").forEach(b=>{b.dataset.ok="1";msgFile(auth,n,b.dataset.mpj).then(u=>{b.innerHTML=`<img src="${u}" alt="${esc(b.dataset.nom)}">`}).catch(()=>{})});
+  const put=ms=>{l.innerHTML=msgItems(ms);l.scrollTop=l.scrollHeight;thumbs();if(upd)upd(n,ms)};
+  const grow=()=>{ta.style.height="auto";ta.style.height=Math.min(160,ta.scrollHeight)+"px"};
+  const drawSel=()=>{sl.hidden=!sel.length;sl.innerHTML=sel.map((x,k)=>`<span>${/^image\//.test(x.type)?"🖼":"📄"} ${esc(x.name)}<button type="button" data-k="${k}" aria-label="Retirer ${esc(x.name)}">×</button></span>`).join("")};
+  l.scrollTop=l.scrollHeight;thumbs();
+  l.addEventListener("click",async e=>{const pb=e.target.closest("[data-mpj]");if(!pb)return;const w=window.open("","_blank");
+    try{const u=await msgFile(auth,n,pb.dataset.mpj);if(w)w.location.href=u;else{const a=document.createElement("a");a.href=u;a.download=pb.dataset.nom||"fichier";a.click()}}
+    catch(err){if(w)w.close();er.textContent=err.message}});
+  if(box.querySelector(".msg-r.new")){const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"lire"},auth(n))));msgApi(fd).then(j=>{if(upd)upd(n,j.messages);setTimeout(()=>{const nb=box.querySelector(".msg-nb");if(nb)nb.remove()},4000)}).catch(()=>{})}
+  fi.onchange=()=>{sel=sel.concat([...fi.files]).slice(0,4);fi.value="";drawSel();ta.focus()};
+  sl.onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;sel.splice(+b.dataset.k,1);drawSel()};
+  ta.oninput=grow;ta.onkeydown=e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();f.requestSubmit()}};
+  f.onsubmit=async e=>{e.preventDefault();er.textContent="";const t=ta.value.trim();
+    if(!t&&!sel.length){er.textContent="Écrivez votre message.";ta.focus();return}
+    if(sel.some(x=>x.size>30*1048576)){er.textContent="Un fichier dépasse 30 Mo : choisissez une photo plus légère.";return}
+    bt.disabled=true;
+    try{const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"envoyer",texte:t},auth(n))));sel.forEach(x=>fd.append("f[]",x,x.name));
+      const j=await msgApi(fd);put(j.messages);ta.value="";sel=[];drawSel();grow()}
     catch(err){er.textContent=err.message}
-    bt.disabled=false;bt.textContent="Envoyer"}})}
+    bt.disabled=false}})}
 function trkShow(j){
   const seen=new Set(j.historique.map(h=>h.etape)),steps=TRK_P.slice();
   if(seen.has("piece")||j.etape==="piece")steps.splice(steps.indexOf("reparation"),0,"piece");
@@ -3936,7 +3988,7 @@ function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==
   return `<article class="acc-r"><div><span class="eyebrow">${esc(r.numero)} · ${clos?"le "+fdate(r.maj_le):"mis à jour le "+fdate(r.maj_le)}</span><h4>${esc(r.appareil)}${u?`<span class="msg-nb">${u} message${u>1?"s":""}</span>`:""}</h4><p>${esc(r.libelle)}${clos?"":" · "+esc(r.phrase)}</p></div>`
    +(clos||r.etape==="annule"?"":`<ol class="trk-p" style="--n:${steps.length}">${steps.map((e,k)=>`<li class="${k<ci?"done":k===ci?"done cur":""}">${esc(lib[e]||e)}</li>`).join("")}</ol>`)
    +(r.devis==="attente"?`<div class="acc-dv"><b>Votre accord est attendu${r.prix?" : "+esc(r.prix):""}.</b><span>Voir le détail dans l’historique.</span><div class="row2"><button type="button" class="btn sm" data-adv="accepte" data-n="${esc(r.numero)}">J’accepte le devis</button><button type="button" class="btn sm ghost" data-adv="refuse" data-n="${esc(r.numero)}">Je refuse</button></div></div>`:r.devis==="accepte"&&r.etape==="devis"?`<p class="acc-g on">✓ Devis accepté</p>`:"")
-   +g+(clos?`<details${u?" open":""}><summary>Messages avec l’atelier${nm?" ("+nm+")":""}</summary>${msgHTML(r.messages,r.numero," ")}</details>`:msgHTML(r.messages,r.numero))
+   +g+(clos?`<details${u?" open":""}><summary>Messages avec l’atelier${nm?" ("+nm+")":""}</summary>${msgHTML(r.messages,r.numero)}</details>`:msgHTML(r.messages,r.numero))
    +`<details${i===0&&!clos?" open":""}><summary>Historique</summary><ul class="trk-h">${r.historique.slice().reverse().map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></details></article>`}
 function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,cours=rs.filter(r=>r.etape!=="rendu"&&r.etape!=="annule"),fin=rs.filter(r=>r.etape==="rendu"||r.etape==="annule");
   $("accin").innerHTML=`<div class="wcard acc-sec"><div class="acc-hd"><div><span class="eyebrow">Connecté</span><h2>Bonjour${c.nom?" "+esc(c.nom.split(" ")[0]):""}</h2><p class="note">${esc(c.email)}</p></div><button type="button" class="btn ghost sm" id="accout">Se déconnecter</button></div></div>`
