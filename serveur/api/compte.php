@@ -45,10 +45,22 @@ function profil(array $c): array {
   $p = $pdo->prepare('SELECT contenu, maj_le FROM gt_paniers WHERE client_id = ?');
   $p->execute([$c['id']]);
   $pan = $p->fetch();
-  $dq = $pdo->prepare('SELECT ref, type, statut, sujet, cree_le, maj_le FROM gt_demandes WHERE client_id = ? OR (email <> \'\' AND LOWER(email) = ?) ORDER BY cree_le DESC LIMIT 30');
+  $dq = $pdo->prepare('SELECT d.ref, d.type, d.statut, d.sujet, d.details, d.pj, d.cree_le, d.maj_le, r.numero AS rep_numero FROM gt_demandes d LEFT JOIN gt_reparations r ON r.id = d.reparation_id WHERE d.client_id = ? OR (d.email <> \'\' AND LOWER(d.email) = ?) ORDER BY d.cree_le DESC LIMIT 30');
   $dq->execute([$c['id'], strtolower($c['email'])]);
-  $dem = array_map(fn($x) => ['ref' => $x['ref'], 'type' => $x['type'], 'sujet' => $x['sujet'], 'statut' => STATUTS_DEMANDE[$x['statut']] ?? 'Reçue',
-    'traitee' => in_array($x['statut'], ['traitee', 'archivee'], true), 'cree_le' => $x['cree_le']], $dq->fetchAll());
+  /* Détail affiché au client : ce qu'il a demandé (sans ses coordonnées, déjà connues), le nombre de fichiers, la réparation créée */
+  $cache = ['nom', 'téléphone', 'telephone', 'e-mail', 'email', '_subject', '_captcha', '_template', 'suivi par e-mail', 'source', 'page', 'référence', 'reference'];
+  $dem = array_map(function ($x) use ($cache) {
+    $det = [];
+    foreach (json_decode((string)$x['details'], true) ?: [] as $k => $v) {
+      if (!is_scalar($v) || in_array(mb_strtolower((string)$k), $cache, true) || str_starts_with((string)$k, '_')) continue;
+      $v = trim((string)$v);
+      if ($v === '' || $v === '-') continue;
+      $det[] = [txt((string)$k, 60), txt($v, 1500)];
+    }
+    return ['ref' => $x['ref'], 'type' => $x['type'], 'sujet' => $x['sujet'], 'statut' => STATUTS_DEMANDE[$x['statut']] ?? 'Reçue',
+      'traitee' => in_array($x['statut'], ['traitee', 'archivee'], true), 'cree_le' => $x['cree_le'], 'maj_le' => $x['maj_le'],
+      'details' => array_slice($det, 0, 25), 'nb_pj' => count(json_decode((string)$x['pj'], true) ?: []), 'reparation' => $x['rep_numero']];
+  }, $dq->fetchAll());
   return [
     'ok' => true,
     'demandes' => $dem,

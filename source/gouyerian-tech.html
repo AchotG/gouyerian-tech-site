@@ -1595,6 +1595,41 @@ details>.msgs{margin-top:10px}
 .acc-dl li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
 .acc-dl b{display:block;font-size:.95rem}.acc-dl small{color:var(--muted);font:500 .78rem var(--f-mono)}
 .acc-dl .chip{flex:none}
+/* Demandes du client : détail dépliable */
+.acc-dl li{display:block;padding:0}
+.acc-d>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;border-radius:12px}
+.acc-d>summary::-webkit-details-marker{display:none}
+.acc-d>summary:hover{background:color-mix(in srgb,var(--acc) 6%,transparent)}
+.acc-d-t{flex:1;min-width:0;display:grid;gap:2px}
+.acc-d-c{flex:none;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg) translateY(-2px);transition:transform .2s}
+.acc-d[open] .acc-d-c{transform:rotate(-135deg) translateY(-2px)}
+.acc-d-b{display:grid;gap:10px;padding:2px 14px 14px;border-top:1px solid var(--line);margin:0 0 0;padding-top:12px}
+.acc-d-e{margin:0;font-size:.93rem}
+.acc-d-l{margin:0;display:grid;gap:8px}
+.acc-d-l div{display:grid;grid-template-columns:minmax(0,140px) minmax(0,1fr);gap:10px;font-size:.9rem}
+.acc-d-l dt{color:var(--muted)}.acc-d-l dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+@media (max-width:480px){.acc-d-l div{grid-template-columns:minmax(0,1fr);gap:2px}.acc-d>summary{flex-wrap:wrap}.acc-d-t{flex-basis:calc(100% - 30px)}}
+/* Espace client connecté : pleine largeur, réparations et devis côte à côte, puis panier et coordonnées */
+#v-compte.acc-on .trk{grid-template-columns:minmax(0,1fr)}
+#v-compte.acc-on .aside{display:none}
+#accin{display:grid;gap:18px}
+.acc-top{display:grid;gap:16px}
+.acc-sts{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
+.acc-st{display:grid;gap:2px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--fg);text-decoration:none;transition:border-color .2s,transform .2s}
+.acc-st:hover{border-color:var(--acc);transform:translateY(-1px)}
+.acc-st b{font:800 1.5rem/1.1 var(--f-disp);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.acc-st span{font-size:.82rem;color:var(--muted)}
+.acc-cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.acc-cols{grid-template-columns:minmax(0,1fr)}}
+.acc-sec>h3{margin-top:0}
+.acc-sec .msg:empty{display:none}
+.acc-empty{display:grid;gap:6px;padding:16px;border:1px dashed var(--line);border-radius:14px;background:var(--bg)}
+.acc-empty p{margin:0;color:var(--muted);font-size:.93rem}
+.acc-nd{display:grid;gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+.acc-nd h4{margin:0;font:700 1rem/1.3 var(--f-disp)}
+.acc-fin{display:grid;gap:10px}.acc-fin>summary{cursor:pointer;font-weight:600;color:var(--acc);padding:4px 0}
+.acc-x{padding:4px 2px}.acc-x>summary{cursor:pointer;color:var(--muted);font-size:.88rem}.acc-x[open]{display:grid;gap:10px}
+
 </style>
 
 <a class="skip" href="#main">Aller au contenu</a>
@@ -3688,6 +3723,8 @@ function route(){
   if(ap)renderArticle(ap);
   if(np)renderNews(np);
   VIEWS.forEach(v=>{const el=$("v-"+v);if(el)el.hidden=v!==h});
+  /* Bandeau « Un appareil en panne ? » du bas : masqué sur les pages qui ont déjà leur encadré téléphone, pour ne pas l'afficher deux fois */
+  {const bd=document.querySelector("section.band");if(bd)bd.hidden=["demande","contact","pro","compte","suivi"].includes(h)}
   if(h==="suivi"&&window.suiviOpen)suiviOpen();
   if(h==="compte"&&window.accOpen)accOpen();
   const grp=h0==="avis"?"infos":({services:"services",boutique:"boutique",demande:"contact",suivi:"services",zone:"contact",secteurs:"contact",commune:"contact",contact:"contact",pro:"pro",faq:"infos",conseils:"infos",article:"infos",actus:"infos",actu:"infos"})[h]||h;
@@ -4066,10 +4103,29 @@ function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==
    +(r.devis==="attente"?`<div class="acc-dv"><b>Votre accord est attendu${r.prix?" : "+esc(r.prix):""}.</b><span>Voir le détail dans l’historique.</span><div class="row2"><button type="button" class="btn sm" data-adv="accepte" data-n="${esc(r.numero)}">J’accepte le devis</button><button type="button" class="btn sm ghost" data-adv="refuse" data-n="${esc(r.numero)}">Je refuse</button></div></div>`:r.devis==="accepte"&&r.etape==="devis"?`<p class="acc-g on">✓ Devis accepté</p>`:"")
    +g+(clos?`<details${u?" open":""}><summary>Messages avec l’atelier${nm?" ("+nm+")":""}</summary>${msgHTML(r.messages,r.numero)}</details>`:msgHTML(r.messages,r.numero))
    +`<details${i===0&&!clos?" open":""}><summary>Historique</summary><ul class="trk-h">${r.historique.slice().reverse().map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></details></article>`}
+/* Une demande du client : ligne cliquable qui s'ouvre sur le détail (ce qui a été demandé, fichiers, suite donnée) */
+const DEM_EXPL={"Reçue":"L’atelier a bien reçu votre demande : vous êtes rappelé rapidement pour en parler.","En cours de traitement":"L’atelier s’occupe de votre demande : vous êtes recontacté avec la suite (devis, rendez-vous ou disponibilité).","Traitée":"Votre demande a été traitée."};
+function accDem(x){const t=x.sujet.replace(/^Demande de devis \(espace client\) : /,"Devis : ").replace(/^Demande : /,"");
+  return `<li><details class="acc-d"><summary><span class="acc-d-t"><b>${esc(t)}</b><small>${esc(x.ref)} · ${fdate(x.cree_le)}</small></span><span class="chip ${x.traitee?"ok":"warn"}">${esc(x.statut)}</span><span class="acc-d-c" aria-hidden="true"></span></summary>
+   <div class="acc-d-b"><p class="acc-d-e">${esc(DEM_EXPL[x.statut]||"")}${x.traitee&&x.maj_le?" ("+fdate(x.maj_le)+")":""}</p>
+   ${x.reparation?`<p class="trk-ok">Réparation créée : <b>${esc(x.reparation)}</b>. <a href="#acc-rep">Voir son avancée</a></p>`:""}
+   ${(x.details||[]).length?`<dl class="acc-d-l">${x.details.map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`:""}
+   ${x.nb_pj?`<p class="note">📎 ${x.nb_pj} fichier${x.nb_pj>1?"s":""} envoyé${x.nb_pj>1?"s":""} avec la demande</p>`:""}
+   <p class="note">Une précision à ajouter ? Appelez le <a href="tel:+33605794894">06 05 79 48 94</a> en indiquant la référence ${esc(x.ref)}.</p></div></details></li>`}
 function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,cours=rs.filter(r=>r.etape!=="rendu"&&r.etape!=="annule"),fin=rs.filter(r=>r.etape==="rendu"||r.etape==="annule");
-  $("accin").innerHTML=`<div class="wcard acc-sec"><div class="acc-hd"><div><span class="eyebrow">Connecté</span><h2>Bonjour${c.nom?" "+esc(c.nom.split(" ")[0]):""}</h2><p class="note">${esc(c.email)}</p></div><button type="button" class="btn ghost sm" id="accout">Se déconnecter</button></div></div>`
-   +`<div class="wcard acc-sec"><h3>Réparations en cours</h3>${cours.length?cours.map(accRep).join(""):`<p>Aucune réparation en cours avec l’adresse ${esc(c.email)}. Une réparation déposée sous une autre adresse se suit avec son numéro sur la page <a href="${link("#suivi")}">Suivre ma réparation</a>.</p>`}<p class="msg" id="accdm" role="alert"></p></div>`
-   +`<div class="wcard acc-sec" id="accdq"><h3>Demander un devis</h3><p class="note">Vos coordonnées sont déjà remplies : décrivez simplement votre appareil et la panne. Réponse rapide, devis gratuit.</p>
+  const dem=p.demandes||[],att=dem.filter(x=>!x.traitee).length,dv=cours.filter(r=>r.devis_etat==="attente").length,nmsg=rs.reduce((a,r)=>a+msgUnread(r.messages),0);
+  const stat=(n,t,href)=>`<a class="acc-st" href="${href}"><b>${n}</b><span>${t}</span></a>`;
+  $("accin").innerHTML=
+   /* 1. En-tête : qui est connecté + résumé */
+   `<div class="wcard acc-top"><div class="acc-hd"><div><span class="eyebrow">Mon espace client</span><h2>Bonjour${c.nom?" "+esc(c.nom.split(" ")[0]):""}</h2><p class="note">${esc(c.email)}</p></div><button type="button" class="btn ghost sm" id="accout">Se déconnecter</button></div>`
+   +`<div class="acc-sts">${stat(cours.length,"réparation"+(cours.length>1?"s":"")+" en cours","#acc-rep")}${stat(att,"demande"+(att>1?"s":"")+" en attente","#acc-dem")}${dv?stat(dv,"devis à valider","#acc-rep"):""}${nmsg?stat(nmsg,"nouveau"+(nmsg>1?"x":"")+" message"+(nmsg>1?"s":""),"#acc-rep"):""}${stat(cartCount(),"article"+(cartCount()>1?"s":"")+" au panier","#acc-moi")}</div></div>`
+   /* 2. Réparations et devis, côte à côte sur ordinateur */
+   +`<div class="acc-cols">`
+   +`<section class="wcard acc-sec" id="acc-rep" aria-labelledby="acc-rep-t"><h3 id="acc-rep-t">Mes réparations</h3>${cours.length?cours.map(accRep).join(""):`<div class="acc-empty"><b>Aucune réparation en cours</b><p>Les réparations enregistrées avec l’adresse ${esc(c.email)} s’affichent ici automatiquement. Déposée sous une autre adresse ? Suivez-la avec son numéro sur <a href="${link("#suivi")}">Suivre ma réparation</a>.</p></div>`}<p class="msg" id="accdm" role="alert"></p>`
+   +(fin.length?`<details class="acc-fin"><summary>Réparations terminées et garanties (${fin.length})</summary>${fin.map((r,i)=>accRep(r,i+1)).join("")}</details>`:"")+`</section>`
+   +`<section class="wcard acc-sec" id="acc-dem" aria-labelledby="acc-dem-t"><h3 id="acc-dem-t">Mes devis et demandes</h3>`
+   +(dem.length?`<ul class="acc-dl">${dem.map(accDem).join("")}</ul>`:`<p class="note">Vos demandes de devis et de rendez-vous apparaîtront ici, avec leur avancée.</p>`)
+   +`<div id="accdq" class="acc-nd"><h4>Nouvelle demande de devis</h4><p class="note">Vos coordonnées sont déjà remplies : décrivez l’appareil et la panne. Devis gratuit, réponse rapide.</p>
      <form class="acc-pf" id="accdf" novalidate><div class="fgrid">
        <div class="fld"><label for="adq-a">Appareil</label><select id="adq-a"><option>Téléphone</option><option>Tablette</option><option>Ordinateur</option><option>Console</option><option>Autre</option></select></div>
        <div class="fld"><label for="adq-m">Marque et modèle</label><input id="adq-m" maxlength="120" placeholder="Ex. : iPhone 13, PC HP Pavilion…"></div>
@@ -4079,12 +4135,11 @@ function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,co
        <div class="fld"><label for="adq-n">Nom</label><input id="adq-n" autocomplete="name" maxlength="120" value="${esc(c.nom)}"></div>
        <div class="fld"><label for="adq-t">Téléphone</label><input id="adq-t" type="tel" autocomplete="tel" maxlength="40" value="${esc(c.telephone)}"></div>
        <div class="fld full"><label for="adq-f">Photos ou vidéo <span class="opt-l">(facultatif, 6 au plus)</span></label><input id="adq-f" type="file" accept="image/*,video/*" multiple></div>
-     </div><p class="msg" id="adq-m2" role="alert"></p><div class="row2"><button class="btn" type="submit" id="adq-go">Envoyer ma demande</button></div></form></div>`
-   +(p.demandes&&p.demandes.length?`<div class="wcard acc-sec"><h3>Mes demandes</h3><ul class="acc-dl">${p.demandes.map(x=>`<li><span><b>${esc(x.sujet.replace(/^Demande de devis \(espace client\) : /,"Devis : "))}</b><small>${esc(x.ref)} · ${fdate(x.cree_le)}</small></span><span class="chip ${x.traitee?"ok":"warn"}">${esc(x.statut)}</span></li>`).join("")}</ul></div>`:"")
-   +(fin.length?`<div class="wcard acc-sec"><h3>Réparations terminées et garanties</h3>${fin.map((r,i)=>accRep(r,i+1)).join("")}</div>`:"")
-   +`<div class="wcard acc-sec"><h3>Mon panier</h3><p>${CART.length?`${cartCount()} article${cartCount()>1?"s":""} : votre panier est enregistré dans votre espace, vous le retrouvez sur tous vos appareils.`:"Votre panier est vide. Les articles ajoutés depuis la boutique sont gardés dans votre espace."}</p><div class="row2">${CART.length?`<button type="button" class="btn sm" id="acccart">Voir mon panier</button>`:`<a class="btn sm ghost" href="${link("#boutique")}">Voir la boutique</a>`}</div></div>`
-   +`<form class="wcard acc-sec acc-pf" id="accpf"><h3>Mes coordonnées</h3><p class="note">Elles sont remplies automatiquement dans les demandes de rendez-vous et le panier.</p><div class="fgrid"><div class="fld"><label for="accn">Nom</label><input id="accn" autocomplete="name" value="${esc(c.nom)}" maxlength="120"></div><div class="fld"><label for="acct">Téléphone</label><input id="acct" type="tel" autocomplete="tel" value="${esc(c.telephone)}" maxlength="40"></div></div><div class="row2"><button class="btn sm" type="submit">Enregistrer</button><span class="note" id="accpm" role="status"></span></div></form>`
-   +`<div class="wcard acc-sec"><h3>Supprimer mon espace</h3><p class="note">Votre espace, votre panier enregistré et vos coordonnées sont effacés. Les fiches de réparation restent à l’atelier pour la garantie (24 mois).</p><div class="row2"><button type="button" class="btn sm ghost" id="accdel">Supprimer mon espace</button></div><div class="acc-del" id="accdelc" hidden><b>Supprimer définitivement votre espace ?</b><div class="row2"><button type="button" class="btn sm" id="accdel2">Oui, supprimer</button><button type="button" class="btn sm ghost" id="accdel0">Non</button></div></div></div>`;
+     </div><p class="msg" id="adq-m2" role="alert"></p><div class="row2"><button class="btn" type="submit" id="adq-go">Envoyer ma demande</button></div></form></div></section></div>`
+   /* 3. Compte : panier et coordonnées */
+   +`<div class="acc-cols" id="acc-moi"><section class="wcard acc-sec"><h3>Mon panier</h3><p>${CART.length?`${cartCount()} article${cartCount()>1?"s":""} : votre panier est enregistré dans votre espace, vous le retrouvez sur tous vos appareils.`:"Votre panier est vide. Les articles ajoutés depuis la boutique sont gardés dans votre espace."}</p><div class="row2">${CART.length?`<button type="button" class="btn sm" id="acccart">Voir mon panier</button>`:`<a class="btn sm ghost" href="${link("#boutique")}">Voir la boutique</a>`}</div></section>`
+   +`<section class="wcard acc-sec"><form class="acc-pf" id="accpf"><h3>Mes coordonnées</h3><p class="note">Elles sont remplies automatiquement dans les demandes de rendez-vous et le panier.</p><div class="fgrid"><div class="fld"><label for="accn">Nom</label><input id="accn" autocomplete="name" value="${esc(c.nom)}" maxlength="120"></div><div class="fld"><label for="acct">Téléphone</label><input id="acct" type="tel" autocomplete="tel" value="${esc(c.telephone)}" maxlength="40"></div></div><div class="row2"><button class="btn sm" type="submit">Enregistrer</button><span class="note" id="accpm" role="status"></span></div></form></section></div>`
+   +`<details class="acc-x"><summary>Supprimer mon espace</summary><p class="note">Votre espace, votre panier enregistré et vos coordonnées sont effacés. Les fiches de réparation restent à l’atelier pour la garantie (24 mois).</p><div class="row2"><button type="button" class="btn sm ghost" id="accdel">Supprimer mon espace</button></div><div class="acc-del" id="accdelc" hidden><b>Supprimer définitivement votre espace ?</b><div class="row2"><button type="button" class="btn sm" id="accdel2">Oui, supprimer</button><button type="button" class="btn sm ghost" id="accdel0">Non</button></div></div></details>`;
   $("accf").hidden=true;$("accin").hidden=false;
   $("accdf").onsubmit=async e=>{e.preventDefault();const m=$("adq-m2"),b=$("adq-go");m.textContent="";
     const nom=$("adq-n").value.trim(),tel=$("adq-t").value.trim(),pan=$("adq-p").value.trim(),fs=[...$("adq-f").files].slice(0,6);
@@ -4106,7 +4161,7 @@ function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,co
   $("accdel2").onclick=async()=>{try{await accApi("supprimer");accSet(null);accView()}catch(err){$("accdelc").querySelector("b").textContent=err.message}};
   msgBind($("accin"),n=>({numero:n}),(n,ms)=>{const r=ACC&&ACC.reparations.find(x=>x.numero===n);if(r)r.messages=ms});
   $("accin").querySelectorAll("[data-adv]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{const j=await accApi("devis",{numero:b.dataset.n,reponse:b.dataset.adv});accSet(j);accDraw()}catch(err){b.disabled=false;$("accdm").textContent=err.message}})}
-function accView(){if(!$("accf"))return;if(ACC){accDraw();return}
+function accView(){if(!$("accf"))return;$("v-compte").classList.toggle("acc-on",!!ACC);if(ACC){accDraw();return}
   $("accin").hidden=true;$("accf").hidden=false;$("accm").textContent="";
   const step2=!!accMail;$("accew").hidden=step2;$("acccw").hidden=!step2;$("accgo").textContent=step2?"Me connecter":"Recevoir mon code";if(step2)$("accto").textContent=accMail}
 window.accOpen=async function(){if(!$("accf"))return;if(!ACC&&accHas()){try{const j=await accApi("etat");accSet(j);if(ACC)accCartMerge(j)}catch(e){}}accView()};

@@ -400,7 +400,7 @@ function prenom(string $nom): string {
 /* Envoi d'un e-mail texte (UTF-8). En test, la configuration « mail_log » écrit l'e-mail dans un fichier.
    Si un mot de passe SMTP est configuré (smtp_pass), l'e-mail part par le serveur d'envoi IONOS authentifié (meilleure délivrabilité) ;
    sinon par la fonction mail() de l'hébergement. Chaque envoi est noté dans /prive/mail.log, sans donnée personnelle. */
-function envoyer_mail(string $to, string $sujet, string $corps, string $html = ''): bool {
+function envoyer_mail(string $to, string $sujet, string $corps, string $html = '', array $images = []): bool {
   if (!filter_var($to, FILTER_VALIDATE_EMAIL)) return false;
   $c = cfg();
   $from = $c['mail_from'] ?? 'suivi@gouyerian-tech.fr';
@@ -432,9 +432,23 @@ function envoyer_mail(string $to, string $sujet, string $corps, string $html = '
   } else {
     /* Version mise en forme (HTML) + version texte pour les messageries qui n'affichent pas le HTML */
     $b = 'gt-' . bin2hex(random_bytes(10));
-    $entetes[] = "Content-Type: multipart/alternative; boundary=\"$b\"";
-    $corps_crlf = "--$b\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($corps))
+    $alt = "--$b\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($corps))
       . "--$b\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($html)) . "--$b--\r\n";
+    if (!$images) {
+      $entetes[] = "Content-Type: multipart/alternative; boundary=\"$b\"";
+      $corps_crlf = $alt;
+    } else {
+      /* Images intégrées à l'e-mail (en-tête) : affichées même par les messageries qui bloquent les images distantes (webmail IONOS…) */
+      $rb = 'gtr-' . bin2hex(random_bytes(10));
+      $entetes[] = "Content-Type: multipart/related; boundary=\"$rb\"; type=\"multipart/alternative\"";
+      $corps_crlf = "--$rb\r\nContent-Type: multipart/alternative; boundary=\"$b\"\r\n\r\n" . $alt;
+      foreach ($images as $cid => [$chemin, $type]) {
+        $nomf = basename($chemin);
+        $corps_crlf .= "--$rb\r\nContent-Type: $type; name=\"$nomf\"\r\nContent-Transfer-Encoding: base64\r\nContent-ID: <$cid>\r\nContent-Disposition: inline; filename=\"$nomf\"\r\n\r\n"
+          . chunk_split(base64_encode((string)file_get_contents($chemin)));
+      }
+      $corps_crlf .= "--$rb--\r\n";
+    }
   }
   $err = '';
   if (!empty($c['smtp_pass'])) {
@@ -546,15 +560,20 @@ function mail_pro(string $to, string $sujet, array $m): bool {
   if (!empty($m['note'])) $c .= '<p style="margin:18px 0 0;' . $font . ';font-size:13px;line-height:1.5;color:' . $mut . '">' . nl2br($h($m['note'])) . '</p>';
   $pre = $h($m['pre'] ?? ($m['paras'][0] ?? ''));
   $bandeau = !empty($m['atelier']) ? 'Espace atelier' : 'Service Client';
+  /* En-tête : image jointe à l'e-mail (cid) si le fichier est sur le serveur, sinon image du site */
+  $f_entete = !empty($m['atelier']) ? 'mail-entete-atelier.png' : 'mail-entete.png';
+  $chemin_entete = dirname(__DIR__) . '/assets/' . $f_entete;
+  $images = is_file($chemin_entete) ? ['entete@gouyerian-tech.fr' => [$chemin_entete, 'image/png']] : [];
+  $src_entete = $images ? 'cid:entete@gouyerian-tech.fr' : "$site/assets/$f_entete?v=2";
   $html = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>' . $h($sujet) . '</title></head>'
     . '<body style="margin:0;padding:0;background:#eef2f8;-webkit-text-size-adjust:100%">'
     . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">' . $pre . '</div>'
     . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef2f8"><tr><td align="center" style="padding:28px 12px">'
     . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px">'
     /* en-tête */
-    . '<tr><td style="background:' . $navy . ';background-image:linear-gradient(135deg,#0b1426 0%,#13254a 60%,#1d3f7a 100%);border-radius:18px 18px 0 0;padding:22px 26px">'
+    . '<tr><td bgcolor="#0b1426" style="background:' . $navy . ';background-image:linear-gradient(135deg,#0b1426 0%,#13254a 60%,#1d3f7a 100%);border-radius:18px 18px 0 0;padding:22px 26px">'
     /* Logo et nom en image : le mode sombre de Gmail sur téléphone assombrissait le texte blanc de l'en-tête */
-    . '<a href="' . $h($site) . '" style="text-decoration:none"><img src="' . $h($site) . '/assets/' . (!empty($m['atelier']) ? 'mail-entete-atelier.png' : 'mail-entete.png') . '?v=2" width="320" height="48" alt="GOUYERIAN TECH · ' . $bandeau . '" style="display:block;border:0;width:320px;max-width:100%;height:auto;' . $font . ';font-size:17px;font-weight:800;color:#ffffff"></a></td></tr>'
+    . '<a href="' . $h($site) . '" style="text-decoration:none"><img src="' . $h($src_entete) . '" width="320" height="48" alt="GOUYERIAN TECH · ' . $bandeau . '" style="display:block;border:0;width:320px;max-width:100%;height:auto;' . $font . ';font-size:17px;font-weight:800;color:#ffffff"></a></td></tr>'
     . '<tr><td style="height:4px;background:#2563eb;background-image:linear-gradient(90deg,#2563eb,#06b6d4);font-size:0;line-height:0">&nbsp;</td></tr>'
     /* contenu */
     . '<tr><td style="background:#ffffff;padding:32px 28px 28px;border-left:1px solid ' . $line . ';border-right:1px solid ' . $line . '">' . $c . '</td></tr>'
@@ -564,7 +583,7 @@ function mail_pro(string $to, string $sujet, array $m): bool {
     . '<a href="tel:+33605794894" style="color:' . $acc . ';text-decoration:none;font-weight:600">06 05 79 48 94</a> · <a href="mailto:contact@gouyerian-tech.fr" style="color:' . $acc . ';text-decoration:none">contact@gouyerian-tech.fr</a> · <a href="' . $h($site) . '" style="color:' . $acc . ';text-decoration:none">gouyerian-tech.fr</a>'
     . '<div style="margin-top:12px;padding-top:12px;border-top:1px solid ' . $line . '">E-mail automatique : merci de ne pas y répondre.' . (!empty($m['stop']) ? ' <a href="' . $h($m['stop']) . '" style="color:' . $mut . '">Ne plus recevoir les e-mails de suivi</a>.' : '') . '</div>'
     . '</td></tr></table></td></tr></table></body></html>';
-  return envoyer_mail($to, $sujet, $texte, $html);
+  return envoyer_mail($to, $sujet, $texte, $html, $images);
 }
 
 /* Étapes affichées dans les e-mails (la pièce seulement si elle a servi) */
