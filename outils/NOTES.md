@@ -176,3 +176,4 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - v103b : l'atelier peut joindre des fichiers (6 au plus) ; le client les ouvre depuis son suivi ou son espace (messages.php action « pj »).
   E-mail au client à chaque message de l'atelier dès qu'une adresse est connue (case cochée par défaut). Indicateurs « ✓ Distribué · e-mail envoyé » et « ✓✓ Lu le … » (colonnes mail et lu_le, schéma v5), aussi côté client.
 - v104 : nouveau design de la messagerie (en-tête avec avatar, fond pointillé, bulles en dégradé, séparateurs de jour, aperçus des photos, barre d'envoi avec trombone et flèche, coches Distribué / Lu) sur le site et dans la gestion.
+- v105 : encart « Nouveau · Espace client » sur l'accueil (suivi, messagerie, devis) avec maquette animée de la conversation, liens vers /mon-espace/ et /suivi/.
