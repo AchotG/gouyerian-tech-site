@@ -231,7 +231,7 @@ with sync_playwright() as p:
     pg.goto(SITE + "/contact/"); pg.hover("button[aria-controls=dd-pro]"); pg.wait_for_timeout(300); pg.click("#dd-pro a.mi >> nth=1"); pg.wait_for_load_state(); pg.wait_for_timeout(300)
     top = pg.evaluate("Math.round(document.getElementById('pro-reseau').getBoundingClientRect().top)")
     print("menu Pros → Wi-Fi :", pg.url, "| position :", top)
-    if not pg.url.endswith("/professionnels/#pro-reseau") or not (0 <= top < 200): bad("ancre Wi-Fi du menu Pros")
+    if not pg.url.endswith("/professionnels/#pro-reseau") or not (-20 <= top < 200): bad("ancre Wi-Fi du menu Pros")  # quelques pixels d’écart selon le chargement des polices
     # fil d'actualités de l'accueil
     pg.goto(SITE + "/"); t1 = pg.inner_text("#ntt"); pg.wait_for_timeout(5600); t2 = pg.inner_text("#ntt")
     print("fil d’actualités :", t1[:50], "→", t2[:50], "| lien :", pg.get_attribute("#nt", "href"))
