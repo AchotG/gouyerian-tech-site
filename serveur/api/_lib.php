@@ -214,7 +214,7 @@ function notifier_atelier(string $titre, string $ligne): bool {
   meta_set('notif_le', (string)time());
   $c = cfg();
   $site = rtrim($c['site'] ?? 'https://gouyerian-tech.fr', '/');
-  return envoyer_mail($c['mail_reply'] ?? 'gouyerian.tech@gmail.com', "Gouyerian Tech : $titre",
+  return envoyer_mail($c['mail_reply'] ?? 'contact@gouyerian-tech.fr', "Gouyerian Tech : $titre",
     "Bonjour,\n\n$ligne\n\nTout est à traiter dans votre espace gestion :\n$site/gestion/\n\n(Réglage des e-mails : en bas de la page de gestion.)\n");
 }
 
@@ -308,9 +308,9 @@ function envoyer_mail(string $to, string $sujet, string $corps): bool {
   if (!filter_var($to, FILTER_VALIDATE_EMAIL)) return false;
   $c = cfg();
   $from = $c['mail_from'] ?? 'suivi@gouyerian-tech.fr';
-  $reply = $c['mail_reply'] ?? 'gouyerian.tech@gmail.com';
+  $reply = $c['mail_reply'] ?? 'contact@gouyerian-tech.fr';
   /* Message automatique : expéditeur « Gouyerian Tech (ne pas répondre) » et rappel en bas de chaque e-mail */
-  $corps = rtrim($corps) . "\n\n—\nCet e-mail est envoyé automatiquement, merci de ne pas y répondre.\nPour nous joindre : 06 05 79 48 94 ou gouyerian.tech@gmail.com\n";
+  $corps = rtrim($corps) . "\n\n—\nCet e-mail est envoyé automatiquement, merci de ne pas y répondre.\nPour nous joindre : 06 05 79 48 94 ou contact@gouyerian-tech.fr\n";
   if (!empty($c['mail_log'])) {
     file_put_contents($c['mail_log'], json_encode(['to' => $to, 'sujet' => $sujet, 'corps' => $corps], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
     return true;

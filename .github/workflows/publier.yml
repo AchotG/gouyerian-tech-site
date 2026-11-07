@@ -85,7 +85,7 @@ jobs:
               "db_user" => getenv("DB_USER"), "db_pass" => getenv("DB_PASS"),
               "admin_hash" => password_hash(getenv("GESTION_MDP"), PASSWORD_DEFAULT),
               "mail_from" => getenv("EXPEDITEUR") ?: "suivi@gouyerian-tech.fr",
-              "mail_reply" => "gouyerian.tech@gmail.com",
+              "mail_reply" => "contact@gouyerian-tech.fr",
               "site" => "https://gouyerian-tech.fr",
             ];
             file_put_contents("gt-config.php", "<?php\n/* Configuration du suivi des réparations (écrite par GitHub, ne pas modifier à la main) */\nreturn " . var_export($c, true) . ";\n");'

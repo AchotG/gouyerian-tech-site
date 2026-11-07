@@ -177,7 +177,7 @@ BUSINESS = {
     "@context": "https://schema.org", "@type": "ComputerStore", "@id": ORG_ID,
     "name": "Gouyerian Tech", "url": SITE + "/", "logo": SITE + "/assets/logo-carre.png", "image": SITE + "/assets/og-image.jpg",
     "description": "Réparation et maintenance de téléphones, tablettes, ordinateurs et consoles de jeux, achat et vente d’appareils et d’accessoires à Saint-Fort-sur-le-Né, près de Cognac. Devis gratuit, déplacement à domicile jusqu’à 40 km, professionnels dans toute la Nouvelle-Aquitaine.",
-    "telephone": "+33605794894", "email": "gouyerian.tech@gmail.com", "priceRange": "€", "currenciesAccepted": "EUR",
+    "telephone": "+33605794894", "email": "contact@gouyerian-tech.fr", "priceRange": "€", "currenciesAccepted": "EUR",
     "paymentAccepted": "Carte bancaire, espèces", "founder": {"@type": "Person", "name": "Achot Gouyerian"},
     "identifier": {"@type": "PropertyValue", "propertyID": "SIRET", "value": "98489954200026"},
     "address": ADDR, "geo": {"@type": "GeoCoordinates", "latitude": 45.5749, "longitude": -0.30094},
@@ -326,7 +326,7 @@ for c in CPG:
              "offers": offer(f"Déplacement à domicile à {c['n']}", re.sub(r"\D", "", fee(c["km"])) or "0")}],
         pg={"view": "commune", "slug": c["s"]}, prio="0.7")
 add("/contact/", "contact", VIEW["contact"], "Contact et atelier · Gouyerian Tech",
-    "Appelez le 06 05 79 48 94 ou écrivez à gouyerian.tech@gmail.com. Atelier sur rendez-vous : 1 route de Segonzac, 16130 Saint-Fort-sur-le-Né.",
+    "Appelez le 06 05 79 48 94 ou écrivez à contact@gouyerian-tech.fr. Atelier sur rendez-vous : 1 route de Segonzac, 16130 Saint-Fort-sur-le-Né.",
     [HOME, ("Contact", "/contact/")], ld=[BUSINESS], prio="0.8")
 add("/mon-espace/", "compte", VIEW["compte"], "Mon espace client · Gouyerian Tech",
     "Espace client Gouyerian Tech : suivez vos réparations, acceptez vos devis, retrouvez vos garanties et votre panier. Connexion par code reçu par e-mail.",
