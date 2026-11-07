@@ -47,4 +47,7 @@ jobs:
             exit 1
           fi
           # Envoie seulement les fichiers modifiés ; supprime de /public les pages qui n'existent plus (ex. actualité retirée).
-          lftp -u "$UTILISATEUR","$MOT_DE_PASSE" "sftp://$HOTE" -e "set sftp:auto-confirm yes; set net:max-retries 3; set net:timeout 30; mirror --reverse --delete --only-newer --parallel=4 --verbose _site/ /public/; bye"
+          # Le mot de passe passe par la variable LFTP_PASSWORD (--env-password) : aucun souci avec les virgules, @, $ ou espaces.
+          export LFTP_PASSWORD="$MOT_DE_PASSE"
+          echo "Connexion à $HOTE avec l'utilisateur $UTILISATEUR (mot de passe de ${#MOT_DE_PASSE} caractères)"
+          lftp --env-password -u "$UTILISATEUR" "sftp://$HOTE" -e "set sftp:auto-confirm yes; set net:max-retries 3; set net:timeout 30; mirror --reverse --delete --only-newer --parallel=4 --verbose _site/ /public/; bye"
