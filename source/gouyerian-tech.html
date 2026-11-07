@@ -2915,9 +2915,10 @@ async function sendForm(data,files){
     try{files.forEach((a,i)=>{const d=new DataTransfer();d.items.add(new File([a.blob],a.name,{type:a.type}));const inp=document.createElement("input");inp.type="file";inp.name="attachment"+(i+1);inp.files=d.files;f.appendChild(inp)})}
     catch(e){ifr.remove();rej(e);return}
     document.body.appendChild(f);let done=false;
-    const end=ok=>{if(done)return;done=true;clearTimeout(t);setTimeout(()=>{f.remove();ifr.remove()},3000);ok?res():rej(new Error("délai"))};
+    const end=ok=>{if(done)return;done=true;clearTimeout(t);clearTimeout(t2);setTimeout(()=>{f.remove();ifr.remove()},3000);ok?res():rej(new Error("délai"))};
     /* Réussite seulement si FormSubmit renvoie vers notre page envoye.html (même site, donc lisible) ; toute autre page (activation, erreur) = échec */
-    ifr.addEventListener("load",()=>{let ok=false;try{ok=/\/envoye\.html$/.test(ifr.contentWindow.location.pathname)}catch(e){ok=false}end(ok)});const t=setTimeout(()=>end(false),120000);f.submit()})}
+    /* page de FormSubmit (autre site, illisible) : on attend 6 s qu’elle renvoie vers envoye.html ; sinon (page d’activation, erreur) l’envoi est considéré comme raté */
+    let t2=0;ifr.addEventListener("load",()=>{let h="";try{h=ifr.contentWindow.location.href}catch(e){clearTimeout(t2);t2=setTimeout(()=>end(false),6000);return}if(h==="about:blank")return;clearTimeout(t2);end(/\/envoye\.html$/.test(new URL(h).pathname))});const t=setTimeout(()=>end(false),120000);f.submit()})}
 async function sendReq(b){
   if($("fhp")&&$("fhp").value)return;
   const t0=b.innerHTML;b.disabled=true;b.textContent="Envoi en cours…";$("fm").textContent="";

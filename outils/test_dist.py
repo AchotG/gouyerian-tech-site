@@ -18,7 +18,8 @@ def serve(route):
         return route.fulfill(status=200, content_type="application/json", body='{"success":"true"}')
     if url.startswith("https://formsubmit.co/"):
         multi.append((route.request.headers.get("content-type", ""), route.request.post_data_buffer or b""))
-        return route.fulfill(status=200, content_type="text/html", body="<p>ok</p>")
+        # comme FormSubmit après un envoi réussi : redirection vers la page _next (envoye.html du site)
+        return route.fulfill(status=200, content_type="text/html", body='<script>location.replace("' + SITE + '/envoye.html")</script>')
     if not url.startswith(SITE):
         external.add(urllib.parse.urlparse(url).netloc)
         return route.abort()
@@ -172,6 +173,7 @@ with sync_playwright() as p:
     pg.click("#nx"); pg.fill("#fn", "Client Photo"); pg.fill("#ft", "0612345678"); pg.fill("#fcm", "Cognac"); pg.click("#ml"); pg.wait_for_timeout(1500)
     ok = pg.query_selector("#wiz h3")
     print("envoi avec fichiers :", pg.inner_text("#wiz h3") if ok else pg.inner_text("#fm"))
+    if not ok: bad("envoi avec fichiers non confirmé alors que FormSubmit a renvoyé vers envoye.html")
     if multi:
         ct, buf = multi[-1]
         print("  type :", ct.split(";")[0], "| taille :", len(buf) // 1024, "Ko | fichiers :", buf.count(b'filename="'), "| captcha désactivé :", b'name="_captcha"' in buf, "| suite :", b"envoye.html" in buf)
