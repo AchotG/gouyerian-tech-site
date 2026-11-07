@@ -168,3 +168,8 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - Espace client : formulaire « Demander un devis » prérempli (avec photos) et liste « Mes demandes » (Reçue / En cours / Traitée).
 - Gestion : onglets Demandes / Réparations ; « Réponses aux devis » (devis acceptés/refusés pas encore vus, colonne `devis_vu`) ; fiche demande (appeler, SMS, répondre par e-mail, pièces jointes, note interne, statuts, « Créer la réparation » préremplie qui rattache et clôt la demande) ; garantie libre en mois (0 à 120).
 - E-mails à l'atelier : une ligne + lien vers /gestion/, réglage dans la gestion (`gt_meta` notif = chaque [défaut] / regroupe [au plus 1 toutes les 3 h] / jamais). Schéma v3.
+
+## v103 : messagerie par réparation
+- Table gt_messages (schéma v4) ; api/messages.php (client : numéro + code, ou espace client avec la même adresse e-mail ; texte + 4 fichiers).
+- Gestion : carte « Nouveaux messages des clients », badge 💬 dans la liste, fil dans la fiche (pièces jointes ?mpj=), réponse avec e-mail court facultatif (mail_message).
+- Le client voit « lu ✓ » côté atelier ; messages et fichiers effacés avec la fiche (supprimer_reparation, RGPD 24 mois).

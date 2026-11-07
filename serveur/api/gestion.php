@@ -6,10 +6,11 @@ declare(strict_types=1);
 require __DIR__ . '/_lib.php';
 $GLOBALS['GT_DIAG'] = true;
 
-/* Pièce jointe d'une demande : lien direct (GET) ouvert depuis la page de gestion, réservé à l'atelier connecté */
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['pj'])) {
-  if (!preg_match('/^(\d+)-(\d+)$/', (string)$_GET['pj'], $m) || !connecte('gtadm')) { http_response_code(403); exit('Accès refusé.'); }
-  $s = db()->prepare('SELECT pj FROM gt_demandes WHERE id = ?');
+/* Pièce jointe d'une demande (?pj=) ou d'un message (?mpj=) : lien direct (GET) ouvert depuis la page de gestion, réservé à l'atelier connecté */
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['pj']) || isset($_GET['mpj']))) {
+  $msg = isset($_GET['mpj']);
+  if (!preg_match('/^(\d+)-(\d+)$/', (string)($msg ? $_GET['mpj'] : $_GET['pj']), $m) || !connecte('gtadm')) { http_response_code(403); exit('Accès refusé.'); }
+  $s = db()->prepare($msg ? 'SELECT pj FROM gt_messages WHERE id = ?' : 'SELECT pj FROM gt_demandes WHERE id = ?');
   $s->execute([(int)$m[1]]);
   $f = (json_decode((string)$s->fetchColumn(), true) ?: [])[(int)$m[2]] ?? null;
   $path = $f ? prive_dir() . '/pj/' . basename($f['fichier']) : '';
@@ -69,12 +70,20 @@ function vue(array $r, bool $complet = false): array {
     'avis_email' => (bool)(int)$r['avis_email'], 'appareil' => $r['appareil'], 'etape' => $r['etape'],
     'libelle' => ETAPES[$r['etape']][0] ?? $r['etape'], 'prix' => $r['prix'], 'maj_le' => $r['maj_le'], 'cree_le' => $r['cree_le'],
     'devis_etat' => (string)$r['devis_etat'], 'devis_vu' => (bool)(int)$r['devis_vu'], 'garantie_mois' => (int)$r['garantie_mois'], 'garantie_fin' => fin_garantie($r),
+    'non_lus' => non_lus((int)$r['id']),
   ];
   if ($complet) {
     $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
+      'messages' => messages((int)$r['id'], 'atelier'),
       'historique' => array_map(fn($h) => $h + ['libelle' => ETAPES[$h['etape']][0] ?? $h['etape']], historique((int)$r['id']))];
   }
   return $v;
+}
+
+function non_lus(int $id): int {
+  $s = db()->prepare("SELECT COUNT(*) FROM gt_messages WHERE reparation_id = ? AND auteur = 'client' AND lu = 0");
+  $s->execute([$id]);
+  return (int)$s->fetchColumn();
 }
 
 function champs(array $d): array {
@@ -170,12 +179,25 @@ switch ($action) {
   case 'fiche':
     $r = fiche((int)($d['id'] ?? 0));
     if (!(int)$r['devis_vu']) $pdo->prepare('UPDATE gt_reparations SET devis_vu = 1 WHERE id = ?')->execute([$r['id']]);
-    out(['ok' => true, 'fiche' => vue($r, true)]);
+    $v = vue($r, true);  // les messages du client sont affichés comme nouveaux une dernière fois, puis marqués lus
+    $pdo->prepare("UPDATE gt_messages SET lu = 1 WHERE reparation_id = ? AND auteur = 'client' AND lu = 0")->execute([$r['id']]);
+    out(['ok' => true, 'fiche' => $v]);
+
+  case 'message':
+    $r = fiche((int)($d['id'] ?? 0));
+    $texte = txt($d['texte'] ?? '', 2000);
+    if ($texte === '') fail('Écrivez un message.');
+    $pdo->prepare("INSERT INTO gt_messages (reparation_id, auteur, texte, pj, le, lu) VALUES (?, 'atelier', ?, '[]', ?, 0)")->execute([$r['id'], $texte, now()]);
+    $pdo->prepare("UPDATE gt_messages SET lu = 1 WHERE reparation_id = ? AND auteur = 'client' AND lu = 0")->execute([$r['id']]);
+    $mail = !empty($d['mail']) ? mail_message($r, $texte) : false;
+    $v = vue(fiche((int)$r['id']), true);
+    out(['ok' => true, 'fiche' => $v, 'mail' => $mail]);
 
   case 'a_traiter':
     $n = (int)$pdo->query("SELECT COUNT(*) FROM gt_demandes WHERE statut IN ('nouvelle','en_cours')")->fetchColumn();
     $dv = $pdo->query("SELECT * FROM gt_reparations WHERE devis_vu = 0 ORDER BY maj_le DESC")->fetchAll();
-    out(['ok' => true, 'demandes' => $n, 'devis' => array_map('vue', $dv), 'notif' => meta('notif', 'chaque')]);
+    $ms = $pdo->query("SELECT * FROM gt_reparations WHERE id IN (SELECT reparation_id FROM gt_messages WHERE auteur = 'client' AND lu = 0) ORDER BY maj_le DESC")->fetchAll();
+    out(['ok' => true, 'demandes' => $n, 'devis' => array_map('vue', $dv), 'messages' => array_map('vue', $ms), 'notif' => meta('notif', 'chaque')]);
 
   case 'demandes':
     $vue = txt($d['vue'] ?? 'a_traiter', 12);
@@ -270,8 +292,7 @@ switch ($action) {
 
   case 'supprimer':
     $r = fiche((int)($d['id'] ?? 0));
-    $pdo->prepare('DELETE FROM gt_historique WHERE reparation_id = ?')->execute([$r['id']]);
-    $pdo->prepare('DELETE FROM gt_reparations WHERE id = ?')->execute([$r['id']]);
+    supprimer_reparation((int)$r['id']);
     out(['ok' => true]);
 
   case 'test_mail':

@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -167,6 +167,17 @@ function schema(PDO $pdo): void {
     maj_le DATETIME NOT NULL
   )$opt");
   ajouter_colonne($pdo, 'gt_reparations', 'devis_vu', 'TINYINT NOT NULL DEFAULT 1');
+  /* v4 : messagerie entre l'atelier et le client, par réparation */
+  $pdo->exec("CREATE TABLE IF NOT EXISTS gt_messages (
+    id $id,
+    reparation_id INT NOT NULL,
+    auteur VARCHAR(10) NOT NULL,
+    texte TEXT,
+    pj TEXT,
+    le DATETIME NOT NULL,
+    lu TINYINT NOT NULL DEFAULT 0" . ($sqlite ? '' : ', INDEX (reparation_id)') . "
+  )$opt");
+  if ($sqlite) $pdo->exec('CREATE INDEX IF NOT EXISTS gt_m_rep ON gt_messages (reparation_id)');
   $pdo->prepare('DELETE FROM gt_meta WHERE cle = ?')->execute(['schema']);
   $pdo->prepare('INSERT INTO gt_meta (cle, val) VALUES (?, ?)')->execute(['schema', (string)SCHEMA_VERSION]);
 }
@@ -240,6 +251,45 @@ function repondre_devis(array $r, string $rep): array {
   return $s->fetch();
 }
 
+/* Messages d'une réparation ; $pour = 'client' ou 'atelier' (pièces jointes visibles seulement de l'atelier) */
+function messages(int $rid, string $pour): array {
+  $s = db()->prepare('SELECT * FROM gt_messages WHERE reparation_id = ? ORDER BY le, id');
+  $s->execute([$rid]);
+  return array_map(function ($m) use ($pour) {
+    $pj = json_decode((string)$m['pj'], true) ?: [];
+    $v = ['id' => (int)$m['id'], 'auteur' => $m['auteur'], 'texte' => (string)$m['texte'], 'le' => $m['le'], 'lu' => (bool)(int)$m['lu'], 'nb_pj' => count($pj)];
+    if ($pour === 'atelier') $v['pj'] = array_map(fn($f, $i) => ['nom' => $f['nom'], 'type' => $f['type'], 'url' => '/api/gestion.php?mpj=' . $m['id'] . '-' . $i], $pj, array_keys($pj));
+    return $v;
+  }, $s->fetchAll());
+}
+
+/* Enregistre les pièces jointes envoyées ($_FILES['f']) dans /prive/pj ; renvoie la liste à stocker */
+function recevoir_pj(int $max = 6): array {
+  $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif', 'image/heic' => 'heic', 'image/heif' => 'heif',
+    'video/mp4' => 'mp4', 'video/quicktime' => 'mov', 'video/webm' => 'webm', 'video/3gpp' => '3gp', 'application/pdf' => 'pdf'];
+  $pj = [];
+  if (empty($_FILES['f']) || !is_array($_FILES['f']['name'])) return $pj;
+  $dir = prive_dir() . '/pj';
+  if (!is_dir($dir) && !@mkdir($dir, 0700, true)) fail('Pièces jointes impossibles à enregistrer.', 500);
+  $fi = class_exists('finfo') ? new finfo(FILEINFO_MIME_TYPE) : null;
+  $total = 0;
+  foreach ($_FILES['f']['name'] as $i => $name) {
+    if (count($pj) >= $max) break;
+    if (($_FILES['f']['error'][$i] ?? 1) !== UPLOAD_ERR_OK) fail('Un fichier n’a pas pu être envoyé (trop lourd ?).', 413);
+    $tmp = $_FILES['f']['tmp_name'][$i];
+    $size = (int)$_FILES['f']['size'][$i];
+    $total += $size;
+    if ($size > 30 * 1048576 || $total > 80 * 1048576) fail('Fichiers trop lourds.', 413);
+    $mime = $fi ? (string)$fi->file($tmp) : (string)($_FILES['f']['type'][$i] ?? '');
+    if (!isset($types[$mime])) fail('Type de fichier refusé : photos, vidéos ou PDF seulement.', 415);
+    $fichier = date('Ym') . '-' . bin2hex(random_bytes(12)) . '.' . $types[$mime];
+    if (!move_uploaded_file($tmp, "$dir/$fichier") && !rename($tmp, "$dir/$fichier")) fail('Pièce jointe impossible à enregistrer.', 500);
+    @chmod("$dir/$fichier", 0600);
+    $pj[] = ['nom' => txt(basename((string)$name), 120), 'type' => $mime, 'taille' => $size, 'fichier' => $fichier];
+  }
+  return $pj;
+}
+
 /* Vue d'une réparation pour le client (jamais de coordonnées ni de note interne). */
 function vue_client(array $r): array {
   return [
@@ -251,6 +301,7 @@ function vue_client(array $r): array {
     'parcours' => array_map(fn($e) => ['etape' => $e, 'libelle' => ETAPES[$e][0]], PARCOURS),
     'historique' => array_map(fn($h) => ['etape' => $h['etape'], 'libelle' => ETAPES[$h['etape']][0] ?? $h['etape'], 'note' => (string)$h['note'], 'le' => $h['le']], historique((int)$r['id'])),
     'avis_email' => (bool)(int)$r['avis_email'],
+    'messages' => messages((int)$r['id'], 'client'),
   ];
 }
 
@@ -363,10 +414,36 @@ function nettoyer(): void {
   $lim = date('Y-m-d H:i:s', strtotime('-' . CONSERVATION_MOIS . ' months'));
   $ids = $pdo->prepare('SELECT id FROM gt_reparations WHERE clos_le IS NOT NULL AND clos_le < ?');
   $ids->execute([$lim]);
-  foreach ($ids->fetchAll(PDO::FETCH_COLUMN) as $id) {
-    $pdo->prepare('DELETE FROM gt_historique WHERE reparation_id = ?')->execute([$id]);
-    $pdo->prepare('DELETE FROM gt_reparations WHERE id = ?')->execute([$id]);
+  foreach ($ids->fetchAll(PDO::FETCH_COLUMN) as $id) supprimer_reparation((int)$id);
+}
+
+/* Efface une réparation avec son historique, ses messages et leurs pièces jointes */
+function supprimer_reparation(int $id): void {
+  $pdo = db();
+  $s = $pdo->prepare('SELECT pj FROM gt_messages WHERE reparation_id = ?');
+  $s->execute([$id]);
+  foreach ($s->fetchAll(PDO::FETCH_COLUMN) as $pj) {
+    foreach (json_decode((string)$pj, true) ?: [] as $f) { $p = prive_dir() . '/pj/' . basename($f['fichier'] ?? ''); if (is_file($p)) @unlink($p); }
   }
+  foreach (['gt_messages', 'gt_historique'] as $t) $pdo->prepare("DELETE FROM $t WHERE reparation_id = ?")->execute([$id]);
+  $pdo->prepare('DELETE FROM gt_reparations WHERE id = ?')->execute([$id]);
+}
+
+/* E-mail court au client quand l'atelier lui écrit (seulement s'il a demandé le suivi par e-mail) */
+function mail_message(array $r, string $texte): bool {
+  if (!(int)$r['avis_email'] || $r['email'] === '') return false;
+  $extrait = mb_substr($texte, 0, 400) . (mb_strlen($texte) > 400 ? '…' : '');
+  $corps = 'Bonjour ' . prenom($r['nom']) . ",
+
+"
+    . "L’atelier vous a écrit au sujet de votre {$r['appareil']} :
+
+« $extrait »
+
+"
+    . 'Pour répondre, utilisez la messagerie de votre suivi (ne répondez pas à cet e-mail) : ' . lien_suivi($r)
+    . pied_mail($r);
+  return envoyer_mail($r['email'], "Nouveau message de l’atelier · réparation {$r['numero']}", $corps);
 }
 
 function nettoyer_demandes(): void {
