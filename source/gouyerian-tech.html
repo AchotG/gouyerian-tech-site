@@ -1484,7 +1484,11 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .acc-dv b{color:var(--fg)}
 .acc-g{font-size:.88rem;color:var(--muted)}
 .acc-rs{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:8px}
-.acc-rs .btn:disabled{opacity:.6;cursor:default}
+.acc-rs #accrs{position:relative;overflow:hidden;min-width:190px;transition:background .3s,color .3s,box-shadow .3s,opacity .3s}
+.acc-rs #accrs.wait{opacity:.55;cursor:default;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 22%,transparent) var(--p,0%),transparent var(--p,0%));font-variant-numeric:tabular-nums}
+.acc-rs #accrs.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 8px 20px -10px color-mix(in srgb,var(--acc) 70%,transparent);animation:accon .6s ease}
+@keyframes accon{40%{transform:scale(1.05)}}
+@media (prefers-reduced-motion:reduce){.acc-rs #accrs.on{animation:none}}
 .acc-rsm{color:var(--ok,#17734a);font-weight:600}.acc-rsm:empty{display:none}
 /* v105 : micro-pub espace client sur l’accueil */
 .hacc{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(20px,4vw,48px);align-items:center;padding:clamp(22px,4vw,44px);border-radius:24px;border:1px solid var(--line);overflow:hidden;
@@ -4024,7 +4028,8 @@ if(PG&&"serviceWorker"in navigator)addEventListener("load",()=>navigator.service
 
 /* v101 : espace client (/mon-espace/) : connexion par code e-mail, réparations, devis, garantie, panier synchronisé (api/compte.php) */
 var ACC=null,ACC_K="gt-compte",accPushT=0,accMail="",accCoolT=0;
-function accCool(){const b=$("accrs");if(!b)return;let n=45;clearInterval(accCoolT);b.disabled=true;const t=()=>{b.textContent=n>0?"Renvoyer le code ("+n+" s)":"Renvoyer le code";if(n<=0){b.disabled=false;clearInterval(accCoolT)}n--};t();accCoolT=setInterval(t,1000)}
+function accCool(){const b=$("accrs");if(!b)return;const D=45;let n=D;clearInterval(accCoolT);b.disabled=true;b.classList.remove("on");b.classList.add("wait");
+  const t=()=>{b.style.setProperty("--p",((D-n)/D*100)+"%");b.textContent=n>0?"Renvoyer le code dans "+n+" s":"Renvoyer le code";if(n<=0){b.disabled=false;b.classList.remove("wait");b.classList.add("on");clearInterval(accCoolT)}n--};t();accCoolT=setInterval(t,1000)}
 async function accApi(action,data){let r,j;
   try{r=await fetch("/api/compte.php",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-GT":"1"},body:JSON.stringify(Object.assign({action},data||{}))})}catch(e){throw new Error("Connexion impossible. Vérifiez Internet ou appelez le 06 05 79 48 94.")}
   try{j=await r.json()}catch(e){throw new Error("L’espace client est momentanément indisponible. Appelez le 06 05 79 48 94.")}

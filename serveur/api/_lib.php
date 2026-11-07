@@ -227,8 +227,10 @@ function notifier_atelier(string $titre, string $ligne): bool {
   meta_set('notif_le', (string)time());
   $c = cfg();
   $site = rtrim($c['site'] ?? 'https://gouyerian-tech.fr', '/');
-  return envoyer_mail($c['mail_reply'] ?? 'contact@gouyerian-tech.fr', "Gouyerian Tech : $titre",
-    "Bonjour,\n\n$ligne\n\nTout est à traiter dans votre espace gestion :\n$site/gestion/\n\n(Réglage des e-mails : en bas de la page de gestion.)\n");
+  return mail_pro($c['mail_reply'] ?? 'contact@gouyerian-tech.fr', "Gouyerian Tech : $titre", [
+    'atelier' => true, 'pre' => $ligne, 'etiquette' => 'À traiter', 'titre' => ucfirst($titre),
+    'paras' => [$ligne], 'bouton' => ['Ouvrir la gestion', "$site/gestion/"],
+    'note' => 'Réglage de ces e-mails (à chaque demande, regroupés, jamais) : onglet Demandes de la gestion.']);
 }
 
 /* Dossier privé (hors du site) : configuration et pièces jointes */
@@ -365,7 +367,7 @@ function prenom(string $nom): string {
 /* Envoi d'un e-mail texte (UTF-8). En test, la configuration « mail_log » écrit l'e-mail dans un fichier.
    Si un mot de passe SMTP est configuré (smtp_pass), l'e-mail part par le serveur d'envoi IONOS authentifié (meilleure délivrabilité) ;
    sinon par la fonction mail() de l'hébergement. Chaque envoi est noté dans /prive/mail.log, sans donnée personnelle. */
-function envoyer_mail(string $to, string $sujet, string $corps): bool {
+function envoyer_mail(string $to, string $sujet, string $corps, string $html = ''): bool {
   if (!filter_var($to, FILTER_VALIDATE_EMAIL)) return false;
   $c = cfg();
   $from = $c['mail_from'] ?? 'suivi@gouyerian-tech.fr';
@@ -373,7 +375,8 @@ function envoyer_mail(string $to, string $sujet, string $corps): bool {
   /* Message automatique : expéditeur « Service Client GOUYERIAN TECH » (nom réglable : mail_nom) et rappel « ne pas répondre » en bas de chaque e-mail */
   $corps = rtrim($corps) . "\n\n—\nCet e-mail est envoyé automatiquement, merci de ne pas y répondre.\nPour nous joindre : 06 05 79 48 94 ou contact@gouyerian-tech.fr\n";
   if (!empty($c['mail_log'])) {
-    file_put_contents($c['mail_log'], json_encode(['to' => $to, 'sujet' => $sujet, 'corps' => $corps], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
+    file_put_contents($c['mail_log'], json_encode(['to' => $to, 'sujet' => $sujet, 'corps' => $corps, 'html' => $html !== ''], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
+    if ($html !== '' && !empty($c['mail_html_dir'])) @file_put_contents($c['mail_html_dir'] . '/' . date('His') . '-' . substr(md5($sujet . microtime()), 0, 6) . '.html', $html);
     return true;
   }
   /* Encodage fait à la main : mb_encode_mimeheader() coupait le nom au milieu des parenthèses et l'hébergement refusait l'e-mail */
@@ -388,11 +391,18 @@ function envoyer_mail(string $to, string $sujet, string $corps): bool {
     'Date: ' . date('r'),
     'Message-ID: <' . bin2hex(random_bytes(12)) . "@$domaine>",
     'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: 8bit',
-    'X-Mailer: Gouyerian Tech suivi',
+    'X-Mailer: Gouyerian Tech',
   ];
-  $corps_crlf = str_replace(["\r\n", "\n"], ["\n", "\r\n"], $corps);
+  if ($html === '') {
+    array_push($entetes, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit');
+    $corps_crlf = str_replace(["\r\n", "\n"], ["\n", "\r\n"], $corps);
+  } else {
+    /* Version mise en forme (HTML) + version texte pour les messageries qui n'affichent pas le HTML */
+    $b = 'gt-' . bin2hex(random_bytes(10));
+    $entetes[] = "Content-Type: multipart/alternative; boundary=\"$b\"";
+    $corps_crlf = "--$b\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($corps))
+      . "--$b\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($html)) . "--$b--\r\n";
+  }
   $err = '';
   if (!empty($c['smtp_pass'])) {
     $methode = 'smtp';
@@ -447,35 +457,132 @@ function smtp_envoyer(array $c, string $from, string $to, array $entetes, string
   return $ok;
 }
 
-function pied_mail(array $r): string {
+/* ---------- E-mails mis en forme (charte Gouyerian Tech) ----------
+   mail_pro() construit la version HTML (tableaux et styles en ligne, lisibles dans Gmail, Outlook, Apple Mail) et la version texte.
+   $m : pre (aperçu dans la boîte), etiquette, titre, paras[], citation, code, bouton [libellé, lien], lien2 [libellé, lien],
+        infos [[clé, valeur]…], etapes [libellés…] + etape_i (étape en cours), note, stop (lien de désinscription), atelier (e-mail interne) */
+function mail_pro(string $to, string $sujet, array $m): bool {
   $site = rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/');
-  return "\n\nSuivre votre réparation : " . lien_suivi($r)
-    . "\nNuméro de suivi : {$r['numero']} · code : {$r['code']}"
-    . "\n\nGouyerian Tech\n1 route de Segonzac, 16130 Saint-Fort-sur-le-Né\n06 05 79 48 94 · $site"
-    . "\n\nVous recevez cet e-mail car vous avez demandé à être informé de l’avancée de votre réparation."
-    . "\nNe plus recevoir ces e-mails : $site/api/suivi.php?stop={$r['stop_token']}\n";
+  $h = fn($t) => htmlspecialchars((string)$t, ENT_QUOTES, 'UTF-8');
+  $acc = '#2563eb'; $navy = '#0b1426'; $mut = '#5b6578'; $line = '#e3e9f2';
+  $font = "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+  /* --- texte --- */
+  $t = [];
+  if (!empty($m['titre'])) $t[] = $m['titre'] . "\n" . str_repeat('—', min(40, mb_strlen($m['titre'])));
+  foreach ($m['paras'] ?? [] as $p) $t[] = $p;
+  if (!empty($m['citation'])) $t[] = '« ' . $m['citation'] . ' »';
+  if (!empty($m['code'])) $t[] = 'Votre code : ' . $m['code'];
+  if (!empty($m['etapes'])) $t[] = 'Avancée : ' . implode(' › ', array_map(fn($e, $i) => $i === ($m['etape_i'] ?? -1) ? "[$e]" : $e, $m['etapes'], array_keys($m['etapes'])));
+  if (!empty($m['infos'])) $t[] = implode("\n", array_map(fn($x) => $x[0] . ' : ' . $x[1], $m['infos']));
+  if (!empty($m['bouton'])) $t[] = $m['bouton'][0] . ' : ' . $m['bouton'][1];
+  if (!empty($m['lien2'])) $t[] = $m['lien2'][0] . ' : ' . $m['lien2'][1];
+  if (!empty($m['note'])) $t[] = $m['note'];
+  $t[] = "Service Client GOUYERIAN TECH\n1 route de Segonzac, 16130 Saint-Fort-sur-le-Né\n06 05 79 48 94 · contact@gouyerian-tech.fr · $site";
+  if (!empty($m['stop'])) $t[] = 'Ne plus recevoir les e-mails de suivi : ' . $m['stop'];
+  $texte = implode("\n\n", $t);
+  /* --- HTML --- */
+  $btn = fn($b, $prim = true) => '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 2px"><tr><td style="border-radius:12px;background:' . ($prim ? "$acc;background-image:linear-gradient(135deg,#2563eb,#06b6d4)" : '#ffffff;border:1px solid ' . $line) . '">'
+    . '<a href="' . $h($b[1]) . '" style="display:inline-block;padding:14px 26px;' . $font . ';font-size:15px;font-weight:700;color:' . ($prim ? '#ffffff' : $acc) . ';text-decoration:none;border-radius:12px">' . $h($b[0]) . ' &rarr;</a></td></tr></table>';
+  $c = '';
+  if (!empty($m['etiquette'])) $c .= '<p style="margin:0 0 10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:' . $acc . ';font-weight:700">' . $h($m['etiquette']) . '</p>';
+  if (!empty($m['titre'])) $c .= '<h1 style="margin:0 0 16px;' . $font . ';font-size:24px;line-height:1.25;color:' . $navy . ';font-weight:800">' . $h($m['titre']) . '</h1>';
+  if (!empty($m['etapes'])) {
+    $n = count($m['etapes']); $ci = (int)($m['etape_i'] ?? -1); $cells = '';
+    foreach ($m['etapes'] as $i => $e) {
+      $on = $i <= $ci;
+      $cells .= '<td style="padding:0 2px"><div style="height:6px;border-radius:3px;background:' . ($on ? "$acc;background-image:linear-gradient(90deg,#2563eb,#06b6d4)" : $line) . '"></div></td>';
+    }
+    $suite = $m['etapes'][$ci + 1] ?? null;
+    $c .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 6px;table-layout:fixed"><tr>' . $cells . '</tr></table>'
+      . '<p style="margin:0 0 20px;' . $font . ';font-size:13px;color:' . $mut . '">Étape <b style="color:' . $navy . '">' . ($ci + 1) . ' sur ' . $n . '</b> · <b style="color:' . $acc . '">' . $h($m['etapes'][$ci] ?? '') . '</b>' . ($suite ? ' · ensuite : ' . $h($suite) : '') . '</p>';
+  }
+  foreach ($m['paras'] ?? [] as $p) $c .= '<p style="margin:0 0 14px;' . $font . ';font-size:16px;line-height:1.6;color:#253047">' . nl2br($h($p)) . '</p>';
+  if (!empty($m['citation'])) $c .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 18px"><tr><td style="background:#f2f6fd;border-left:4px solid ' . $acc . ';border-radius:4px 12px 12px 4px;padding:14px 18px;' . $font . ';font-size:16px;line-height:1.55;color:' . $navy . '">' . nl2br($h($m['citation'])) . '</td></tr></table>';
+  if (!empty($m['code'])) $c .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 18px"><tr><td align="center" style="background:#f2f6fd;border:1px dashed #b9c9e6;border-radius:14px;padding:18px"><div style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:34px;letter-spacing:10px;font-weight:800;color:' . $navy . '">' . $h($m['code']) . '</div><div style="margin-top:6px;' . $font . ';font-size:12px;color:' . $mut . '">Valable 15 minutes</div></td></tr></table>';
+  if (!empty($m['bouton'])) $c .= $btn($m['bouton']);
+  if (!empty($m['lien2'])) $c .= '<p style="margin:12px 0 0;' . $font . ';font-size:14px"><a href="' . $h($m['lien2'][1]) . '" style="color:' . $acc . ';font-weight:600;text-decoration:none">' . $h($m['lien2'][0]) . ' &rsaquo;</a></p>';
+  if (!empty($m['infos'])) {
+    $rows = '';
+    foreach (array_values($m['infos']) as $k => $x) {
+      $bt = $k ? 'border-top:1px solid ' . $line . ';' : '';
+      $rows .= '<tr><td width="42%" style="padding:10px 14px;' . $font . ';font-size:13px;color:' . $mut . ';' . $bt . '">' . $h($x[0]) . '</td>'
+        . '<td style="padding:10px 14px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;color:' . $navy . ';font-weight:700;' . $bt . '">' . $h($x[1]) . '</td></tr>';
+    }
+    $c .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 4px;border:1px solid ' . $line . ';border-radius:12px;border-collapse:separate">' . $rows . '</table>';
+  }
+  if (!empty($m['note'])) $c .= '<p style="margin:18px 0 0;' . $font . ';font-size:13px;line-height:1.5;color:' . $mut . '">' . nl2br($h($m['note'])) . '</p>';
+  $pre = $h($m['pre'] ?? ($m['paras'][0] ?? ''));
+  $bandeau = !empty($m['atelier']) ? 'Espace atelier' : 'Réparation · Vente · Assistance';
+  $html = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>' . $h($sujet) . '</title></head>'
+    . '<body style="margin:0;padding:0;background:#eef2f8;-webkit-text-size-adjust:100%">'
+    . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">' . $pre . str_repeat('&#8199;&#65279;&#847; ', 40) . '</div>'
+    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef2f8"><tr><td align="center" style="padding:28px 12px">'
+    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px">'
+    /* en-tête */
+    . '<tr><td style="background:' . $navy . ';background-image:linear-gradient(135deg,#0b1426 0%,#13254a 60%,#1d3f7a 100%);border-radius:18px 18px 0 0;padding:22px 26px">'
+    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'
+    . '<td width="52" valign="middle"><a href="' . $h($site) . '"><img src="' . $h($site) . '/assets/icon-192.png" width="44" height="44" alt="GT" style="display:block;border:0;border-radius:11px"></a></td>'
+    . '<td valign="middle" style="padding-left:12px"><div style="' . $font . ';font-size:17px;font-weight:800;letter-spacing:.14em;color:#ffffff">GOUYERIAN TECH</div><div style="' . $font . ';font-size:12px;color:#9fb4d8;margin-top:2px">' . $bandeau . '</div></td>'
+    . '</tr></table></td></tr>'
+    . '<tr><td style="height:4px;background:#2563eb;background-image:linear-gradient(90deg,#2563eb,#06b6d4);font-size:0;line-height:0">&nbsp;</td></tr>'
+    /* contenu */
+    . '<tr><td style="background:#ffffff;padding:32px 28px 28px;border-left:1px solid ' . $line . ';border-right:1px solid ' . $line . '">' . $c . '</td></tr>'
+    /* pied */
+    . '<tr><td style="background:#f7f9fc;border:1px solid ' . $line . ';border-top:0;border-radius:0 0 18px 18px;padding:20px 28px;' . $font . ';font-size:12px;line-height:1.6;color:' . $mut . '">'
+    . '<b style="color:' . $navy . '">Service Client GOUYERIAN TECH</b><br>1 route de Segonzac, 16130 Saint-Fort-sur-le-Né<br>'
+    . '<a href="tel:+33605794894" style="color:' . $acc . ';text-decoration:none;font-weight:600">06 05 79 48 94</a> · <a href="mailto:contact@gouyerian-tech.fr" style="color:' . $acc . ';text-decoration:none">contact@gouyerian-tech.fr</a> · <a href="' . $h($site) . '" style="color:' . $acc . ';text-decoration:none">gouyerian-tech.fr</a>'
+    . '<div style="margin-top:12px;padding-top:12px;border-top:1px solid ' . $line . '">E-mail automatique : merci de ne pas y répondre.' . (!empty($m['stop']) ? ' <a href="' . $h($m['stop']) . '" style="color:' . $mut . '">Ne plus recevoir les e-mails de suivi</a>.' : '') . '</div>'
+    . '</td></tr></table></td></tr></table></body></html>';
+  return envoyer_mail($to, $sujet, $texte, $html);
+}
+
+/* Étapes affichées dans les e-mails (la pièce seulement si elle a servi) */
+function etapes_mail(array $r, string $etape): array {
+  $p = ['recu', 'diagnostic', 'devis', 'reparation', 'prete', 'rendu'];
+  $s = db()->prepare("SELECT COUNT(*) FROM gt_historique WHERE reparation_id = ? AND etape = 'piece'");
+  $s->execute([$r['id']]);
+  if ($etape === 'piece' || (int)$s->fetchColumn()) array_splice($p, 3, 0, ['piece']);
+  $court = ['recu' => 'Reçu', 'diagnostic' => 'Diagnostic', 'devis' => 'Devis', 'piece' => 'Pièce', 'reparation' => 'Réparation', 'prete' => 'Prêt', 'rendu' => 'Rendu'];
+  return [array_map(fn($e) => $court[$e], $p), (int)array_search($etape, $p, true)];
+}
+
+function infos_suivi(array $r): array {
+  return [['Numéro de suivi', $r['numero']], ['Code', $r['code']], ['Appareil', $r['appareil']]];
+}
+
+function lien_stop(array $r): string {
+  return rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/') . '/api/suivi.php?stop=' . $r['stop_token'];
+}
+
+/* Ancien pied texte, gardé pour compatibilité */
+function pied_mail(array $r): string {
+  return "\n\nSuivre votre réparation : " . lien_suivi($r) . "\nNuméro de suivi : {$r['numero']} · code : {$r['code']}\n";
 }
 
 function mail_etape(array $r, string $etape, string $note): bool {
   if (!(int)$r['avis_email'] || $r['email'] === '') return false;
   [$lib, $phrase] = ETAPES[$etape];
-  $sujet = "Votre réparation {$r['numero']} : $lib";
-  $corps = 'Bonjour ' . prenom($r['nom']) . ",\n\n"
-    . "Votre {$r['appareil']} : $lib.\n$phrase"
-    . ($note !== '' ? "\n\nMessage de l’atelier : $note" : '')
-    . ($etape === 'devis' ? "\n\nAcceptez ou refusez le devis en un clic : " . lien_suivi($r) : '')
-    . pied_mail($r);
-  return envoyer_mail($r['email'], $sujet, $corps);
+  $m = ['pre' => "$lib · $phrase", 'etiquette' => "Réparation {$r['numero']}", 'titre' => $lib,
+    'paras' => ['Bonjour ' . prenom($r['nom']) . ',', "Votre {$r['appareil']} : " . mb_strtolower(mb_substr($phrase, 0, 1)) . mb_substr($phrase, 1)],
+    'citation' => $note !== '' ? $note : null, 'infos' => infos_suivi($r), 'stop' => lien_stop($r)];
+  if ($etape !== 'annule') [$m['etapes'], $m['etape_i']] = etapes_mail($r, $etape);
+  if ($note !== '') $m['paras'][] = 'Message de l’atelier :';
+  if ($etape === 'devis') { $m['bouton'] = ['Voir et accepter le devis', lien_suivi($r)]; $m['note'] = 'La réparation commence dès votre accord. Une question ? Écrivez-nous depuis la page de suivi ou appelez le 06 05 79 48 94.'; }
+  elseif ($etape === 'prete') { $m['bouton'] = ['Voir ma réparation', lien_suivi($r)]; $m['note'] = 'Appelez le 06 05 79 48 94 pour convenir de l’heure de passage ou d’une livraison.'; }
+  elseif ($etape === 'rendu') { $m['bouton'] = ['Laisser un avis Google', 'https://search.google.com/local/writereview?placeid=ChIJY1Q5ZwBhAEgRGG3fYcH4qpk']; $m['lien2'] = ['Voir ma garantie dans mon espace', rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/') . '/mon-espace/']; }
+  else $m['bouton'] = ['Suivre ma réparation', lien_suivi($r)];
+  return mail_pro($r['email'], "Votre réparation {$r['numero']} : $lib", $m);
 }
 
 function mail_bienvenue(array $r): bool {
   if (!(int)$r['avis_email'] || $r['email'] === '') return false;
-  $sujet = "Suivi de votre réparation {$r['numero']}";
-  $corps = 'Bonjour ' . prenom($r['nom']) . ",\n\n"
-    . "Votre {$r['appareil']} est enregistré à l’atelier Gouyerian Tech.\n"
-    . "Vous recevrez un e-mail à chaque étape de la réparation, et vous pouvez suivre son avancée à tout moment sur le site."
-    . pied_mail($r);
-  return envoyer_mail($r['email'], $sujet, $corps);
+  [$et, $ei] = etapes_mail($r, 'recu');
+  return mail_pro($r['email'], "Suivi de votre réparation {$r['numero']}", [
+    'pre' => "Votre {$r['appareil']} est bien enregistré à l’atelier.", 'etiquette' => "Réparation {$r['numero']}", 'titre' => 'Votre appareil est entre de bonnes mains',
+    'paras' => ['Bonjour ' . prenom($r['nom']) . ',', "Votre {$r['appareil']} est enregistré à l’atelier Gouyerian Tech. Vous recevrez un e-mail à chaque étape, et vous pouvez suivre l’avancée ou écrire à l’atelier à tout moment."],
+    'etapes' => $et, 'etape_i' => $ei, 'bouton' => ['Suivre ma réparation', lien_suivi($r)],
+    'lien2' => ['Créer mon espace client (sans mot de passe)', rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/') . '/mon-espace/'],
+    'infos' => infos_suivi($r), 'note' => 'Gardez cet e-mail : le numéro et le code permettent de suivre la réparation depuis n’importe quel appareil.', 'stop' => lien_stop($r)]);
 }
 
 /* RGPD : efface les réparations terminées depuis plus de CONSERVATION_MOIS mois. */
@@ -502,17 +609,15 @@ function supprimer_reparation(int $id): void {
 /* E-mail au client quand l'atelier lui écrit (dès qu'une adresse e-mail est connue) */
 function mail_message(array $r, string $texte, int $nb_pj = 0): bool {
   if ($r['email'] === '') return false;
-  $site = rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/');
-  $extrait = mb_substr($texte, 0, 400) . (mb_strlen($texte) > 400 ? '…' : '');
-  $corps = 'Bonjour ' . prenom($r['nom']) . ",\n\n"
-    . "L’atelier Gouyerian Tech vous a envoyé un message au sujet de votre {$r['appareil']} (réparation {$r['numero']}) :\n\n"
-    . ($extrait !== '' ? "« $extrait »\n\n" : '')
-    . ($nb_pj ? ($nb_pj > 1 ? "$nb_pj fichiers sont joints" : 'Un fichier est joint') . " au message, à ouvrir sur votre page de suivi.\n\n" : '')
-    . "Lire le message et répondre : " . lien_suivi($r) . "\n(ou depuis votre espace client : $site/mon-espace/)\n"
-    . "Merci de répondre depuis cette page et non à cet e-mail."
-    . "\n\nNuméro de suivi : {$r['numero']} · code : {$r['code']}"
-    . "\n\nGouyerian Tech\n1 route de Segonzac, 16130 Saint-Fort-sur-le-Né\n06 05 79 48 94 · $site\n";
-  return envoyer_mail($r['email'], "Nouveau message de l’atelier · réparation {$r['numero']}", $corps);
+  $extrait = mb_substr($texte, 0, 600) . (mb_strlen($texte) > 600 ? '…' : '');
+  return mail_pro($r['email'], "Nouveau message de l’atelier · réparation {$r['numero']}", [
+    'pre' => $extrait !== '' ? $extrait : 'L’atelier vous a envoyé un fichier.', 'etiquette' => "Réparation {$r['numero']} · {$r['appareil']}", 'titre' => 'Vous avez un nouveau message',
+    'paras' => ['Bonjour ' . prenom($r['nom']) . ',', 'L’atelier vous a écrit au sujet de votre ' . $r['appareil'] . ' :'],
+    'citation' => $extrait !== '' ? $extrait : null,
+    'note' => ($nb_pj ? ($nb_pj > 1 ? "$nb_pj fichiers sont joints" : 'Un fichier est joint') . ' au message, à ouvrir sur votre page de suivi. ' : '') . 'Pour répondre, utilisez la messagerie de votre suivi : les réponses à cet e-mail ne sont pas lues.',
+    'bouton' => ['Lire et répondre', lien_suivi($r)],
+    'lien2' => ['Ouvrir mon espace client', rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/') . '/mon-espace/'],
+    'infos' => infos_suivi($r)]);
 }
 
 function nettoyer_demandes(): void {

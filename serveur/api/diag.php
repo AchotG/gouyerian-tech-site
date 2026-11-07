@@ -22,7 +22,9 @@ $res = ['ok' => true, 'methode' => empty($c['smtp_pass']) ? 'mail()' : 'smtp', '
   'sendmail_path' => (string)ini_get('sendmail_path')];
 if (isset($res_err)) $res['erreur_cible'] = $res_err;
 if ($to !== '') {
-  $res['envoi'] = envoyer_mail($to, 'Test du suivi Gouyerian Tech', "Bonjour,\n\nCeci est un e-mail de test envoyé par le diagnostic du site gouyerian-tech.fr, le " . date('d/m/Y à H:i') . ".\n");
+  $res['envoi'] = mail_pro($to, 'Test des e-mails Gouyerian Tech', ['etiquette' => 'Test', 'titre' => 'Les e-mails du site fonctionnent',
+    'paras' => ['Bonjour,', 'Cet e-mail confirme que le site gouyerian-tech.fr envoie bien ses e-mails automatiques (suivi des réparations, codes de connexion, messages).'],
+    'note' => 'Envoyé le ' . date('d/m/Y à H:i') . '.']);
 }
 /* Variantes de mail() pour trouver ce que l'hébergement accepte */
 if ($to !== '' && !empty($d['variantes'])) {

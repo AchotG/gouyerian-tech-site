@@ -76,10 +76,11 @@ if ($action === 'demander_code') {
   $pdo->prepare('INSERT INTO gt_codes (email, code_hash, expire, essais) VALUES (?, ?, ?, 0)')
     ->execute([$email, hash('sha256', $email . '|' . $code), date('Y-m-d H:i:s', time() + 900)]);
   $site = rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/');
-  envoyer_mail($email, "Votre code de connexion Gouyerian Tech : $code",
-    "Bonjour,\n\nVoici votre code pour vous connecter à votre espace client Gouyerian Tech :\n\n    $code\n\n"
-    . "Il est valable 15 minutes. Si vous n’avez pas demandé ce code, ignorez simplement cet e-mail : personne ne peut se connecter sans lui.\n\n"
-    . "Gouyerian Tech\n1 route de Segonzac, 16130 Saint-Fort-sur-le-Né\n06 05 79 48 94 · $site\n");
+  mail_pro($email, "Votre code de connexion Gouyerian Tech : $code", [
+    'pre' => "Votre code : $code (valable 15 minutes)", 'etiquette' => 'Espace client', 'titre' => 'Votre code de connexion',
+    'paras' => ['Bonjour,', 'Voici votre code pour vous connecter à votre espace client Gouyerian Tech :'],
+    'code' => $code,
+    'note' => 'Si vous n’avez pas demandé ce code, ignorez simplement cet e-mail : personne ne peut se connecter sans lui. Ne le communiquez à personne, l’atelier ne vous le demandera jamais.']);
   out(['ok' => true]);  // même réponse que l'adresse soit connue ou non
 }
 

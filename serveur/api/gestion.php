@@ -299,7 +299,9 @@ switch ($action) {
 
   case 'test_mail':
     $to = txt($d['to'] ?? (cfg()['mail_reply'] ?? ''), 190);
-    $ok = envoyer_mail($to, 'Test du suivi Gouyerian Tech', "Bonjour,\n\nCet e-mail confirme que le site gouyerian-tech.fr sait envoyer les e-mails de suivi des réparations.\n\nEnvoyé le " . date('d/m/Y à H:i') . ".\n");
+    $ok = mail_pro($to, 'Test des e-mails Gouyerian Tech', ['etiquette' => 'Test', 'titre' => 'Les e-mails du site fonctionnent',
+    'paras' => ['Bonjour,', 'Cet e-mail confirme que le site gouyerian-tech.fr envoie bien ses e-mails automatiques (suivi des réparations, codes de connexion, messages).'],
+    'note' => 'Envoyé le ' . date('d/m/Y à H:i') . '.']);
     out(['ok' => $ok, 'to' => $to]);
 }
 fail('Action inconnue.');
