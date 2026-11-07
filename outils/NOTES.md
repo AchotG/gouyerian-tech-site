@@ -144,3 +144,7 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - Piège corrigé : dans la construction et les tests, le service worker du site allait chercher l'ancien site en ligne (Internet ouvert sur GitHub) → `service_workers="block"`. Test de l'ancre Wi-Fi : tolérance de -20 px.
 - Les 3 tâches d'actualités écrivent maintenant dans le dépôt (add_repo + clone + commit + push), puis recopient la modification dans l'aperçu claude.ai.
 - Reste à faire par Achot chez IONOS (DNS) : A @ → 185.199.108.153 / .109 / .110 / .111 ; supprimer AAAA @ (IONOS) ; www → CNAME achotg.github.io (supprimer A/AAAA www). Garder MX/SPF/DKIM (e-mail). Puis cocher « Enforce HTTPS » dans GitHub Pages.
+
+## Mode clair retravaillé (v98, 7 nov.)
+- Jetons du mode clair seulement (bloc « v98 » en fin de CSS) : fond bleuté #f4f7fc, encre bleu nuit #0b1426, gris #4f5b6e, lignes #d9e1ec, ombre douce des cartes `--elev`, en-tête blanc translucide `--hdr`, boutons secondaires et boutons ronds sur fond blanc `--ghost`, halo de l'en-tête plus visible (`--hero-w1/w2/p2`), bande des avis `--band-bg`.
+- Le mode sombre redéfinit chacun de ces jetons à l'identique de l'ancien rendu (vérifié par comparaison de captures : identique).

@@ -1396,6 +1396,28 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .ball{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media (max-width:1100px){.ball{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:860px){.ball{grid-template-columns:minmax(0,1fr)}}
+
+/* v98 : mode clair retravaillé (le mode sombre ne change pas : chaque jeton est redéfini plus bas pour le sombre).
+   Fond légèrement bleuté au lieu du gris neutre, encre bleu nuit, cartes blanches posées sur une ombre douce,
+   en-tête blanc translucide, boutons secondaires sur fond blanc, halo de l’accueil plus visible. */
+:root{--bg:#f4f7fc;--surface:#ffffff;--sunk:#e9eff8;--fg:#0b1426;--muted:#4f5b6e;--line:#d9e1ec;
+  --inv:#0b1530;--on-inv:#f4f7ff;--shadow:0 24px 48px -24px rgba(17,38,84,.3);
+  --elev:0 1px 2px rgba(17,38,84,.05),0 8px 22px -14px rgba(17,38,84,.22);
+  --hdr:color-mix(in srgb,#ffffff 86%,transparent);--ghost:var(--surface);--hero-w1:17%;--hero-w2:13%;--hero-p2:0% 45%;
+  --band-bg:linear-gradient(180deg,#ffffff 0%,#f9fbfe 100%)}
+@media (prefers-color-scheme:dark){:root:not([data-gt="light"]){
+  --bg:#0b0c0e;--surface:#131518;--sunk:#1b1e22;--fg:#eff1f3;--muted:#9aa1a9;--line:#2a2e34;
+  --inv:#eff1f3;--on-inv:#0b0c0e;--shadow:0 24px 48px -24px rgba(0,0,0,.85);
+  --elev:none;--hdr:color-mix(in srgb,var(--bg) 88%,transparent);--ghost:transparent;--hero-w1:12%;--hero-w2:9%;--hero-p2:0% 100%;--band-bg:var(--surface)}}
+:root[data-gt="dark"]{
+  --bg:#0b0c0e;--surface:#131518;--sunk:#1b1e22;--fg:#eff1f3;--muted:#9aa1a9;--line:#2a2e34;
+  --inv:#eff1f3;--on-inv:#0b0c0e;--shadow:0 24px 48px -24px rgba(0,0,0,.85);
+  --elev:none;--hdr:color-mix(in srgb,var(--bg) 88%,transparent);--ghost:transparent;--hero-w1:12%;--hero-w2:9%;--hero-p2:0% 100%;--band-bg:var(--surface)}
+.hdr::before{background:var(--hdr)}
+.hero,.phead{background:radial-gradient(55% 70% at 88% 0%,color-mix(in srgb,var(--acc) var(--hero-w1),transparent),transparent 70%),radial-gradient(40% 60% at var(--hero-p2),color-mix(in srgb,var(--acc2) var(--hero-w2),transparent),transparent 70%)}
+.btn.ghost,.icon-btn{background:var(--ghost)}
+.card,.rv,.trust,.gar>div,.acard:not(.inv),.ccard,.ctile,.cfacts,.wcard,.ball>div,.pill2,.prod,.cfg,.pro-for>div,.plan,.pro-svc>div,
+.art-card,.nw,.home-news,.hn,.prest,.hub-c,.tk,.panel,.ba,.fbar,.cf-blk,.ok-recap,.hub-mini,.nt,.seg button,.seg a,.nchips button,.faq-chips button,.faq-chips a{box-shadow:var(--elev)}
 </style>
 
 <a class="skip" href="#main">Aller au contenu</a>
@@ -1678,7 +1700,7 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
     </div>
   </div></section>
 
-  <section class="sec" id="avis-sec" style="background:var(--surface);border-block:1px solid var(--line)"><div class="wrap">
+  <section class="sec" id="avis-sec" style="background:var(--band-bg);border-block:1px solid var(--line)"><div class="wrap">
     <div class="sec-h"><div><span class="eyebrow">Avis clients</span><h2>Ce qu’en disent les clients</h2><div class="score"><span class="stars" id="stars"></span><b>5/5</b><span>sur Google</span></div></div></div>
   </div>
     <div class="rev" id="rev" tabindex="0" role="region" aria-label="Avis clients : faites glisser ou utilisez les flèches"><div class="track" id="trk"></div></div>
