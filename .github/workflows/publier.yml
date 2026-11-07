@@ -1,5 +1,8 @@
-# Construit le site à partir de source/gouyerian-tech.html, le teste, puis le publie sur GitHub Pages.
-# Se lance à chaque modification (par exemple une actualité ajoutée par la tâche automatique) et chaque nuit.
+# Construit le site à partir de source/gouyerian-tech.html, le teste, puis l'envoie sur l'hébergement IONOS (dossier /public) par SFTP.
+# Se lance à chaque modification (par exemple une actualité ajoutée par la tâche automatique), chaque nuit, ou à la main.
+# Réglages du dépôt (Settings → Secrets and variables → Actions) :
+#   variables : IONOS_SFTP_HOST (ex. access-1234567.webspace-data.io), IONOS_SFTP_USER
+#   secret    : IONOS_SFTP_PASSWORD (mot de passe SFTP créé par Achot chez IONOS)
 name: Publier le site
 
 on:
@@ -11,39 +14,37 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: publication
   cancel-in-progress: false
 
 jobs:
-  construire:
+  publier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Outils (Playwright + Chromium)
+      - name: Outils (Playwright + Chromium, lftp)
         run: |
           pip install playwright==1.48.0 pillow
           python -m playwright install --with-deps chromium
+          sudo apt-get install -y lftp
       - name: Construire les pages
         run: python outils/build.py
-      - name: Tester le site (aucune publication si un problème est trouvé)
+      - name: Tester le site (aucun envoi si un problème est trouvé)
         run: python outils/test_dist.py
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-  publier:
-    needs: construire
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploiement.outputs.page_url }}
-    steps:
-      - id: deploiement
-        uses: actions/deploy-pages@v4
+      - name: Envoyer sur IONOS (/public)
+        env:
+          HOTE: ${{ vars.IONOS_SFTP_HOST }}
+          UTILISATEUR: ${{ vars.IONOS_SFTP_USER }}
+          MOT_DE_PASSE: ${{ secrets.IONOS_SFTP_PASSWORD }}
+        run: |
+          if [ -z "$HOTE" ] || [ -z "$UTILISATEUR" ] || [ -z "$MOT_DE_PASSE" ]; then
+            echo "::error::Accès SFTP IONOS non configuré (variables IONOS_SFTP_HOST, IONOS_SFTP_USER et secret IONOS_SFTP_PASSWORD)."
+            exit 1
+          fi
+          # Envoie seulement les fichiers modifiés ; supprime de /public les pages qui n'existent plus (ex. actualité retirée).
+          lftp -u "$UTILISATEUR","$MOT_DE_PASSE" "sftp://$HOTE" -e "set sftp:auto-confirm yes; set net:max-retries 3; set net:timeout 30; mirror --reverse --delete --only-newer --parallel=4 --verbose _site/ /public/; bye"
