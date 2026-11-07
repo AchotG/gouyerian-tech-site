@@ -8,7 +8,7 @@ on:
         required: false
         default: "contact"
       variantes:
-        description: "Essayer plusieurs façons d'appeler mail() (oui/non)"
+        description: "Essayer plusieurs façons d'appeler mail() (oui, nouvelles ou non)"
         required: false
         default: "non"
 jobs:
@@ -32,4 +32,4 @@ jobs:
           export LFTP_PASSWORD="$MOT_DE_PASSE"
           lftp --env-password -u "$UTILISATEUR" "sftp://$HOTE" -e "set sftp:auto-confirm yes; set net:timeout 30; put diag-token -o /prive/diag-token; chmod 600 /prive/diag-token; bye"
           rm -f diag-token
-          curl -sS -X POST -H "X-Diag: $J" -H "Content-Type: application/json" -d "{\"cible\":\"$CIBLE\",\"variantes\":$([ "$VARIANTES" = oui ] && echo true || echo false)}" https://gouyerian-tech.fr/api/diag.php | python3 -m json.tool
+          curl -sS -X POST -H "X-Diag: $J" -H "Content-Type: application/json" -d "{\"cible\":\"$CIBLE\",\"variantes\":$([ "$VARIANTES" != non ] && echo true || echo false),\"seulement_nouvelles\":$([ "$VARIANTES" = nouvelles ] && echo true || echo false)}" https://gouyerian-tech.fr/api/diag.php | python3 -m json.tool

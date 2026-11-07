@@ -29,11 +29,19 @@ if ($to !== '' && !empty($d['variantes'])) {
   $from = $c['mail_from'] ?? 'suivi@gouyerian-tech.fr';
   $v = [];
   $essai = function (string $nom, callable $f) use (&$v) { error_clear_last(); $ok = $f(); $v[$nom] = $ok ? 'OK' : ('ECHEC ' . (error_get_last()['message'] ?? '')); };
+  if (empty($d['seulement_nouvelles'])) {
   $essai('a_minimal', fn() => mail($to, 'Test A Gouyerian Tech', "Test A (minimal)\r\n"));
   $essai('b_from_simple', fn() => mail($to, 'Test B Gouyerian Tech', "Test B (From simple)\r\n", "From: $from"));
   $essai('c_from_f', fn() => mail($to, 'Test C Gouyerian Tech', "Test C (From + -f)\r\n", "From: $from", '-f' . $from));
   $essai('d_from_nom', fn() => mail($to, 'Test D Gouyerian Tech', "Test D (From avec nom)\r\n", 'From: ' . mb_encode_mimeheader('Gouyerian Tech (ne pas répondre)', 'UTF-8') . " <$from>"));
   $essai('e_from_contact', fn() => mail($to, 'Test E Gouyerian Tech', "Test E (From contact)\r\n", 'From: contact@gouyerian-tech.fr'));
+  }
+  $nomb = '=?UTF-8?B?' . base64_encode('Gouyerian Tech (ne pas répondre)') . '?=';
+  $sujb = '=?UTF-8?B?' . base64_encode('Test H : réparation GT-2611-001 étape') . '?=';
+  $essai('f_nom_base64', fn() => mail($to, 'Test F Gouyerian Tech', "Test F (nom encodé à la main)\r\n", "From: $nomb <$from>", '-f' . $from));
+  $essai('g_nom_ascii', fn() => mail($to, 'Test G Gouyerian Tech', "Test G (nom ASCII entre guillemets)\r\n", "From: \"Gouyerian Tech - ne pas repondre\" <$from>", '-f' . $from));
+  $essai('h_sujet_accents', fn() => mail($to, $sujb, "Test H (sujet accentué)\r\n", "From: $nomb <$from>\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: 8bit", '-f' . $from));
+  $res['mb_nom'] = mb_encode_mimeheader('Gouyerian Tech (ne pas répondre)', 'UTF-8');
   $res['variantes'] = $v;
 }
 $log = prive_dir() . '/mail.log';
