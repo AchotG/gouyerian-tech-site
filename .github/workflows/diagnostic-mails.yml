@@ -1,0 +1,30 @@
+name: Diagnostic des e-mails
+# Lance un e-mail de test depuis le serveur et affiche le journal des envois (sans adresse ni contenu).
+on:
+  workflow_dispatch:
+    inputs:
+      cible:
+        description: "Destinataire du test : contact (contact@gouyerian-tech.fr), dernier_code (adresse de la dernière demande de code de l'espace client) ou rien"
+        required: false
+        default: "contact"
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Outils
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+      - name: Jeton à usage unique et appel du diagnostic
+        env:
+          HOTE: ${{ vars.IONOS_SFTP_HOST }}
+          UTILISATEUR: ${{ vars.IONOS_SFTP_USER }}
+          MOT_DE_PASSE: ${{ secrets.IONOS_SFTP_PASSWORD }}
+          CIBLE: ${{ inputs.cible }}
+        run: |
+          umask 077
+          J=$(openssl rand -hex 32)
+          echo "::add-mask::$J"
+          printf '%s' "$J" > diag-token
+          export LFTP_PASSWORD="$MOT_DE_PASSE"
+          lftp --env-password -u "$UTILISATEUR" "sftp://$HOTE" -e "set sftp:auto-confirm yes; set net:timeout 30; put diag-token -o /prive/diag-token; chmod 600 /prive/diag-token; bye"
+          rm -f diag-token
+          curl -sS -X POST -H "X-Diag: $J" -H "Content-Type: application/json" -d "{\"cible\":\"$CIBLE\"}" https://gouyerian-tech.fr/api/diag.php | python3 -m json.tool

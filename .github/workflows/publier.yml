@@ -75,6 +75,7 @@ jobs:
           DB_PASS: ${{ secrets.SUIVI_DB_PASSWORD }}
           GESTION_MDP: ${{ secrets.GESTION_MOT_DE_PASSE }}
           EXPEDITEUR: ${{ vars.SUIVI_EXPEDITEUR }}
+          SMTP_PASS: ${{ secrets.SUIVI_SMTP_PASSWORD }}
         run: |
           umask 077
           # Fichier de configuration PHP écrit par PHP lui-même (guillemets et caractères spéciaux sans risque) ;
@@ -88,6 +89,8 @@ jobs:
               "mail_reply" => "contact@gouyerian-tech.fr",
               "site" => "https://gouyerian-tech.fr",
             ];
+            /* Envoi par le serveur SMTP d IONOS (authentifié avec la boîte d expédition) si le secret SUIVI_SMTP_PASSWORD existe */
+            if (getenv("SMTP_PASS")) $c += ["smtp_host" => "smtp.ionos.fr", "smtp_port" => 465, "smtp_user" => $c["mail_from"], "smtp_pass" => getenv("SMTP_PASS")];
             file_put_contents("gt-config.php", "<?php\n/* Configuration du suivi des réparations (écrite par GitHub, ne pas modifier à la main) */\nreturn " . var_export($c, true) . ";\n");'
           php -l gt-config.php >/dev/null
           printf 'Require all denied\n' > htaccess-prive

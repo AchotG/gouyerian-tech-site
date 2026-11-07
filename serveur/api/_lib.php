@@ -362,7 +362,9 @@ function prenom(string $nom): string {
   return $p[0];
 }
 
-/* Envoi d'un e-mail texte (UTF-8). En test, la configuration « mail_log » écrit l'e-mail dans un fichier. */
+/* Envoi d'un e-mail texte (UTF-8). En test, la configuration « mail_log » écrit l'e-mail dans un fichier.
+   Si un mot de passe SMTP est configuré (smtp_pass), l'e-mail part par le serveur d'envoi IONOS authentifié (meilleure délivrabilité) ;
+   sinon par la fonction mail() de l'hébergement. Chaque envoi est noté dans /prive/mail.log, sans donnée personnelle. */
 function envoyer_mail(string $to, string $sujet, string $corps): bool {
   if (!filter_var($to, FILTER_VALIDATE_EMAIL)) return false;
   $c = cfg();
@@ -374,15 +376,72 @@ function envoyer_mail(string $to, string $sujet, string $corps): bool {
     file_put_contents($c['mail_log'], json_encode(['to' => $to, 'sujet' => $sujet, 'corps' => $corps], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
     return true;
   }
-  $headers = implode("\r\n", [
-    'From: ' . mb_encode_mimeheader('Gouyerian Tech (ne pas répondre)', 'UTF-8') . " <$from>",
+  $nom = mb_encode_mimeheader('Gouyerian Tech (ne pas répondre)', 'UTF-8');
+  $sujet_enc = mb_encode_mimeheader($sujet, 'UTF-8');
+  $domaine = substr(strrchr($from, '@') ?: '@gouyerian-tech.fr', 1);
+  $entetes = [
+    "From: $nom <$from>",
     "Reply-To: $reply",
+    'Date: ' . date('r'),
+    'Message-ID: <' . bin2hex(random_bytes(12)) . "@$domaine>",
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8',
     'Content-Transfer-Encoding: 8bit',
     'X-Mailer: Gouyerian Tech suivi',
-  ]);
-  return mail($to, mb_encode_mimeheader($sujet, 'UTF-8'), str_replace("\n", "\r\n", $corps), $headers, '-f' . $from);
+  ];
+  $corps_crlf = str_replace(["\r\n", "\n"], ["\n", "\r\n"], $corps);
+  $err = '';
+  if (!empty($c['smtp_pass'])) {
+    $methode = 'smtp';
+    $ok = smtp_envoyer($c, $from, $to, array_merge(["To: <$to>", "Subject: $sujet_enc"], $entetes), $corps_crlf, $err);
+  } else {
+    $methode = 'mail()';
+    error_clear_last();
+    $ok = mail($to, $sujet_enc, $corps_crlf, implode("\r\n", $entetes), '-f' . $from);
+    if (!$ok) $err = (error_get_last()['message'] ?? 'mail() a renvoyé false');
+  }
+  journal_mail($to, $sujet, $methode, $ok, $err);
+  return $ok;
+}
+
+/* Journal des envois : date, domaine du destinataire, type d'e-mail, méthode, résultat. Ni adresse complète ni contenu. */
+function journal_mail(string $to, string $sujet, string $methode, bool $ok, string $err): void {
+  $type = preg_match('/code de connexion/i', $sujet) ? 'code' : (preg_match('/^Gouyerian Tech :/', $sujet) ? 'atelier' : (preg_match('/message/i', $sujet) ? 'message' : (preg_match('/^Test/', $sujet) ? 'test' : 'suivi')));
+  $ligne = date('Y-m-d H:i:s') . ' | @' . substr(strrchr($to, '@') ?: '@?', 1) . " | $type | $methode | " . ($ok ? 'OK' : 'ECHEC ' . mb_substr(preg_replace('/\s+/', ' ', $err), 0, 200)) . "\n";
+  $f = prive_dir() . '/mail.log';
+  $old = is_file($f) ? array_slice(file($f) ?: [], -300) : [];
+  @file_put_contents($f, implode('', $old) . $ligne, LOCK_EX);
+  @chmod($f, 0600);
+}
+
+/* Envoi SMTP authentifié (SSL 465 ou STARTTLS 587), sans bibliothèque externe */
+function smtp_envoyer(array $c, string $from, string $to, array $entetes, string $corps, string &$err): bool {
+  $hote = $c['smtp_host'] ?? 'smtp.ionos.fr';
+  $port = (int)($c['smtp_port'] ?? 465);
+  $user = $c['smtp_user'] ?? $from;
+  $fp = @stream_socket_client(($port === 465 ? 'ssl://' : 'tcp://') . "$hote:$port", $no, $msg, 20);
+  if (!$fp) { $err = "connexion $hote:$port impossible ($msg)"; return false; }
+  stream_set_timeout($fp, 20);
+  $lire = function () use ($fp): string { $r = ''; while (($l = fgets($fp, 1024)) !== false) { $r .= $l; if (strlen($l) < 4 || $l[3] === ' ') break; } return $r; };
+  $cmd = function (string $ligne, array $attendu) use ($fp, $lire, &$err): bool {
+    if ($ligne !== '') fwrite($fp, $ligne . "\r\n");
+    $r = $lire();
+    if (!in_array((int)substr($r, 0, 3), $attendu, true)) { $err = trim(preg_replace('/^AUTH.*$/m', 'AUTH …', $ligne) ?: '') . ' → ' . trim($r); return false; }
+    return true;
+  };
+  $ok = $cmd('', [220]) && $cmd('EHLO gouyerian-tech.fr', [250]);
+  if ($ok && $port !== 465) {
+    $ok = $cmd('STARTTLS', [220]) && stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT) && $cmd('EHLO gouyerian-tech.fr', [250]);
+  }
+  $ok = $ok && $cmd('AUTH LOGIN', [334]) && $cmd(base64_encode($user), [334]) && $cmd(base64_encode((string)$c['smtp_pass']), [235])
+    && $cmd("MAIL FROM:<$from>", [250]) && $cmd("RCPT TO:<$to>", [250, 251]) && $cmd('DATA', [354]);
+  if ($ok) {
+    $data = implode("\r\n", $entetes) . "\r\n\r\n" . preg_replace('/^\./m', '..', $corps);
+    $ok = $cmd($data . "\r\n.", [250]);
+  }
+  @fwrite($fp, "QUIT\r\n");
+  fclose($fp);
+  return $ok;
 }
 
 function pied_mail(array $r): string {
