@@ -75,7 +75,7 @@ print("liens internes vérifiés :", len(links))
 with sync_playwright() as p:
     b = p.chromium.launch()
     for vw, vh, tag in ((1366, 900, "ordi"), (390, 844, "mobile")):
-        ctx = b.new_context(viewport={"width": vw, "height": vh}, locale="fr-FR", timezone_id="Europe/Paris", has_touch=(tag == "mobile"))
+        ctx = b.new_context(service_workers="block", viewport={"width": vw, "height": vh}, locale="fr-FR", timezone_id="Europe/Paris", has_touch=(tag == "mobile"))
         ctx.add_init_script("try{if(!localStorage.getItem('gt-consent'))localStorage.setItem('gt-consent',JSON.stringify({v:'non',t:Date.now()}))}catch(e){}"); ctx.route("**/*", serve)
         for pd in PAGES:
             pg = ctx.new_page()
@@ -102,7 +102,7 @@ with sync_playwright() as p:
         ctx.close()
 
     # 2. Parcours fonctionnels
-    ctx = b.new_context(viewport={"width": 1366, "height": 900}, locale="fr-FR", timezone_id="Europe/Paris")
+    ctx = b.new_context(service_workers="block", viewport={"width": 1366, "height": 900}, locale="fr-FR", timezone_id="Europe/Paris")
     ctx.add_init_script("try{if(!localStorage.getItem('gt-consent'))localStorage.setItem('gt-consent',JSON.stringify({v:'non',t:Date.now()}))}catch(e){}"); ctx.route("**/*", serve)
     pg = ctx.new_page()
     pg.on("pageerror", lambda e: bad("erreur JS parcours : " + str(e)))
@@ -270,7 +270,7 @@ with sync_playwright() as p:
     pg.screenshot(path=str(SHOTS / "404.png"))
     ctx.close()
 
-    ctx = b.new_context(viewport={"width": 390, "height": 844}, locale="fr-FR", has_touch=True, is_mobile=True)
+    ctx = b.new_context(service_workers="block", viewport={"width": 390, "height": 844}, locale="fr-FR", has_touch=True, is_mobile=True)
     ctx.add_init_script("try{if(!localStorage.getItem('gt-consent'))localStorage.setItem('gt-consent',JSON.stringify({v:'non',t:Date.now()}))}catch(e){}"); ctx.route("**/*", serve)
     pg = ctx.new_page()
     pg.goto(SITE + "/services/telephones/"); pg.wait_for_timeout(200)

@@ -115,7 +115,7 @@ def site_data():
     (tmp / "index.html").write_text("<!doctype html><html lang=fr><head><meta charset=utf-8><style>[hidden]{display:none!important}</style></head><body>" + body.replace('src="/assets/', 'src="assets/') + "<script>" + js + "</script></body></html>", encoding="utf-8")
     with sync_playwright() as p:
         b = p.chromium.launch()
-        pg = b.new_page()
+        pg = b.new_page(service_workers="block")
         pg.route("**/*", lambda r: r.continue_() if r.request.url.startswith("file:") else r.abort())
         pg.goto((tmp / "index.html").as_uri())
         pg.wait_for_timeout(300)
@@ -458,7 +458,7 @@ def serve(route):
 
 with sync_playwright() as p:
     b = p.chromium.launch()
-    ctx = b.new_context(viewport={"width": 1366, "height": 900}, locale="fr-FR", timezone_id="Europe/Paris")
+    ctx = b.new_context(service_workers="block", viewport={"width": 1366, "height": 900}, locale="fr-FR", timezone_id="Europe/Paris")
     ctx.route("**/*", serve)
     errs = []
     for pd in PAGES:
