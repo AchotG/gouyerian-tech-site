@@ -24,6 +24,18 @@ if (isset($res_err)) $res['erreur_cible'] = $res_err;
 if ($to !== '') {
   $res['envoi'] = envoyer_mail($to, 'Test du suivi Gouyerian Tech', "Bonjour,\n\nCeci est un e-mail de test envoyé par le diagnostic du site gouyerian-tech.fr, le " . date('d/m/Y à H:i') . ".\n");
 }
+/* Variantes de mail() pour trouver ce que l'hébergement accepte */
+if ($to !== '' && !empty($d['variantes'])) {
+  $from = $c['mail_from'] ?? 'suivi@gouyerian-tech.fr';
+  $v = [];
+  $essai = function (string $nom, callable $f) use (&$v) { error_clear_last(); $ok = $f(); $v[$nom] = $ok ? 'OK' : ('ECHEC ' . (error_get_last()['message'] ?? '')); };
+  $essai('a_minimal', fn() => mail($to, 'Test A Gouyerian Tech', "Test A (minimal)\r\n"));
+  $essai('b_from_simple', fn() => mail($to, 'Test B Gouyerian Tech', "Test B (From simple)\r\n", "From: $from"));
+  $essai('c_from_f', fn() => mail($to, 'Test C Gouyerian Tech', "Test C (From + -f)\r\n", "From: $from", '-f' . $from));
+  $essai('d_from_nom', fn() => mail($to, 'Test D Gouyerian Tech', "Test D (From avec nom)\r\n", 'From: ' . mb_encode_mimeheader('Gouyerian Tech (ne pas répondre)', 'UTF-8') . " <$from>"));
+  $essai('e_from_contact', fn() => mail($to, 'Test E Gouyerian Tech', "Test E (From contact)\r\n", 'From: contact@gouyerian-tech.fr'));
+  $res['variantes'] = $v;
+}
 $log = prive_dir() . '/mail.log';
 $res['journal'] = is_file($log) ? array_map('trim', array_slice(file($log) ?: [], -40)) : [];
 out($res);
