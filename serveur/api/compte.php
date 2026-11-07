@@ -16,6 +16,7 @@ const JOURS_CLIENT = 30;
 $d = entree();
 $action = txt($d['action'] ?? '', 30);
 $pdo = db();
+entretien();
 
 function cookie_client(string $val, int $exp): void {
   setcookie(CK_CLIENT, $val, ['expires' => $exp, 'path' => '/api/', 'secure' => empty(cfg()['dev']), 'httponly' => true, 'samesite' => 'Strict']);

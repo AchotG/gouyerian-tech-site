@@ -167,6 +167,7 @@ if ($action === 'connexion') {
   set_cookie($COOKIE, $j, $exp);
   nettoyer();
   nettoyer_demandes();
+  nettoyer_messages();
   out(['ok' => true]);
 }
 

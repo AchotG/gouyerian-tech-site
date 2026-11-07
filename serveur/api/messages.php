@@ -24,6 +24,7 @@ $d = entree();
 if (!$d) fail('Demande illisible.');
 $action = txt($d['action'] ?? 'lire', 20);
 $pdo = db();
+entretien();
 
 /* Client connecté à son espace (cookie de session) */
 function client_session(): ?array {

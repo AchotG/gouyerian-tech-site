@@ -672,6 +672,43 @@ function nettoyer(): void {
   foreach ($ids->fetchAll(PDO::FETCH_COLUMN) as $id) supprimer_reparation((int)$id);
 }
 
+/* Conversations : effacées avec leurs pièces jointes 3 mois après la fin
+   (réparation rendue ou annulée, demande traitée, ou 3 mois sans message pour la conversation générale) */
+const CONSERVATION_MESSAGES_MOIS = 3;
+function effacer_messages(string $where, array $p): int {
+  $pdo = db();
+  $s = $pdo->prepare("SELECT id, pj FROM gt_messages WHERE $where");
+  $s->execute($p);
+  $n = 0;
+  foreach ($s->fetchAll() as $m) {
+    foreach (json_decode((string)$m['pj'], true) ?: [] as $f) { $f = prive_dir() . '/pj/' . basename($f['fichier'] ?? ''); if (is_file($f)) @unlink($f); }
+    $pdo->prepare('DELETE FROM gt_messages WHERE id = ?')->execute([$m['id']]);
+    $n++;
+  }
+  return $n;
+}
+function nettoyer_messages(): void {
+  $pdo = db();
+  $lim = date('Y-m-d H:i:s', strtotime('-' . CONSERVATION_MESSAGES_MOIS . ' months'));
+  $r = $pdo->prepare("SELECT id FROM gt_reparations WHERE etape IN ('rendu','annule') AND COALESCE(clos_le, maj_le) < ?");
+  $r->execute([$lim]);
+  foreach ($r->fetchAll(PDO::FETCH_COLUMN) as $id) effacer_messages('reparation_id = ?', [(int)$id]);
+  $d = $pdo->prepare("SELECT id FROM gt_demandes WHERE statut IN ('traitee','archivee') AND maj_le < ?");
+  $d->execute([$lim]);
+  foreach ($d->fetchAll(PDO::FETCH_COLUMN) as $id) effacer_messages('reparation_id = 0 AND demande_id = ?', [(int)$id]);
+  $c = $pdo->prepare("SELECT client_id FROM gt_messages WHERE reparation_id = 0 AND demande_id = 0 AND client_id > 0 GROUP BY client_id HAVING MAX(le) < ?");
+  $c->execute([$lim]);
+  foreach ($c->fetchAll(PDO::FETCH_COLUMN) as $id) effacer_messages('reparation_id = 0 AND demande_id = 0 AND client_id = ?', [(int)$id]);
+}
+/* Entretien automatique, une fois par jour, au premier passage sur le site */
+function entretien(): void {
+  try {
+    if (meta('entretien', '') === date('Y-m-d')) return;
+    meta_set('entretien', date('Y-m-d'));
+    nettoyer(); nettoyer_demandes(); nettoyer_messages();
+  } catch (Throwable $e) { /* jamais bloquant */ }
+}
+
 /* Efface une réparation avec son historique, ses messages et leurs pièces jointes */
 function supprimer_reparation(int $id): void {
   $pdo = db();

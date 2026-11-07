@@ -3694,14 +3694,18 @@ function msgBind(root,auth,upd){root.querySelectorAll(".msgs").forEach(box=>{con
   /* Vidéos : lien signé temporaire, lu directement par le lecteur du navigateur (fonctionne aussi sur iPhone) */
   const vids=()=>l.querySelectorAll(".msg-vid:not([data-ok])").forEach(v=>{v.dataset.ok="1";const [id,i]=v.dataset.mvid.split("-"),fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"lien",id:+id,i:+i},auth(n))));
     msgApi(fd).then(j=>{v.innerHTML=`<video src="${j.url}#t=0.1" controls playsinline preload="metadata"></video><a class="msg-vdl" href="${j.url}&dl=1">⬇ Télécharger ${esc(v.dataset.nom)}</a>`}).catch(()=>{v.innerHTML=`<span class="msg-vload">Vidéo indisponible</span>`})});
-  const put=ms=>{l.innerHTML=msgItems(ms);l.scrollTop=l.scrollHeight;thumbs();vids();if(upd)upd(n,ms)};
+  const put=ms=>{cur=(ms||[]).map(m=>m.id+(m.lu?"l":"")).join(",");l.innerHTML=msgItems(ms);l.scrollTop=l.scrollHeight;thumbs();vids();if(upd)upd(n,ms)};
   const grow=()=>{ta.style.height="auto";ta.style.height=Math.min(160,ta.scrollHeight)+"px"};
   const drawSel=()=>{sl.hidden=!sel.length;sl.innerHTML=sel.map((x,k)=>`<span>${/^image\//.test(x.type)?"🖼":"📄"} ${esc(x.name)}<button type="button" data-k="${k}" aria-label="Retirer ${esc(x.name)}">×</button></span>`).join("")};
   l.scrollTop=l.scrollHeight;thumbs();vids();
   l.addEventListener("click",async e=>{const pb=e.target.closest("[data-mpj]");if(!pb)return;const w=window.open("","_blank");
     try{const u=await msgFile(auth,n,pb.dataset.mpj);if(w)w.location.href=u;else{const a=document.createElement("a");a.href=u;a.download=pb.dataset.nom||"fichier";a.click()}}
     catch(err){if(w)w.close();er.textContent=err.message}});
-  if(box.querySelector(".msg-r.new")){const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"lire"},auth(n))));msgApi(fd).then(j=>{if(upd)upd(n,j.messages);setTimeout(()=>{const nb=box.querySelector(".msg-nb");if(nb)nb.remove()},4000)}).catch(()=>{})}
+  /* Toujours à jour : la conversation est relue depuis le serveur à l'ouverture puis toutes les 6 s tant qu'elle est affichée */
+  const sig=ms=>(ms||[]).map(m=>m.id+(m.lu?"l":"")).join(",");let cur="";
+  const frais=()=>{if(!box.isConnected||document.hidden||!box.offsetParent)return;const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"lire"},auth(n))));
+    msgApi(fd).then(j=>{const g=sig(j.messages);if(g!==cur){const bas=l.scrollHeight-l.scrollTop-l.clientHeight<80,st=l.scrollTop;cur=g;l.innerHTML=msgItems(j.messages);thumbs();vids();l.scrollTop=bas?l.scrollHeight:st}if(upd)upd(n,j.messages);const nb=box.querySelector(".msg-nb");if(nb)setTimeout(()=>nb.remove(),3000)}).catch(()=>{})};
+  frais();const tm=setInterval(()=>{if(!box.isConnected){clearInterval(tm);return}frais()},6000);
   fi.onchange=()=>{sel=sel.concat([...fi.files]).slice(0,4);fi.value="";drawSel();ta.focus()};
   sl.onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;sel.splice(+b.dataset.k,1);drawSel()};
   ta.oninput=grow;ta.onkeydown=e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();f.requestSubmit()}};
@@ -4149,6 +4153,11 @@ function accConvOpen(k){const c=accConvs().find(x=>x.k===k);if(!c)return;let m=$
   $("accmodt").textContent=c.t;$("accmodb").innerHTML=msgHTML(c.ms,c.k,c.s);m.hidden=false;document.documentElement.classList.add("acc-lock");
   msgBind($("accmodb"),accConvAuth,accConvSet);setTimeout(()=>{const t=$("accmodb").querySelector("textarea");if(t&&matchMedia("(min-width:700px)").matches)t.focus()},200)}
 document.addEventListener("click",e=>{if(e.target.closest("#cpat")){window.GT_OPEN_C=1;try{sessionStorage.setItem("gt-open-c","1")}catch(_){}const x=$("cx");if(x)x.click()}},true);
+/* Espace ouvert : nouveaux messages de l'atelier affichés sans recharger la page (toutes les 30 s) */
+const accMsgSig=()=>ACC?accConvs().map(c=>c.k+":"+(c.ms||[]).map(m=>m.id+(m.lu?"l":"")).join(".")).join("|"):"";
+setInterval(async()=>{if(document.hidden||!ACC||!$("accin")||$("accin").hidden||$("v-compte").hidden)return;const m=$("accmod");if(m&&!m.hidden)return;
+  const a=document.activeElement;if(a&&$("accin").contains(a)&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
+  try{const before=accMsgSig(),j=await accApi("moi");accSet(j);if(accMsgSig()!==before){const y=scrollY;accDraw();scrollTo(0,y)}}catch(e){}},30000);
 function accConvClose(){const m=$("accmod");if(!m)return;m.hidden=true;document.documentElement.classList.remove("acc-lock");$("accmodb").innerHTML="";if(ACC&&!$("accin").hidden)accDraw()}
 /* Une demande du client : ligne cliquable qui s'ouvre sur le détail (ce qui a été demandé, fichiers, suite donnée) */
 const DEM_EXPL={"Reçue":"L’atelier a bien reçu votre demande : vous êtes rappelé rapidement pour en parler.","En cours de traitement":"L’atelier s’occupe de votre demande : vous êtes recontacté avec la suite (devis, rendez-vous ou disponibilité).","Traitée":"Votre demande a été traitée."};
