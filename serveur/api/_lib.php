@@ -376,8 +376,10 @@ function envoyer_mail(string $to, string $sujet, string $corps): bool {
     file_put_contents($c['mail_log'], json_encode(['to' => $to, 'sujet' => $sujet, 'corps' => $corps], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
     return true;
   }
-  $nom = mb_encode_mimeheader('Gouyerian Tech (ne pas répondre)', 'UTF-8');
-  $sujet_enc = mb_encode_mimeheader($sujet, 'UTF-8');
+  /* Encodage fait à la main : mb_encode_mimeheader() coupait le nom au milieu des parenthèses et l'hébergement refusait l'e-mail */
+  $enc = fn(string $t) => preg_match('/[^\x20-\x7e]/', $t) ? '=?UTF-8?B?' . base64_encode($t) . '?=' : $t;
+  $nom = $enc('Gouyerian Tech (ne pas répondre)');
+  $sujet_enc = $enc($sujet);
   $domaine = substr(strrchr($from, '@') ?: '@gouyerian-tech.fr', 1);
   $entetes = [
     "From: $nom <$from>",
