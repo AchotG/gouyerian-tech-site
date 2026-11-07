@@ -219,11 +219,14 @@ S["reconditionne-ou-neuf"] = frame(
     + f'<circle cx="980" cy="560" r="72" fill="{GR}" stroke="none"/>' + label(980, 556, "2 ANS", 30, "#062a1c") + label(980, 590, "garantie", 22, "#062a1c", weight=600), 640, 360)
 
 
-def render():
+def render(only=()):
+    """only : noms à dessiner (ex. python outils/gen_illus.py mon-article) ; vide = toutes les illustrations."""
     with sync_playwright() as p:
         b = p.chromium.launch()
         pg = b.new_page(viewport={"width": W, "height": H})
         for name, svg in S.items():
+            if only and name not in only:
+                continue
             (SRC / f"{name}.svg").write_text(svg, encoding="utf-8")
             pg.set_content(f"<html><body style='margin:0'>{svg}</body></html>")
             pg.wait_for_timeout(60)
@@ -237,7 +240,11 @@ def render():
 
 
 if __name__ == "__main__":
-    render()
+    import sys
+    manque = [n for n in sys.argv[1:] if n not in S]
+    if manque:
+        sys.exit("Illustration inconnue : " + ", ".join(manque))
+    render(tuple(sys.argv[1:]))
     tot = sum(f.stat().st_size for f in OUT.iterdir())
     for f in sorted(OUT.iterdir()):
         print(f.name, f.stat().st_size // 1024, "Ko")
