@@ -71,6 +71,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box
 .mth .nw{padding:1px 7px;border-radius:999px;background:var(--acc);color:var(--on-acc);font:700 .62rem system-ui}
 .mth .pjs{display:flex;flex-wrap:wrap;gap:6px}
 .mth .pjs a{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:10px;border:1px solid color-mix(in srgb,currentColor 25%,transparent);background:color-mix(in srgb,currentColor 7%,transparent);color:inherit;font-size:.8rem;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
+.mth .pjs .vid{display:grid;gap:4px;width:min(260px,100%)}.mth .pjs .vid video{width:100%;max-height:300px;border-radius:10px;background:#000}.mth .pjs .vid a{border:0;background:none;padding:0}
 .mth .pjs a.img{padding:0;width:132px;height:100px;border:0;border-radius:10px;overflow:hidden}.mth .pjs a.img img{width:100%;height:100%;object-fit:cover;display:block}
 .mth .vide{align-self:center;margin:auto;color:var(--muted);text-align:center;max-width:320px;padding:12px 0}
 .chat-f{display:grid;gap:8px;padding:10px 12px 12px;border-top:1px solid var(--line)}
@@ -227,7 +228,7 @@ a{color:var(--acc)}
     <div class="card" style="margin-top:14px">
       <div><span class="muted" style="font:600 .85rem ui-monospace,monospace" id="fnum"></span><h1 id="fapp"></h1></div>
       <dl class="kv" id="finfo"></dl>
-      <div class="row"><button class="btn g" type="button" id="bedit">Modifier</button><button class="btn g" type="button" id="bprint">Bon de dépôt</button><button class="btn g" type="button" id="bcopy">Copier le lien de suivi</button><button class="btn g" type="button" id="bresend" hidden>Renvoyer l’e-mail de suivi</button></div>
+      <div class="row"><button class="btn g" type="button" id="bedit">Modifier</button><button class="btn g" type="button" id="bprint">Bon de dépôt</button><button class="btn" type="button" id="bchat">💬 Écrire au client</button><button class="btn g" type="button" id="bcopy">Copier le lien de suivi</button><button class="btn g" type="button" id="bresend" hidden>Renvoyer l’e-mail de suivi</button></div>
     </div>
     <div class="card" style="margin-top:14px">
       <h2>Changer l’étape</h2>
@@ -297,14 +298,15 @@ $("btest").onclick=async()=>{try{const j=await api("test_mail",{to:$("tmail").va
 
 /* Formulaire */
 function formulaire(f){
-  EDIT=f||null;DEMSRC=null;$("ftitle").textContent=f?"Modifier "+f.numero:"Nouvelle réparation";$("fsave").textContent=f?"Enregistrer":"Créer la réparation";
+  EDIT=f||null;DEMSRC=null;AVIS_TOUCHE=false;$("ftitle").textContent=f?"Modifier "+f.numero:"Nouvelle réparation";$("fsave").textContent=f?"Enregistrer":"Créer la réparation";
   $("f-nom").value=f?.nom||"";$("f-tel").value=f?.telephone||"";$("f-mail").value=f?.email||"";$("f-avis").checked=!!f?.avis_email;
   $("f-app").value=f?.appareil||"";$("f-gar").value=String(f?.garantie_mois||0);$("f-panne").value=f?.panne||"";$("f-prix").value=f?.prix||"";$("f-int").value=f?.note_interne||"";$("f-note").value="";$("f-note-l").hidden=!!f;
   show("form");$("f-nom").focus();
 }
 $("bnew").onclick=()=>formulaire(null);
 $("fcancel").onclick=()=>EDIT?ouvrir(EDIT.id):DEMSRC?show("dfiche"):show("liste");
-$("f-mail").oninput=()=>{if(!$("f-mail").value.trim())$("f-avis").checked=false};
+let AVIS_TOUCHE=false;$("f-avis").addEventListener("change",()=>{AVIS_TOUCHE=true});
+$("f-mail").oninput=()=>{const v=$("f-mail").value.trim();if(!v)$("f-avis").checked=false;else if(!AVIS_TOUCHE&&!EDIT&&/\S+@\S+\.\S+/.test(v))$("f-avis").checked=true};
 $("vform").addEventListener("submit",async e=>{e.preventDefault();
   if($("f-avis").checked&&!$("f-mail").value.trim()){flash("Indiquez l’e-mail du client pour lui envoyer le suivi.",false);$("f-mail").focus();return}
   const d={nom:$("f-nom").value,telephone:$("f-tel").value,email:$("f-mail").value,avis_email:$("f-avis").checked,appareil:$("f-app").value,panne:$("f-panne").value,prix:$("f-prix").value,note_interne:$("f-int").value,garantie_mois:Math.max(0,Math.min(120,parseInt($("f-gar").value,10)||0)),demande_id:EDIT?undefined:DEMSRC||undefined};
@@ -320,14 +322,14 @@ function rendre(f){
   $("finfo").innerHTML=`<dt>Client</dt><dd>${esc(f.nom)}</dd>${f.telephone?`<dt>Téléphone</dt><dd><a href="tel:${esc(f.telephone.replace(/[^\d+]/g,""))}">${esc(f.telephone)}</a></dd>`:""}${f.email?`<dt>E-mail</dt><dd>${esc(f.email)}${f.avis_email?" · suivi par e-mail ✓":" · pas d’e-mails"}</dd>`:""}${f.prix?`<dt>Prix</dt><dd>${esc(f.prix)}</dd>`:""}${f.etape==="devis"?`<dt>Devis</dt><dd>${f.devis_etat==="accepte"?"<b style='color:var(--ok)'>✓ Accepté par le client</b>":f.devis_etat==="refuse"?"<b style='color:var(--bad)'>✗ Refusé par le client</b>":"En attente de la réponse du client"}</dd>`:""}${f.garantie_mois?`<dt>Garantie</dt><dd>${f.garantie_mois} mois${f.garantie_fin?" · jusqu’au "+new Date(f.garantie_fin+"T12:00").toLocaleDateString("fr-FR"):""}</dd>`:""}${f.panne?`<dt>Panne</dt><dd>${esc(f.panne)}</dd>`:""}${f.note_interne?`<dt>Note interne</dt><dd>${esc(f.note_interne)}</dd>`:""}<dt>Code client</dt><dd class="code">${esc(f.code)}</dd><dt>Créée</dt><dd>${dt(f.cree_le)}</dd>`;
   $("bresend").hidden=!f.avis_email;
   $("steps").innerHTML=PARCOURS.map(k=>{const e=ETAPES.find(x=>x.etape===k);return `<button type="button" data-e="${k}" aria-pressed="false" class="${k===f.etape?"cur":""}">${esc(e?e.libelle:k)}</button>`}).join("");
-  $("snote").value="";$("smail").checked=f.avis_email;$("smail").disabled=!f.avis_email;$("smail-l").textContent=f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Le client n’a pas demandé le suivi par e-mail";$("ssave").disabled=true;
+  $("snote").value="";$("smail").checked=!!f.avis_email;$("smail").disabled=!f.email;$("smail-l").textContent=!f.email?"Pas d’e-mail pour ce client : il verra l’étape dans son suivi":f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Envoyer quand même un e-mail ("+f.email+") : le client n’a pas coché le suivi par e-mail";$("ssave").disabled=true;
   $("fhist").innerHTML=f.historique.map(h=>`<li><b>${esc(h.libelle)}</b><small>${dt(h.le)}${+h.mail?" · e-mail envoyé":""}</small>${h.note?`<span>${esc(h.note)}</span>`:""}</li>`).join("");
   $("mav").textContent=(f.nom||"?").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join("")||"?";$("mwho").textContent=f.nom||"Client";
   $("msub").textContent=f.numero+" · "+(f.email?f.email:"pas d’e-mail : le client lit dans son suivi");
   const jour=s=>{const d=new Date(s.replace(" ","T")),t=new Date(),y=new Date(t);y.setDate(t.getDate()-1);return d.toDateString()===t.toDateString()?"Aujourd’hui":d.toDateString()===y.toDateString()?"Hier":d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})};
   const hm=s=>new Date(s.replace(" ","T")).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});let jd="";
   $("mth").innerHTML=f.messages.length?f.messages.map(m=>{const j=jour(m.le),a=m.auteur==="atelier";let h=j!==jd?`<li class="day">${esc(j)}</li>`:"";jd=j;
-    return h+`<li class="bu ${a?"a":"c"}${!a&&!m.lu?" new":""}">${m.texte?`<span class="t">${esc(m.texte)}</span>`:""}${m.pj&&m.pj.length?`<div class="pjs">${m.pj.map(p=>/^image\//.test(p.type)?`<a class="img" href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.nom)}"><img src="${esc(p.url)}" alt="${esc(p.nom)}" loading="lazy"></a>`:`<a href="${esc(p.url)}" target="_blank" rel="noopener">📄 ${esc(p.nom)}</a>`).join("")}</div>`:""}<span class="mt">${!a&&!m.lu?'<span class="nw">nouveau</span>':""}${hm(m.le)}${a?(m.lu?`<span class="lu">${SVG_LU}</span>Lu${m.lu_le?" à "+hm(m.lu_le):""}`:`<span class="ok">${SVG_OK}</span>Distribué${m.mail?" · e-mail envoyé":""}`):""}</span></li>`}).join(""):`<li class="vide">Aucun message pour l’instant.<br>Écrivez au client : il le verra dans son suivi${f.email?" et recevra un e-mail":""}.</li>`;
+    return h+`<li class="bu ${a?"a":"c"}${!a&&!m.lu?" new":""}">${m.texte?`<span class="t">${esc(m.texte)}</span>`:""}${m.pj&&m.pj.length?`<div class="pjs">${m.pj.map(p=>/^video\//.test(p.type)?`<span class="vid"><video src="${esc(p.url)}#t=0.1" preload="metadata" controls playsinline></video><a href="${esc(p.url)}&amp;dl=1">⬇ ${esc(p.nom)}</a></span>`:/^image\//.test(p.type)?`<a class="img" href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.nom)}"><img src="${esc(p.url)}" alt="${esc(p.nom)}" loading="lazy"></a>`:`<a href="${esc(p.url)}" target="_blank" rel="noopener">📄 ${esc(p.nom)}</a>`).join("")}</div>`:""}<span class="mt">${!a&&!m.lu?'<span class="nw">nouveau</span>':""}${hm(m.le)}${a?(m.lu?`<span class="lu">${SVG_LU}</span>Lu${m.lu_le?" à "+hm(m.lu_le):""}`:`<span class="ok">${SVG_OK}</span>Distribué${m.mail?" · e-mail envoyé":""}`):""}</span></li>`}).join(""):`<li class="vide">Aucun message pour l’instant.<br>Écrivez au client : il le verra dans son suivi${f.email?" et recevra un e-mail":""}.</li>`;
   requestAnimationFrame(()=>{$("mth").scrollTop=$("mth").scrollHeight});$("mtxt").value="";$("mtxt").style.height="";MSEL=[];drawMsel();
   $("mmail").checked=!!f.email;$("mmail").disabled=!f.email;$("mmail-l").textContent=f.email?"Prévenir le client par e-mail ("+f.email+")":"Pas d’e-mail pour ce client : il verra le message dans son suivi";
   $("delc").hidden=true;$("bdel").hidden=false;
@@ -344,6 +346,7 @@ $("mfile").onchange=()=>{MSEL=MSEL.concat([...$("mfile").files]).slice(0,6);$("m
 $("msel").onclick=e=>{const b=e.target.closest("[data-k]");if(b){MSEL.splice(+b.dataset.k,1);drawMsel()}};
 $("mtxt").oninput=()=>{const t=$("mtxt");t.style.height="auto";t.style.height=Math.min(180,t.scrollHeight)+"px"};
 $("mtxt").onkeydown=e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();$("msend").click()}};
+$("bchat").onclick=()=>{$("fmsg").scrollIntoView({behavior:"smooth",block:"start"});setTimeout(()=>$("mtxt").focus({preventScroll:true}),400)};
 $("msend").onclick=async()=>{if(!FICHE)return;const t=$("mtxt").value.trim(),fs=MSEL.slice(0,6);
   if(!t&&!fs.length){flash("Écrivez le message ou joignez un fichier.",false);$("mtxt").focus();return}
   if(fs.some(x=>x.size>30*1048576)){flash("Un fichier dépasse 30 Mo.",false);return}
@@ -386,7 +389,7 @@ function rendreDemande(d){DEM=d;$("dref").textContent=d.ref+" · "+(TYPES[d.type
   const tel=d.telephone.replace(/[^\d+]/g,"");
   $("dcontact").innerHTML=(tel?`<a class="btn" href="tel:${esc(tel)}">Appeler ${esc(d.telephone)}</a><a class="btn g" href="sms:${esc(tel)}">SMS</a>`:"")+(d.email?`<a class="btn g" href="mailto:${esc(d.email)}?subject=${encodeURIComponent("Votre demande "+d.ref+" · Gouyerian Tech")}">Répondre par e-mail</a>`:"");
   $("ddet").innerHTML=Object.entries(d.details).filter(([k,v])=>v&&v!=="-").map(([k,v])=>`<dt>${esc(k)}</dt><dd style="white-space:pre-line">${esc(v)}</dd>`).join("");
-  $("dpj").innerHTML=d.pj.length?`<h2 style="margin:8px 0">Pièces jointes</h2><div class="pjs">${d.pj.map(f=>`<a href="${esc(f.url)}" target="_blank" rel="noopener">${f.type.startsWith("image/")?`<img src="${esc(f.url)}" alt="" loading="lazy">`:f.type.startsWith("video/")?`<video src="${esc(f.url)}" preload="metadata" muted></video>`:`<span class="file">PDF</span>`}<span>${esc(f.nom)} · ${Math.max(1,Math.round(f.taille/1024))} Ko</span></a>`).join("")}</div>`:"";
+  $("dpj").innerHTML=d.pj.length?`<h2 style="margin:8px 0">Pièces jointes</h2><div class="pjs">${d.pj.map(f=>`<a href="${esc(f.url)}" target="_blank" rel="noopener">${f.type.startsWith("image/")?`<img src="${esc(f.url)}" alt="" loading="lazy">`:f.type.startsWith("video/")?`<video src="${esc(f.url)}#t=0.1" preload="metadata" controls playsinline onclick="event.preventDefault()"></video>`:`<span class="file">PDF</span>`}<span>${esc(f.nom)} · ${Math.max(1,Math.round(f.taille/1024))} Ko</span></a>`).join("")}</div>`:"";
   $("dnote").value=d.note_interne||"";$("dmkrep").hidden=!!d.reparation_id;$("ddelc").hidden=true;$("ddel").hidden=false;
   if(d.reparation_id)$("dcontact").insertAdjacentHTML("beforeend",`<button class="btn g" type="button" id="dgorep">Voir la réparation</button>`);
   if($("dgorep"))$("dgorep").onclick=()=>ouvrir(d.reparation_id)}

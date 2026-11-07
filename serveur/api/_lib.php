@@ -270,6 +270,39 @@ function messages(int $rid, string $pour): array {
 }
 
 /* Enregistre les pièces jointes envoyées ($_FILES['f']) dans /prive/pj ; renvoie la liste à stocker */
+/* Envoie un fichier joint au navigateur, avec prise en charge des plages (Range) :
+   sans elles, Safari et l'iPhone refusent de lire les vidéos. ?dl=1 force le téléchargement. */
+/* Clé secrète du serveur pour signer les liens temporaires (créée une fois dans le dossier privé) */
+function jeton_secret(): string {
+  $f = prive_dir() . '/cle-liens';
+  if (!is_file($f)) { @file_put_contents($f, bin2hex(random_bytes(32))); @chmod($f, 0600); }
+  return (string)file_get_contents($f);
+}
+
+function envoyer_fichier(string $path, string $type, string $nom): void {
+  $taille = filesize($path);
+  $debut = 0; $fin = $taille - 1;
+  if (preg_match('/^bytes=(\d*)-(\d*)$/', (string)($_SERVER['HTTP_RANGE'] ?? ''), $m) && ($m[1] !== '' || $m[2] !== '')) {
+    if ($m[1] === '') { $debut = max(0, $taille - (int)$m[2]); }
+    else { $debut = (int)$m[1]; if ($m[2] !== '') $fin = min($fin, (int)$m[2]); }
+    if ($debut > $fin || $debut >= $taille) { http_response_code(416); header("Content-Range: bytes */$taille"); exit; }
+    http_response_code(206);
+    header("Content-Range: bytes $debut-$fin/$taille");
+  }
+  header('Content-Type: ' . $type);
+  header('Accept-Ranges: bytes');
+  header('Content-Length: ' . ($fin - $debut + 1));
+  header('Content-Disposition: ' . (!empty($_GET['dl']) ? 'attachment' : 'inline') . '; filename="' . preg_replace('/[^\w.\- ]/u', '_', $nom) . '"');
+  header('Cache-Control: private, max-age=0, must-revalidate');
+  header('X-Content-Type-Options: nosniff');
+  $fp = fopen($path, 'rb');
+  fseek($fp, $debut);
+  $reste = $fin - $debut + 1;
+  while ($reste > 0 && !feof($fp)) { $b = fread($fp, (int)min(262144, $reste)); echo $b; $reste -= strlen($b); flush(); }
+  fclose($fp);
+  exit;
+}
+
 function recevoir_pj(int $max = 6): array {
   $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif', 'image/heic' => 'heic', 'image/heif' => 'heif',
     'video/mp4' => 'mp4', 'video/quicktime' => 'mov', 'video/webm' => 'webm', 'video/3gpp' => '3gp', 'application/pdf' => 'pdf'];
@@ -557,12 +590,12 @@ function pied_mail(array $r): string {
   return "\n\nSuivre votre réparation : " . lien_suivi($r) . "\nNuméro de suivi : {$r['numero']} · code : {$r['code']}\n";
 }
 
-function mail_etape(array $r, string $etape, string $note): bool {
-  if (!(int)$r['avis_email'] || $r['email'] === '') return false;
+function mail_etape(array $r, string $etape, string $note, bool $force = false): bool {
+  if ((!(int)$r['avis_email'] && !$force) || $r['email'] === '') return false;
   [$lib, $phrase] = ETAPES[$etape];
   $m = ['pre' => "$lib · $phrase", 'etiquette' => "Réparation {$r['numero']}", 'titre' => $lib,
     'paras' => ['Bonjour ' . prenom($r['nom']) . ',', "Votre {$r['appareil']} : " . mb_strtolower(mb_substr($phrase, 0, 1)) . mb_substr($phrase, 1)],
-    'citation' => $note !== '' ? $note : null, 'infos' => infos_suivi($r), 'stop' => lien_stop($r)];
+    'citation' => $note !== '' ? $note : null, 'infos' => infos_suivi($r), 'stop' => (int)$r['avis_email'] ? lien_stop($r) : null];
   if ($etape !== 'annule') [$m['etapes'], $m['etape_i']] = etapes_mail($r, $etape);
   if ($note !== '') $m['paras'][] = 'Message de l’atelier :';
   if ($etape === 'devis') { $m['bouton'] = ['Voir et accepter le devis', lien_suivi($r)]; $m['note'] = 'La réparation commence dès votre accord. Une question ? Écrivez-nous depuis la page de suivi ou appelez le 06 05 79 48 94.'; }

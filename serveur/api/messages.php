@@ -4,6 +4,18 @@
 declare(strict_types=1);
 require __DIR__ . '/_lib.php';
 
+/* GET ?pj=… : lecture directe d'une vidéo ou d'un fichier (le lecteur vidéo du navigateur demande le fichier par morceaux).
+   Le lien est signé et valable 2 heures ; il est délivré par l'action « lien » ci-dessous. */
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['pj'])) {
+  if (!preg_match('/^(\d+)-(\d+)-(\d+)-([a-f0-9]{32})$/', (string)$_GET['pj'], $m) || (int)$m[3] < time()
+    || !hash_equals(substr(hash_hmac('sha256', "$m[1]-$m[2]-$m[3]", jeton_secret()), 0, 32), $m[4])) { http_response_code(403); exit('Lien expiré : rouvrez la page de suivi.'); }
+  $s = db()->prepare('SELECT pj FROM gt_messages WHERE id = ?');
+  $s->execute([(int)$m[1]]);
+  $f = (json_decode((string)$s->fetchColumn(), true) ?: [])[(int)$m[2]] ?? null;
+  $path = $f ? prive_dir() . '/pj/' . basename($f['fichier']) : '';
+  if (!$f || !is_file($path)) { http_response_code(404); exit('Fichier introuvable.'); }
+  envoyer_fichier($path, $f['type'], $f['nom']);
+}
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Méthode non autorisée.', 405);
 if (($_SERVER['HTTP_X_GT'] ?? '') !== '1') fail('Demande refusée.', 403);
 if (!https_ok()) fail('Ouvrez la page en https://', 403);
@@ -38,6 +50,16 @@ if (!$ok) {
   fail('Accès refusé à cette réparation.', 403);
 }
 
+/* Lien temporaire (2 h) vers une pièce jointe, pour la lire directement (vidéos) */
+if ($action === 'lien') {
+  $s = $pdo->prepare('SELECT pj FROM gt_messages WHERE id = ? AND reparation_id = ?');
+  $s->execute([(int)($d['id'] ?? 0), $r['id']]);
+  $i = (int)($d['i'] ?? -1);
+  if (!isset((json_decode((string)$s->fetchColumn(), true) ?: [])[$i])) fail('Fichier introuvable.', 404);
+  $base = (int)$d['id'] . "-$i-" . (time() + 7200);
+  out(['ok' => true, 'url' => '/api/messages.php?pj=' . $base . '-' . substr(hash_hmac('sha256', $base, jeton_secret()), 0, 32)]);
+}
+
 /* Ouvrir une pièce jointe de la conversation */
 if ($action === 'pj') {
   $s = $pdo->prepare('SELECT pj FROM gt_messages WHERE id = ? AND reparation_id = ?');
@@ -45,13 +67,7 @@ if ($action === 'pj') {
   $f = (json_decode((string)$s->fetchColumn(), true) ?: [])[(int)($d['i'] ?? -1)] ?? null;
   $path = $f ? prive_dir() . '/pj/' . basename($f['fichier']) : '';
   if (!$f || !is_file($path)) fail('Fichier introuvable.', 404);
-  header('Content-Type: ' . $f['type']);
-  header('Content-Length: ' . filesize($path));
-  header('Content-Disposition: inline; filename="' . preg_replace('/[^\w.\- ]/u', '_', $f['nom']) . '"');
-  header('Cache-Control: private, no-store');
-  header('X-Content-Type-Options: nosniff');
-  readfile($path);
-  exit;
+  envoyer_fichier($path, $f['type'], $f['nom']);
 }
 
 if ($action === 'envoyer') {

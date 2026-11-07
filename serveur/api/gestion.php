@@ -15,13 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['pj']) || isset($_GET['
   $f = (json_decode((string)$s->fetchColumn(), true) ?: [])[(int)$m[2]] ?? null;
   $path = $f ? prive_dir() . '/pj/' . basename($f['fichier']) : '';
   if (!$f || !is_file($path)) { http_response_code(404); exit('Fichier introuvable.'); }
-  header('Content-Type: ' . $f['type']);
-  header('Content-Length: ' . filesize($path));
-  header('Content-Disposition: inline; filename="' . preg_replace('/[^\w.\- ]/u', '_', $f['nom']) . '"');
-  header('Cache-Control: private, no-store');
-  header('X-Content-Type-Options: nosniff');
-  readfile($path);
-  exit;
+  envoyer_fichier($path, $f['type'], $f['nom']);
 }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Méthode non autorisée.', 405);
 if (($_SERVER['HTTP_X_GT'] ?? '') !== '1') fail('Demande refusée.', 403);
@@ -271,7 +265,7 @@ switch ($action) {
     $etape = txt($d['etape'] ?? '', 20);
     if (!isset(ETAPES[$etape])) fail('Étape inconnue.');
     $note = txt($d['note'] ?? '', 1000);
-    $mail = !empty($d['mail']) ? mail_etape($r, $etape, $note) : false;
+    $mail = !empty($d['mail']) ? mail_etape($r, $etape, $note, true) : false;
     $pdo->prepare('UPDATE gt_reparations SET etape = ?, maj_le = ?, clos_le = ?, devis_etat = ? WHERE id = ?')
       ->execute([$etape, now(), in_array($etape, CLOS, true) ? now() : null, $etape === 'devis' ? 'attente' : (string)$r['devis_etat'], $r['id']]);
     $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, ?)')

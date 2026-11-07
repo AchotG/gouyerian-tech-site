@@ -1554,6 +1554,10 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .msg-mt .lu svg{color:#c6ffd9}
 .msg-r.a .msg-mt{color:var(--muted);opacity:1}
 .msg-pjs{display:flex;flex-wrap:wrap;gap:6px}
+.msg-vid{display:grid;gap:4px;width:min(260px,100%)}
+.msg-vid video{width:100%;max-height:320px;border-radius:10px;background:#000;display:block}
+.msg-vload{display:grid;place-items:center;height:120px;border-radius:10px;background:color-mix(in srgb,currentColor 8%,transparent);font-size:.82rem;opacity:.8}
+.msg-vdl{font-size:.78rem;color:inherit;opacity:.85}
 .msg-img{padding:0;border:0;border-radius:10px;overflow:hidden;cursor:zoom-in;background:color-mix(in srgb,var(--fg) 8%,transparent);width:132px;height:100px;display:grid;place-items:center}
 .msg-img img{width:100%;height:100%;object-fit:cover;display:block}
 .msg-img span{font-size:1.3rem;opacity:.5}
@@ -3608,7 +3612,7 @@ function msgDay(s){const d=new Date(String(s).replace(" ","T")),t=new Date();if(
 function msgTime(s){const d=new Date(String(s).replace(" ","T"));return isNaN(d)?"":d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}).replace(":","h")}
 function msgItems(ms){if(!ms||!ms.length)return `<li class="msg-0"><span class="msg-av">GT</span><b>Une question sur votre réparation ?</b><span>Écrivez directement à l’atelier : vous pouvez joindre des photos, la réponse s’affiche ici.</span></li>`;
   let day="",prev="";return ms.map(m=>{const dd=msgDay(m.le),a=m.auteur==="atelier"?"a":"c",cont=prev===a&&day===dd;let h="";if(dd!==day){h+=`<li class="msg-day">${esc(dd)}</li>`;day=dd}prev=a;
-    const pj=(m.pj||[]).map(f=>/^image\//.test(f.type)?`<button type="button" class="msg-img" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}" aria-label="Ouvrir ${esc(f.nom)}"><span>🖼</span></button>`:`<button type="button" class="msg-pjl" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}">${MSG_IC.file}${esc(f.nom)}</button>`).join("");
+    const pj=(m.pj||[]).map(f=>/^video\//.test(f.type)?`<span class="msg-vid" data-mvid="${m.id}-${f.i}" data-nom="${esc(f.nom)}"><span class="msg-vload">▶ Chargement de la vidéo…</span></span>`:/^image\//.test(f.type)?`<button type="button" class="msg-img" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}" aria-label="Ouvrir ${esc(f.nom)}"><span>🖼</span></button>`:`<button type="button" class="msg-pjl" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}">${MSG_IC.file}${esc(f.nom)}</button>`).join("");
     return h+`<li class="msg-r ${a}${cont?" cont":""}${a==="a"&&!m.lu?" new":""}">${a==="a"?'<span class="msg-av" aria-hidden="true">GT</span>':""}<div class="msg-bu"><span class="sr">${a==="a"?"Atelier":"Vous"} :</span>${m.texte?`<p>${esc(m.texte)}</p>`:""}${pj?`<span class="msg-pjs">${pj}</span>`:""}<span class="msg-mt">${esc(msgTime(m.le))}${a==="c"?(m.lu?`<span class="lu" title="Lu par l’atelier">${MSG_IC.lu}</span><span>Lu</span>`:`<span title="Distribué">${MSG_IC.ok}</span><span>Distribué</span>`):""}</span></div></li>`}).join("")}
 function msgUnread(ms){return(ms||[]).filter(m=>m.auteur==="atelier"&&!m.lu).length}
 function msgHTML(ms,n){const u=msgUnread(ms);return `<section class="msgs" data-mn="${esc(n)}" aria-label="Messages avec l’atelier"><header class="msg-hd"><span class="msg-av" aria-hidden="true">GT</span><div><b>Atelier Gouyerian Tech</b><small>Réparation ${esc(n)} · réponse sous 24 h ouvrées</small></div>${u?`<span class="msg-nb">${u} nouveau${u>1?"x":""}</span>`:""}</header><ul class="msg-l" aria-live="polite">${msgItems(ms)}</ul><form class="msg-f" novalidate><div class="msg-sel" hidden></div><div class="msg-bar"><label class="msg-ib" title="Joindre des photos ou un PDF">${MSG_IC.clip}<span class="sr">Joindre des fichiers</span><input type="file" accept="image/*,video/*,application/pdf" multiple hidden></label><label class="sr" for="mt-${esc(n)}">Votre message à l’atelier</label><textarea id="mt-${esc(n)}" rows="1" maxlength="2000" placeholder="Écrire à l’atelier…"></textarea><button class="msg-ib go" type="submit" aria-label="Envoyer">${MSG_IC.send}</button></div><span class="msg-tip">Ctrl + Entrée pour envoyer · photos, vidéos ou PDF, 4 au plus</span><p class="msg" role="alert"></p></form></section>`}
@@ -3620,10 +3624,13 @@ async function msgFile(auth,n,key){if(MSG_THUMB.has(key))return MSG_THUMB.get(ke
   MSG_THUMB.set(key,p);p.catch(()=>MSG_THUMB.delete(key));return p}
 function msgBind(root,auth,upd){root.querySelectorAll(".msgs").forEach(box=>{const n=box.dataset.mn,f=box.querySelector("form"),ta=f.querySelector("textarea"),fi=f.querySelector("input[type=file]"),sl=f.querySelector(".msg-sel"),er=f.querySelector("p.msg"),bt=f.querySelector("button[type=submit]"),l=box.querySelector(".msg-l");let sel=[];
   const thumbs=()=>l.querySelectorAll(".msg-img:not([data-ok])").forEach(b=>{b.dataset.ok="1";msgFile(auth,n,b.dataset.mpj).then(u=>{b.innerHTML=`<img src="${u}" alt="${esc(b.dataset.nom)}">`}).catch(()=>{})});
-  const put=ms=>{l.innerHTML=msgItems(ms);l.scrollTop=l.scrollHeight;thumbs();if(upd)upd(n,ms)};
+  /* Vidéos : lien signé temporaire, lu directement par le lecteur du navigateur (fonctionne aussi sur iPhone) */
+  const vids=()=>l.querySelectorAll(".msg-vid:not([data-ok])").forEach(v=>{v.dataset.ok="1";const [id,i]=v.dataset.mvid.split("-"),fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"lien",id:+id,i:+i},auth(n))));
+    msgApi(fd).then(j=>{v.innerHTML=`<video src="${j.url}#t=0.1" controls playsinline preload="metadata"></video><a class="msg-vdl" href="${j.url}&dl=1">⬇ Télécharger ${esc(v.dataset.nom)}</a>`}).catch(()=>{v.innerHTML=`<span class="msg-vload">Vidéo indisponible</span>`})});
+  const put=ms=>{l.innerHTML=msgItems(ms);l.scrollTop=l.scrollHeight;thumbs();vids();if(upd)upd(n,ms)};
   const grow=()=>{ta.style.height="auto";ta.style.height=Math.min(160,ta.scrollHeight)+"px"};
   const drawSel=()=>{sl.hidden=!sel.length;sl.innerHTML=sel.map((x,k)=>`<span>${/^image\//.test(x.type)?"🖼":"📄"} ${esc(x.name)}<button type="button" data-k="${k}" aria-label="Retirer ${esc(x.name)}">×</button></span>`).join("")};
-  l.scrollTop=l.scrollHeight;thumbs();
+  l.scrollTop=l.scrollHeight;thumbs();vids();
   l.addEventListener("click",async e=>{const pb=e.target.closest("[data-mpj]");if(!pb)return;const w=window.open("","_blank");
     try{const u=await msgFile(auth,n,pb.dataset.mpj);if(w)w.location.href=u;else{const a=document.createElement("a");a.href=u;a.download=pb.dataset.nom||"fichier";a.click()}}
     catch(err){if(w)w.close();er.textContent=err.message}});
