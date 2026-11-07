@@ -144,6 +144,14 @@ def fee(km):
 PAGES = []  # dict(path, view, markup, title, desc, crumbs, ld, pg, changefreq, priority)
 
 
+IMGV = {f.name: hashlib.sha1(f.read_bytes()).hexdigest()[:8] for f in sorted((B / "img" / "ill").iterdir())}  # empreintes des illustrations
+
+
+def iv(name):
+    """« ?v=empreinte » d'une illustration : une image redessinée change d'adresse, donc plus de vieille copie en cache."""
+    return f"?v={IMGV[name]}" if name in IMGV else ""
+
+
 def add(path, view, markup, title, desc, crumbs, ld=None, pg=None, prio="0.7", index=True, extra_head="", lastmod=TODAY, og=None, imgs=()):
     PAGES.append(dict(path=path, view=view, markup=markup, title=title, desc=desc, crumbs=crumbs, ld=ld or [], pg=pg or {"view": view}, prio=prio, index=index, extra_head=extra_head, lastmod=lastmod, og=og, imgs=imgs))
 
@@ -241,15 +249,18 @@ add("/infos-pratiques/", "conseils", VIEW["conseils"], "Infos pratiques en infor
         {"@type": "ListItem", "position": i + 1, "url": f"{SITE}/infos-pratiques/{a['s']}/", "name": a["t"]} for i, a in enumerate(DATA["arts"])]}],
     prio="0.8")
 for a in DATA["arts"]:
+    manque = [f for f in (f"{a['s']}-640.webp", f"{a['s']}-1280.webp", f"og-{a['s']}.jpg") if f not in IMGV]
+    if manque:
+        raise SystemExit(f"Illustration manquante pour l’info pratique « {a['s']} » : {', '.join(manque)} (ajouter S['{a['s']}'] dans outils/gen_illus.py puis : python outils/gen_illus.py {a['s']})")
     path = f"/infos-pratiques/{a['s']}/"
     t = a["t"] + " · Gouyerian Tech"
     add(path, "article", VIEW["article"], t if len(t) <= 65 else a["t"], a["d"],
         [HOME, ("Infos pratiques", "/infos-pratiques/"), (a["t"], path)],
         ld=[{"@context": "https://schema.org", "@type": "Article", "headline": a["t"], "description": a["d"], "inLanguage": "fr-FR",
              "datePublished": a["date"], "dateModified": a["date"], "articleSection": a["cat"], "timeRequired": f"PT{a['min']}M",
-             "image": [SITE + f"/assets/img/og-{a['s']}.jpg", SITE + f"/assets/img/{a['s']}-1280.webp"], "mainEntityOfPage": SITE + path,
+             "image": [SITE + f"/assets/img/og-{a['s']}.jpg" + iv(f"og-{a['s']}.jpg"), SITE + f"/assets/img/{a['s']}-1280.webp" + iv(f"{a['s']}-1280.webp")], "mainEntityOfPage": SITE + path,
              "author": {"@type": "Organization", "name": "Gouyerian Tech", "url": SITE + "/"}, "publisher": {"@id": ORG_ID}}],
-        pg={"view": "article", "slug": a["s"]}, prio="0.7", lastmod=a["date"], og=f"/assets/img/og-{a['s']}.jpg", imgs=(f"/assets/img/{a['s']}-1280.webp",))
+        pg={"view": "article", "slug": a["s"]}, prio="0.7", lastmod=a["date"], og=f"/assets/img/og-{a['s']}.jpg" + iv(f"og-{a['s']}.jpg"), imgs=(f"/assets/img/{a['s']}-1280.webp",))
 add("/actualites/", "actus", VIEW["actus"], "Actualités tech France et monde · Gouyerian Tech",
     f"{DATA['news']} actualités tech résumées simplement : smartphones, ordinateurs, IA, Internet, sécurité, jeux vidéo. Un conseil pratique et le lien vers chaque source.",
     [HOME, ("Actualités", "/actualites/")], prio="0.7")
@@ -405,7 +416,7 @@ def out_file(path):
 A = DIST / "assets"
 (A / "fonts").mkdir(parents=True)
 (A / "site.css").write_text(site_css, encoding="utf-8")
-(A / "app.js").write_text("/* Gouyerian Tech, script du site */\n" + js.strip() + "\n", encoding="utf-8")
+(A / "app.js").write_text("/* Gouyerian Tech, script du site */\nwindow.GT_IMGV=" + json.dumps(IMGV, separators=(",", ":")) + ";\n" + js.strip() + "\n", encoding="utf-8")
 (A / "logo.png").write_bytes(__import__("base64").b64decode((B / "donnees" / "logo.b64").read_text().strip()))
 (A / "adresses.js").write_text('window.GT_BANZ="' + (B / "donnees" / "ban.b64").read_text().strip() + '";\n', encoding="utf-8")
 for f in (B / "fonts").iterdir():

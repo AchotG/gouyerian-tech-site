@@ -34,6 +34,8 @@ jobs:
           pip install playwright==1.48.0 pillow
           python -m playwright install --with-deps chromium
           sudo apt-get install -y lftp
+      - name: Contrôler les illustrations (bords, textes, centrage)
+        run: python outils/gen_illus.py --controle
       - name: Construire les pages
         run: python outils/build.py
       - name: Tester le site (aucun envoi si un problème est trouvé)

@@ -2385,7 +2385,9 @@ NEWS.sort((a,b)=>(isUrg(b)-isUrg(a))||b.d.localeCompare(a.d));
 /* Chaque actualité a sa page : #actu-<adresse> dans l’aperçu, /actualites/<adresse>/ sur le site */
 const slugify=t=>{let o="";for(const w of norm(t).split(" ")){if(o&&(o+"-"+w).length>64)break;o+=(o?"-":"")+w}return o};
 NEWS.forEach(n=>{n.id=slugify(n.t)});
-const picHTML=(n,alt,sizes,eager)=>`<img src="${ASSETS}img/${n}-640.webp" srcset="${ASSETS}img/${n}-640.webp 640w, ${ASSETS}img/${n}-1280.webp 1280w" sizes="${sizes}" width="1280" height="720" alt="${alt||""}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async">`;
+/* IMGV : empreinte de chaque image (ajoutée par build.py), pour que les navigateurs prennent tout de suite une illustration redessinée */
+const imgv=f=>{const v=(window.GT_IMGV||{})[f];return v?"?v="+v:""};
+const picHTML=(n,alt,sizes,eager)=>`<img src="${ASSETS}img/${n}-640.webp${imgv(n+"-640.webp")}" srcset="${ASSETS}img/${n}-640.webp${imgv(n+"-640.webp")} 640w, ${ASSETS}img/${n}-1280.webp${imgv(n+"-1280.webp")} 1280w" sizes="${sizes}" width="1280" height="720" alt="${alt||""}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async">`;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const C={tel:"06 05 79 48 94",telI:"+33605794894",mail:"gouyerian.tech@gmail.com",adr:"1 route de Segonzac, 16130 Saint-Fort-sur-le-Né"};
 const hrefs={tel:"tel:"+C.telI,mail:"mailto:"+C.mail,map:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("Gouyerian Tech, "+C.adr)+"&query_place_id=ChIJY1Q5ZwBhAEgRGG3fYcH4qpk"};

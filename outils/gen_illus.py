@@ -304,20 +304,14 @@ S["cat-assistance"] = frame(
     + wifi(735, 480, 90) + f'<path d="M1010 250c0 70 -70 130 -70 130s-70 -60 -70 -130a70 70 0 0 1 140 0z" fill="url(#ac)" stroke="{INK}"/><circle cx="940" cy="250" r="24" fill="{BODY}"/>'
     + f'<path d="M940 380c-80 60 -150 60 -190 40" stroke="{CY}" stroke-dasharray="4 18" stroke-width="7"/>', 620, 380)
 S["cat-consoles"] = frame(
-    # console portable générique : écran au centre, deux manettes détachables
-    f'<rect x="330" y="200" width="130" height="250" rx="58" fill="{BODY}" stroke="{CY}"/><rect x="740" y="200" width="130" height="250" rx="58" fill="{BODY}" stroke="{BL}"/>'
-    + f'<rect x="440" y="200" width="320" height="250" rx="14" fill="{BODY}"/><rect x="462" y="222" width="276" height="206" rx="8" fill="url(#ac)" fill-opacity=".38" stroke="none"/>'
-    + f'<circle cx="395" cy="265" r="24" fill="#14306a"/><circle cx="805" cy="375" r="24" fill="#14306a"/>'
-    + f'<path d="M395 352v40M375 372h40" stroke-width="8"/>'
-    + "".join(f'<circle cx="{x}" cy="{y}" r="9" fill="{INK}" stroke="none"/>' for x, y in ((805, 250), (785, 270), (825, 270), (805, 290)))
-    + f'<rect x="580" y="458" width="40" height="12" rx="6" fill="{INK}" stroke="none"/>' + bolt(600, 540, .7, AM)
-    # prise HDMI et son câble
-    + f'<path d="M170 520h110l-14 40h-82z" fill="{BODY}" stroke="{CY}"/><path d="M196 532h58" stroke="{CY}" stroke-width="5"/><path d="M225 560v40c0 40 60 50 110 30" stroke="{CY}" stroke-width="8"/>'
+    # écran, manette générique et prise HDMI : réparation de consoles (aucun modèle réel)
+    monitor(560, 290, 500, 300, f'<path d="M336 390h448" stroke="{CY}" stroke-width="6"/><rect x="400" y="320" width="110" height="22" rx="6" fill="url(#ac)" stroke="none"/>'
+             f'<rect x="590" y="260" width="130" height="22" rx="6" fill="url(#ac)" stroke="none"/><circle cx="455" cy="292" r="20" fill="{AM}" stroke="none"/>'
+             f'<path d="M490 270q60 -70 120 -30" stroke="{AM}" stroke-width="5" stroke-dasharray="4 14"/>' + sparkles([(655, 220), (380, 200)], GR))
+    + gamepad(930, 545, 1.08)
+    + f'<path d="M170 520h110l-14 40h-82z" fill="{BODY}" stroke="{CY}"/><path d="M196 532h58" stroke="{CY}" stroke-width="5"/><path d="M225 560v34c0 34 60 44 110 22" stroke="{CY}" stroke-width="8"/>'
     + label(225, 500, "HDMI", 30, CY)
-    # manette
-    + f'<path d="M928 500h164a52 52 0 0 1 50 64l-18 64a30 30 0 0 1 -52 10l-32 -40h-110l-32 40a30 30 0 0 1 -52 -10l-18 -64a52 52 0 0 1 50 -64z" fill="{BODY}"/>'
-    + f'<path d="M946 540v34M929 557h34" stroke-width="7"/><circle cx="1068" cy="545" r="8" fill="{CY}" stroke="none"/><circle cx="1090" cy="566" r="8" fill="{AM}" stroke="none"/>'
-    + wrench(1000, 250, .7, 40, CY) + check(1110, 170, 42), 600, 360)
+    + wrench(1010, 230, .7, 40, CY) + check(1110, 140, 42) + bolt(560, 560, .6, AM), 600, 360)
 S["pro-virus"] = frame(
     monitor(560, 320, 520, 320, shield(560, 320, 1.0) + f'<path d="M520 320l30 30 56 -64" stroke="#071226" stroke-width="12"/>')
     + f'<g transform="translate(960 220)"><ellipse rx="44" ry="56" fill="{BODY}" stroke="{RD}"/><path d="M-44 -10h-30M44 -10h30M-40 26l-28 18M40 26l28 18M-30 -44l-20 -24M30 -44l20 -24M0 -56v112" stroke="{RD}"/></g>'
@@ -342,10 +336,12 @@ S["telephone-tombe-dans-l-eau"] = frame(
     + f'<path d="M120 580q60 -40 120 0t120 0 120 0 120 0 120 0 120 0 120 0 120 0 120 0" stroke="{CY}" stroke-width="7"/><path d="M180 640q60 -40 120 0t120 0 120 0 120 0 120 0 120 0 120 0 120 0" stroke="{CY}" stroke-width="6" stroke-opacity=".5"/>'
     + f'<circle cx="1040" cy="460" r="54" fill="{AM}" stroke="none"/><path d="M1022 438a28 28 0 1 0 36 0" stroke="#2a1a00" stroke-width="8"/><path d="M1040 424v34" stroke="#2a1a00" stroke-width="8"/>', 640, 320)
 S["arnaques-en-ligne"] = frame(
-    phone(470, 370, 230, 440, 0, screen="#14306a", extra=bubble(385, 230, 210, 110, AM) + f'<path d="M410 270h140M410 300h90" stroke="{AM}" stroke-width="6"/>')
-    + f'<path d="M820 90v240" stroke-width="5"/><path d="M820 330c0 60 -80 60 -80 0v-20" stroke="{INK}" stroke-width="10"/><path d="M740 300l-16 24 30 -4" fill="{INK}"/>'
-    + f'<path d="M900 470L1000 300L1100 470Z" fill="{AM}" stroke="{AM}"/><path d="M1000 360v50" stroke="#2a1a00" stroke-width="12"/><circle cx="1000" cy="438" r="8" fill="#2a1a00" stroke="none"/>'
-    + f'<path d="M640 470h150" stroke="{RD}" stroke-width="6" stroke-dasharray="4 16"/>', 640, 360)
+    # faux message reçu sur le téléphone, hameçon qui « pêche » la carte bancaire, alerte
+    phone(470, 370, 230, 440, -4, screen="#14306a", extra=bubble(378, 236, 190, 104, AM) + f'<path d="M402 272h130M402 302h84" stroke="{AM}" stroke-width="6"/>'
+          + screenlines(392, 400, 3, 150, 34))
+    + f'<path d="M850 40v170" stroke-width="5"/><path d="M850 210c0 46 -58 52 -66 14" stroke-width="9"/><path d="M784 224l-14 -20M784 224l22 -8" stroke-width="8"/>'
+    + bankcard(860, 330, 240, 12)
+    + warning(1080, 190, .62) + check(1070, 520, 46) + link(600, 300, 740, 330, -40, RD), 640, 360)
 S["ordinateur-lent"] = frame(
     laptop(520, 320, 480, f'<path d="M330 260h180M330 300h140M330 340h160" stroke-width="5" stroke-opacity=".5"/>')
     + f'<g transform="translate(640 300)"><path d="M-50 -70h100M-50 70h100M-40 -70c0 50 80 50 80 70s-80 20 -80 70M40 -70c0 50 -80 50 -80 70s80 20 80 70" fill="{BODY}" stroke="{AM}"/><path d="M-20 50h40l-20 -18z" fill="{AM}" stroke="none"/></g>'
@@ -353,9 +349,11 @@ S["ordinateur-lent"] = frame(
     + f'<path d="M790 310h80" stroke="{CY}" stroke-width="8"/><path d="M850 290l24 20 -24 20" stroke="{CY}" stroke-width="8"/>'
     + gear(990, 520, 48, CY), 640, 340)
 S["batterie-smartphone"] = frame(
-    phone(460, 360, 210, 420, 0, screen="#14306a", extra=battery(460, 340, 120, 56, .8) + label(460, 450, "80 %", 40, INK))
-    + f'<g transform="translate(820 300)"><path d="M-22 -110a22 22 0 0 1 44 0v140a46 46 0 1 1 -44 0z" fill="{BODY}"/><circle r="30" cy="70" fill="{RD}" stroke="none"/><path d="M0 70v-130" stroke="{RD}" stroke-width="12"/></g>'
-    + cross(890, 180, 34) + f'<path d="M980 470a90 90 0 1 1 160 0" stroke="{GR}" stroke-width="10"/><path d="M1060 470l-36 -60" stroke="{GR}" stroke-width="8"/>' + bolt(1060, 540, .7, AM), 620, 360)
+    # batterie ménagée : ni trop chaud, ni trop froid, charge limitée à 80 %
+    phone(430, 360, 220, 430, 0, screen="#14306a", extra=battery(430, 330, 130, 60, .8) + bolt(430, 440, .55, AM))
+    + thermometer(760, 330, .95, .85) + cross(830, 190, 34)
+    + snowflake(1010, 220, 62) + cross(1076, 160, 30)
+    + badge(1010, 500, "80 %", 82, GR, sub="charge"), 640, 360)
 S["sauvegarder-ses-photos"] = frame(
     f'<rect x="170" y="240" width="300" height="230" rx="16" fill="{BODY}"/><path d="M200 440l80 -90 60 60 40 -40 60 70" stroke="{CY}"/><circle cx="410" cy="300" r="22" fill="{AM}" stroke="none"/>'
     + cloud(780, 220, .95, "url(#ac)")
