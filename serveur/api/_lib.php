@@ -520,10 +520,8 @@ function mail_pro(string $to, string $sujet, array $m): bool {
     . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px">'
     /* en-tête */
     . '<tr><td style="background:' . $navy . ';background-image:linear-gradient(135deg,#0b1426 0%,#13254a 60%,#1d3f7a 100%);border-radius:18px 18px 0 0;padding:22px 26px">'
-    . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'
-    . '<td width="52" valign="middle"><a href="' . $h($site) . '"><img src="' . $h($site) . '/assets/icon-192.png" width="44" height="44" alt="GT" style="display:block;border:0;border-radius:11px"></a></td>'
-    . '<td valign="middle" style="padding-left:12px"><div style="' . $font . ';font-size:17px;font-weight:800;letter-spacing:.14em;color:#ffffff">GOUYERIAN TECH</div><div style="' . $font . ';font-size:12px;color:#9fb4d8;margin-top:2px">' . $bandeau . '</div></td>'
-    . '</tr></table></td></tr>'
+    /* Logo et nom en image : le mode sombre de Gmail sur téléphone assombrissait le texte blanc de l'en-tête */
+    . '<a href="' . $h($site) . '" style="text-decoration:none"><img src="' . $h($site) . '/assets/' . (!empty($m['atelier']) ? 'mail-entete-atelier.png' : 'mail-entete.png') . '?v=2" width="320" height="48" alt="GOUYERIAN TECH · ' . $bandeau . '" style="display:block;border:0;width:320px;max-width:100%;height:auto;' . $font . ';font-size:17px;font-weight:800;color:#ffffff"></a></td></tr>'
     . '<tr><td style="height:4px;background:#2563eb;background-image:linear-gradient(90deg,#2563eb,#06b6d4);font-size:0;line-height:0">&nbsp;</td></tr>'
     /* contenu */
     . '<tr><td style="background:#ffffff;padding:32px 28px 28px;border-left:1px solid ' . $line . ';border-right:1px solid ' . $line . '">' . $c . '</td></tr>'

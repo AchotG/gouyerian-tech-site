@@ -431,7 +431,7 @@ IMG = B / "img"
 (A / "img").mkdir()
 for f in (B / "img" / "ill").iterdir():  # illustrations (gen_illus.py)
     shutil.copy(f, A / "img" / f.name)
-for n in ("og-image.jpg", "logo-carre.png", "favicon-32.png", "icon-192.png", "icon-512.png", "icon-maskable-512.png"):
+for n in ("og-image.jpg", "logo-carre.png", "favicon-32.png", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "mail-entete.png", "mail-entete-atelier.png"):
     shutil.copy(IMG / n, A / n)
 shutil.copy(IMG / "favicon.ico", DIST / "favicon.ico")
 shutil.copy(IMG / "apple-touch-icon.png", DIST / "apple-touch-icon.png")
