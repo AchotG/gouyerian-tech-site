@@ -49,7 +49,11 @@ if ($cfil !== '') {
     $q->execute([$m[1], $cl['id'], strtolower($cl['email'])]);
     $dm = $q->fetch();
     if (!$dm) fail('Demande introuvable.', 404);
-    $fil = ['d', (int)$dm['id'], (int)$cl['id']]; $titre = 'demande ' . $dm['ref'];
+    if ((int)($dm['reparation_id'] ?? 0) > 0) {  /* demande devenue réparation : même conversation que la réparation */
+      $q = $pdo->prepare('SELECT * FROM gt_reparations WHERE id = ?'); $q->execute([(int)$dm['reparation_id']]); $r = $q->fetch() ?: null;
+    }
+    if ($r) { $fil = ['r', (int)$r['id']]; $titre = 'réparation ' . $r['numero'] . ' (' . $r['appareil'] . ')'; }
+    else { $fil = ['d', (int)$dm['id'], (int)$cl['id']]; $titre = 'demande ' . $dm['ref']; }
   } else fail('Conversation inconnue.');
 } else {
   $numero = norm_numero(txt($d['numero'] ?? '', 30));

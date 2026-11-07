@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 6;
+const SCHEMA_VERSION = 7;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -182,6 +182,10 @@ function schema(PDO $pdo): void {
   ajouter_colonne($pdo, 'gt_messages', 'lu_le', 'DATETIME NULL');               // v5 : date de lecture
   ajouter_colonne($pdo, 'gt_messages', 'demande_id', 'INT NOT NULL DEFAULT 0');  // v6 : conversation d'une demande (reparation_id = 0)
   ajouter_colonne($pdo, 'gt_messages', 'client_id', 'INT NOT NULL DEFAULT 0');   // v6 : conversation générale d'un client (sans réparation ni demande)
+  /* v7 : les conversations des demandes devenues réparations rejoignent la conversation de la réparation */
+  foreach ($pdo->query('SELECT id, reparation_id FROM gt_demandes WHERE reparation_id IS NOT NULL AND reparation_id > 0')->fetchAll() as $x) {
+    $pdo->prepare('UPDATE gt_messages SET reparation_id = ?, demande_id = 0 WHERE reparation_id = 0 AND demande_id = ?')->execute([(int)$x['reparation_id'], (int)$x['id']]);
+  }
   $pdo->prepare('DELETE FROM gt_meta WHERE cle = ?')->execute(['schema']);
   $pdo->prepare('INSERT INTO gt_meta (cle, val) VALUES (?, ?)')->execute(['schema', (string)SCHEMA_VERSION]);
 }
@@ -279,6 +283,11 @@ function ajouter_message(array $fil, string $auteur, string $texte, array $pj, b
 function marquer_lus(array $fil, string $auteur): void {
   [$w, $p] = fil_where($fil);
   db()->prepare("UPDATE gt_messages SET lu = 1, lu_le = ? WHERE $w AND auteur = ? AND lu = 0")->execute(array_merge([now()], $p, [$auteur]));
+}
+
+/* Une demande devient une réparation : sa conversation continue dans celle de la réparation (même historique) */
+function fusionner_demande(int $did, int $rid): void {
+  db()->prepare('UPDATE gt_messages SET reparation_id = ?, demande_id = 0 WHERE reparation_id = 0 AND demande_id = ?')->execute([$rid, $did]);
 }
 
 function messages(int $rid, string $pour): array { return messages_fil(['r', $rid], $pour); }

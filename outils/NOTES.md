@@ -183,3 +183,4 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
   Espace client réorganisé (résumé, réparations | devis et demandes, panier | coordonnées), demandes dépliables ; bandeau téléphone du bas masqué là où un encadré téléphone existe déjà.
   E-mails : en-tête intégré à l'e-mail (image cid), lisible même quand le webmail bloque les images distantes.
 - v107 : conversations en direct (relues toutes les 6 s côté client et gestion), conversation plein écran sur téléphone dans la gestion, effacement des conversations et pièces jointes 3 mois après la fin (réparation rendue/annulée, demande traitée, 3 mois sans message pour la générale), entretien automatique quotidien.
+- v108 : une demande devenue réparation garde sa conversation (messages déplacés dans la conversation de la réparation, schéma v7 pour les anciennes) ; plus de conversation en double.

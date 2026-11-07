@@ -135,6 +135,10 @@ function fil_gestion(array $x): ?array {
 
 function fil_ouvrir(string $cle): array {
   if (!preg_match('/^([rdc]):(\d+)$/', $cle, $m)) fail('Conversation inconnue.');
+  if ($m[1] === 'd') {  /* demande devenue réparation : on ouvre la conversation de la réparation */
+    $q = db()->prepare('SELECT reparation_id FROM gt_demandes WHERE id = ?'); $q->execute([(int)$m[2]]); $rid = (int)$q->fetchColumn();
+    if ($rid > 0) $m = [0, 'r', (string)$rid];
+  }
   $x = ['reparation_id' => $m[1] === 'r' ? $m[2] : 0, 'demande_id' => $m[1] === 'd' ? $m[2] : 0, 'client_id' => $m[1] === 'c' ? $m[2] : 0];
   $ctx = fil_gestion($x);
   if (!$ctx) fail('Conversation introuvable.', 404);
@@ -324,6 +328,7 @@ switch ($action) {
     $r = fiche($id);
     if (!empty($d['demande_id'])) {  /* réparation créée depuis une demande : la demande est rattachée et traitée */
       $pdo->prepare("UPDATE gt_demandes SET reparation_id = ?, statut = 'traitee', maj_le = ? WHERE id = ?")->execute([$id, now(), (int)$d['demande_id']]);
+      fusionner_demande((int)$d['demande_id'], (int)$id);
     }
     $mail = mail_bienvenue($r);
     $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, ?)')

@@ -4142,8 +4142,9 @@ function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==
 /* Conversations de l'espace client : générale, par réparation, par demande. Une ligne → la conversation s'ouvre en grand */
 function accConvs(){const p=ACC;if(!p)return[];const L=[];
   L.push({k:"c",t:"Atelier Gouyerian Tech",s:"Question, conseil, rendez-vous…",ms:p.messages_general||[]});
-  p.reparations.forEach(r=>{const clos=r.etape==="rendu"||r.etape==="annule";if(!clos||(r.messages||[]).length)L.push({k:r.numero,t:r.appareil,s:"Réparation "+r.numero,ms:r.messages||[]})});
-  (p.demandes||[]).forEach(x=>{if(!x.traitee||(x.messages||[]).length)L.push({k:"d:"+x.ref,t:x.sujet.replace(/^Demande de devis \(espace client\) : /,"Devis : ").replace(/^Demande : /,""),s:"Demande "+x.ref,ms:x.messages||[]})});
+  p.reparations.forEach(r=>{const clos=r.etape==="rendu"||r.etape==="annule",dm=(p.demandes||[]).find(x=>x.reparation===r.numero);if(!clos||(r.messages||[]).length)L.push({k:r.numero,t:r.appareil,s:"Réparation "+r.numero+(dm?" · suite de la demande "+dm.ref:""),ms:r.messages||[]})});
+  /* une demande devenue réparation n'a plus sa propre conversation : tout continue dans celle de la réparation */
+  (p.demandes||[]).forEach(x=>{if(x.reparation)return;if(!x.traitee||(x.messages||[]).length)L.push({k:"d:"+x.ref,t:x.sujet.replace(/^Demande de devis \(espace client\) : /,"Devis : ").replace(/^Demande : /,""),s:"Demande "+x.ref,ms:x.messages||[]})});
   const last=c=>c.ms.length?c.ms[c.ms.length-1].le:"";return L.sort((a,b)=>(msgUnread(b.ms)-msgUnread(a.ms))||String(last(b)).localeCompare(String(last(a))))}
 function accConvAuth(k){return k==="c"||k.startsWith("d:")?{fil:k}:{numero:k}}
 function accConvSet(k,ms){if(!ACC)return;if(k==="c")ACC.messages_general=ms;else if(k.startsWith("d:")){const d=(ACC.demandes||[]).find(x=>"d:"+x.ref===k);if(d)d.messages=ms}else{const r=ACC.reparations.find(x=>x.numero===k);if(r)r.messages=ms}}
