@@ -115,6 +115,36 @@ function vue_demande(array $r, bool $complet = false): array {
   return $v;
 }
 
+/* Description d'une conversation pour la gestion (clé r:ID, d:ID ou c:ID) */
+function fil_gestion(array $x): ?array {
+  $pdo = db();
+  if ((int)$x['reparation_id']) {
+    $q = $pdo->prepare('SELECT id, numero, nom, email, telephone, appareil FROM gt_reparations WHERE id = ?'); $q->execute([$x['reparation_id']]); $r = $q->fetch();
+    return $r ? ['cle' => 'r:' . $r['id'], 'type' => 'reparation', 'nom' => $r['nom'], 'email' => $r['email'], 'telephone' => $r['telephone'], 'sujet' => 'Réparation ' . $r['numero'] . ' · ' . $r['appareil'], 'id' => (int)$r['id']] : null;
+  }
+  if ((int)$x['demande_id']) {
+    $q = $pdo->prepare('SELECT id, ref, nom, email, telephone, sujet FROM gt_demandes WHERE id = ?'); $q->execute([$x['demande_id']]); $r = $q->fetch();
+    return $r ? ['cle' => 'd:' . $r['id'], 'type' => 'demande', 'nom' => $r['nom'], 'email' => $r['email'], 'telephone' => $r['telephone'], 'ref' => $r['ref'], 'sujet' => 'Demande ' . $r['ref'] . ' · ' . preg_replace('/^Demande( de devis \(espace client\))? : /', '', (string)$r['sujet']), 'id' => (int)$r['id']] : null;
+  }
+  if ((int)$x['client_id']) {
+    $q = $pdo->prepare('SELECT id, nom, email, telephone FROM gt_clients WHERE id = ?'); $q->execute([$x['client_id']]); $r = $q->fetch();
+    return $r ? ['cle' => 'c:' . $r['id'], 'type' => 'client', 'nom' => $r['nom'], 'email' => $r['email'], 'telephone' => $r['telephone'], 'sujet' => 'Espace client · conversation générale', 'id' => (int)$r['id']] : null;
+  }
+  return null;
+}
+
+function fil_ouvrir(string $cle): array {
+  if (!preg_match('/^([rdc]):(\d+)$/', $cle, $m)) fail('Conversation inconnue.');
+  $x = ['reparation_id' => $m[1] === 'r' ? $m[2] : 0, 'demande_id' => $m[1] === 'd' ? $m[2] : 0, 'client_id' => $m[1] === 'c' ? $m[2] : 0];
+  $ctx = fil_gestion($x);
+  if (!$ctx) fail('Conversation introuvable.', 404);
+  $fil = [$m[1], (int)$m[2]];
+  if ($m[1] === 'd') {  /* rattache la conversation au client de la demande, pour la retrouver dans son espace */
+    $q = db()->prepare('SELECT client_id FROM gt_demandes WHERE id = ?'); $q->execute([(int)$m[2]]); $fil[] = (int)$q->fetchColumn();
+  }
+  return [$fil, $ctx];
+}
+
 /* ---------- Sans connexion : état, connexion ---------- */
 if ($action === 'etat') {
   out(['ok' => true, 'connecte' => connecte($COOKIE), 'etapes' => array_map(fn($k, $v) => ['etape' => $k, 'libelle' => $v[0]], array_keys(ETAPES), ETAPES)]);
@@ -193,7 +223,46 @@ switch ($action) {
     $n = (int)$pdo->query("SELECT COUNT(*) FROM gt_demandes WHERE statut IN ('nouvelle','en_cours')")->fetchColumn();
     $dv = $pdo->query("SELECT * FROM gt_reparations WHERE devis_vu = 0 ORDER BY maj_le DESC")->fetchAll();
     $ms = $pdo->query("SELECT * FROM gt_reparations WHERE id IN (SELECT reparation_id FROM gt_messages WHERE auteur = 'client' AND lu = 0) ORDER BY maj_le DESC")->fetchAll();
-    out(['ok' => true, 'demandes' => $n, 'devis' => array_map('vue', $dv), 'messages' => array_map('vue', $ms), 'notif' => meta('notif', 'chaque')]);
+    $nm = (int)$pdo->query("SELECT COUNT(*) FROM gt_messages WHERE auteur = 'client' AND lu = 0")->fetchColumn();
+    out(['ok' => true, 'demandes' => $n, 'devis' => array_map('vue', $dv), 'messages' => array_map('vue', $ms), 'messages_non_lus' => $nm, 'notif' => meta('notif', 'chaque')]);
+
+  /* ---------- Messagerie : toutes les conversations ---------- */
+  case 'fils':
+    $rows = $pdo->query("SELECT reparation_id, demande_id, client_id, MAX(le) AS dernier, COUNT(*) AS n,
+        SUM(CASE WHEN auteur = 'client' AND lu = 0 THEN 1 ELSE 0 END) AS non_lus, MAX(id) AS mid
+      FROM gt_messages GROUP BY reparation_id, demande_id, client_id ORDER BY dernier DESC LIMIT 150")->fetchAll();
+    $fils = [];
+    foreach ($rows as $x) {
+      $f = fil_gestion($x);
+      if (!$f) continue;
+      $m = $pdo->prepare('SELECT auteur, texte, pj FROM gt_messages WHERE id = ?');
+      $m->execute([$x['mid']]);
+      $dm = $m->fetch();
+      $f += ['dernier' => $x['dernier'], 'n' => (int)$x['n'], 'non_lus' => (int)$x['non_lus'],
+        'apercu' => ($dm['auteur'] === 'atelier' ? 'Vous : ' : '') . ((string)$dm['texte'] !== '' ? mb_substr((string)$dm['texte'], 0, 90) : '📎 fichier')];
+      $fils[] = $f;
+    }
+    out(['ok' => true, 'fils' => $fils]);
+
+  case 'fil':
+    [$fil, $ctx] = fil_ouvrir(txt($d['fil'] ?? '', 20));
+    $ms = messages_fil($fil, 'atelier');
+    marquer_lus($fil, 'client');
+    out(['ok' => true, 'fil' => $ctx, 'messages' => $ms]);
+
+  case 'fil_envoyer':
+    [$fil, $ctx] = fil_ouvrir(txt($d['fil'] ?? '', 20));
+    $texte = txt($d['texte'] ?? '', 2000);
+    $pj = recevoir_pj(6);
+    if ($texte === '' && !$pj) fail('Écrivez un message ou joignez un fichier.');
+    $mail = false;
+    if (!empty($d['mail'])) {
+      if ($fil[0] === 'r') $mail = mail_message(fiche($fil[1]), $texte, count($pj));
+      else $mail = mail_message_espace($ctx['email'], $ctx['nom'], $texte, count($pj), $fil[0] === 'd' ? 'Demande ' . $ctx['ref'] : 'Espace client');
+    }
+    ajouter_message($fil, 'atelier', $texte, $pj, $mail);
+    marquer_lus($fil, 'client');
+    out(['ok' => true, 'fil' => $ctx, 'messages' => messages_fil($fil, 'atelier'), 'mail' => $mail]);
 
   case 'demandes':
     $vue = txt($d['vue'] ?? 'a_traiter', 12);

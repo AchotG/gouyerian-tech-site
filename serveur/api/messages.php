@@ -23,37 +23,56 @@ if (!https_ok()) fail('Ouvrez la page en https://', 403);
 $d = entree();
 if (!$d) fail('Demande illisible.');
 $action = txt($d['action'] ?? 'lire', 20);
-$numero = norm_numero(txt($d['numero'] ?? '', 30));
-if ($numero === '') fail('Numéro de suivi manquant.');
-
 $pdo = db();
-$s = $pdo->prepare('SELECT * FROM gt_reparations WHERE numero = ?');
-$s->execute([$numero]);
-$r = $s->fetch();
 
-/* Accès : code de suivi, ou espace client connecté avec la même adresse e-mail */
-$ok = false;
-$code = norm_code(txt($d['code'] ?? '', 20));
-if ($r && $code !== '' && hash_equals($r['code'], $code)) $ok = true;
-if ($r && !$ok) {
+/* Client connecté à son espace (cookie de session) */
+function client_session(): ?array {
   $j = $_COOKIE['gtcli'] ?? '';
-  if (preg_match('/^[a-f0-9]{64}$/', $j)) {
-    $c = $pdo->prepare('SELECT c.email FROM gt_csessions s JOIN gt_clients c ON c.id = s.client_id WHERE s.jeton = ? AND s.expire > ?');
-    $c->execute([hash('sha256', $j), now()]);
-    $em = $c->fetchColumn();
-    if ($em && strtolower((string)$em) === strtolower((string)$r['email'])) $ok = true;
+  if (!preg_match('/^[a-f0-9]{64}$/', $j)) return null;
+  $c = db()->prepare('SELECT c.* FROM gt_csessions s JOIN gt_clients c ON c.id = s.client_id WHERE s.jeton = ? AND s.expire > ?');
+  $c->execute([hash('sha256', $j), now()]);
+  return $c->fetch() ?: null;
+}
+
+/* Quelle conversation ? « fil » = d:RÉFÉRENCE (une demande) ou c (conversation générale), réservés à l'espace client ;
+   sinon « numero » d'une réparation, avec son code de suivi ou l'espace client de la même adresse */
+$fil = null; $r = null; $titre = ''; $email = ''; $nom = ''; $lien = rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/') . '/mon-espace/';
+$cfil = txt($d['fil'] ?? '', 40);
+if ($cfil !== '') {
+  $cl = client_session();
+  if (!$cl) fail('Connectez-vous à votre espace client.', 401);
+  $nom = (string)$cl['nom']; $email = (string)$cl['email'];
+  if ($cfil === 'c') { $fil = ['c', (int)$cl['id']]; $titre = 'conversation générale'; }
+  elseif (preg_match('/^d:(D-\d{4}-\d{3,})$/', $cfil, $m)) {
+    $q = $pdo->prepare("SELECT * FROM gt_demandes WHERE ref = ? AND (client_id = ? OR (email <> '' AND LOWER(email) = ?))");
+    $q->execute([$m[1], $cl['id'], strtolower($cl['email'])]);
+    $dm = $q->fetch();
+    if (!$dm) fail('Demande introuvable.', 404);
+    $fil = ['d', (int)$dm['id'], (int)$cl['id']]; $titre = 'demande ' . $dm['ref'];
+  } else fail('Conversation inconnue.');
+} else {
+  $numero = norm_numero(txt($d['numero'] ?? '', 30));
+  if ($numero === '') fail('Numéro de suivi manquant.');
+  $s = $pdo->prepare('SELECT * FROM gt_reparations WHERE numero = ?');
+  $s->execute([$numero]);
+  $r = $s->fetch();
+  $ok = false;
+  $code = norm_code(txt($d['code'] ?? '', 20));
+  if ($r && $code !== '' && hash_equals($r['code'], $code)) $ok = true;
+  if ($r && !$ok) { $cl = client_session(); if ($cl && strtolower((string)$cl['email']) === strtolower((string)$r['email'])) $ok = true; }
+  if (!$ok) {
+    limite('suivi:' . ip(), 20, 10);
+    essai('suivi:' . ip());
+    fail('Accès refusé à cette réparation.', 403);
   }
+  $fil = ['r', (int)$r['id']]; $titre = 'réparation ' . $r['numero'] . ' (' . $r['appareil'] . ')'; $nom = (string)$r['nom'];
 }
-if (!$ok) {
-  limite('suivi:' . ip(), 20, 10);
-  essai('suivi:' . ip());
-  fail('Accès refusé à cette réparation.', 403);
-}
+[$W, $WP] = fil_where($fil);
 
 /* Lien temporaire (2 h) vers une pièce jointe, pour la lire directement (vidéos) */
 if ($action === 'lien') {
-  $s = $pdo->prepare('SELECT pj FROM gt_messages WHERE id = ? AND reparation_id = ?');
-  $s->execute([(int)($d['id'] ?? 0), $r['id']]);
+  $s = $pdo->prepare("SELECT pj FROM gt_messages WHERE id = ? AND $W");
+  $s->execute(array_merge([(int)($d['id'] ?? 0)], $WP));
   $i = (int)($d['i'] ?? -1);
   if (!isset((json_decode((string)$s->fetchColumn(), true) ?: [])[$i])) fail('Fichier introuvable.', 404);
   $base = (int)$d['id'] . "-$i-" . (time() + 7200);
@@ -62,8 +81,8 @@ if ($action === 'lien') {
 
 /* Ouvrir une pièce jointe de la conversation */
 if ($action === 'pj') {
-  $s = $pdo->prepare('SELECT pj FROM gt_messages WHERE id = ? AND reparation_id = ?');
-  $s->execute([(int)($d['id'] ?? 0), $r['id']]);
+ $s = $pdo->prepare("SELECT pj FROM gt_messages WHERE id = ? AND $W");
+  $s->execute(array_merge([(int)($d['id'] ?? 0)], $WP));
   $f = (json_decode((string)$s->fetchColumn(), true) ?: [])[(int)($d['i'] ?? -1)] ?? null;
   $path = $f ? prive_dir() . '/pj/' . basename($f['fichier']) : '';
   if (!$f || !is_file($path)) fail('Fichier introuvable.', 404);
@@ -76,16 +95,13 @@ if ($action === 'envoyer') {
   $texte = txt($d['texte'] ?? '', 2000);
   $pj = recevoir_pj(4);
   if ($texte === '' && !$pj) fail('Écrivez un message.');
-  $pdo->prepare('INSERT INTO gt_messages (reparation_id, auteur, texte, pj, le, lu) VALUES (?, ?, ?, ?, ?, 0)')
-    ->execute([$r['id'], 'client', $texte, json_encode($pj, JSON_UNESCAPED_UNICODE), now()]);
-  $pdo->prepare('UPDATE gt_reparations SET maj_le = ? WHERE id = ?')->execute([now(), $r['id']]);
-  notifier_atelier("message de {$r['nom']} ({$r['numero']})",
-    "Nouveau message de {$r['nom']} pour la réparation {$r['numero']} ({$r['appareil']}) :\n« " . mb_substr($texte, 0, 300) . (mb_strlen($texte) > 300 ? '…' : '') . ' »'
+  ajouter_message($fil, 'client', $texte, $pj);
+  if ($r) $pdo->prepare('UPDATE gt_reparations SET maj_le = ? WHERE id = ?')->execute([now(), $r['id']]);
+  notifier_atelier('message de ' . ($nom !== '' ? $nom : $email) . " ($titre)",
+    'Nouveau message de ' . ($nom !== '' ? $nom : $email) . " ($titre) :\n« " . mb_substr($texte, 0, 300) . (mb_strlen($texte) > 300 ? '…' : '') . ' »'
     . ($pj ? "\n" . count($pj) . ' pièce(s) jointe(s)' : ''));
 }
 
 /* Les messages de l'atelier sont marqués comme lus par le client */
-if ($action === 'lire' || $action === 'envoyer') {
-  $pdo->prepare("UPDATE gt_messages SET lu = 1, lu_le = ? WHERE reparation_id = ? AND auteur = 'atelier' AND lu = 0")->execute([now(), $r['id']]);
-}
-out(['ok' => true, 'messages' => messages((int)$r['id'], 'client')]);
+if ($action === 'lire' || $action === 'envoyer') marquer_lus($fil, 'atelier');
+out(['ok' => true, 'messages' => messages_fil($fil, 'client')]);

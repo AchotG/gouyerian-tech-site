@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -180,6 +180,8 @@ function schema(PDO $pdo): void {
   if ($sqlite) $pdo->exec('CREATE INDEX IF NOT EXISTS gt_m_rep ON gt_messages (reparation_id)');
   ajouter_colonne($pdo, 'gt_messages', 'mail', 'TINYINT NOT NULL DEFAULT 0');   // v5 : e-mail d'avis envoyé au destinataire
   ajouter_colonne($pdo, 'gt_messages', 'lu_le', 'DATETIME NULL');               // v5 : date de lecture
+  ajouter_colonne($pdo, 'gt_messages', 'demande_id', 'INT NOT NULL DEFAULT 0');  // v6 : conversation d'une demande (reparation_id = 0)
+  ajouter_colonne($pdo, 'gt_messages', 'client_id', 'INT NOT NULL DEFAULT 0');   // v6 : conversation générale d'un client (sans réparation ni demande)
   $pdo->prepare('DELETE FROM gt_meta WHERE cle = ?')->execute(['schema']);
   $pdo->prepare('INSERT INTO gt_meta (cle, val) VALUES (?, ?)')->execute(['schema', (string)SCHEMA_VERSION]);
 }
@@ -256,9 +258,35 @@ function repondre_devis(array $r, string $rep): array {
 }
 
 /* Messages d'une réparation ; $pour = 'client' ou 'atelier' (pièces jointes visibles seulement de l'atelier) */
-function messages(int $rid, string $pour): array {
-  $s = db()->prepare('SELECT * FROM gt_messages WHERE reparation_id = ? ORDER BY le, id');
-  $s->execute([$rid]);
+/* Conversations : une par réparation ['r', id], par demande ['d', id] ou générale par client ['c', id] */
+function fil_where(array $fil): array {
+  [$t, $id] = $fil;
+  if ($t === 'r') return ['reparation_id = ?', [$id]];
+  if ($t === 'd') return ['reparation_id = 0 AND demande_id = ?', [$id]];
+  return ['reparation_id = 0 AND demande_id = 0 AND client_id = ?', [$id]];
+}
+
+function fil_cols(array $fil): array {
+  return ['reparation_id' => $fil[0] === 'r' ? $fil[1] : 0, 'demande_id' => $fil[0] === 'd' ? $fil[1] : 0, 'client_id' => $fil[0] === 'c' ? $fil[1] : (int)($fil[2] ?? 0)];
+}
+
+function ajouter_message(array $fil, string $auteur, string $texte, array $pj, bool $mail = false): void {
+  $c = fil_cols($fil);
+  db()->prepare('INSERT INTO gt_messages (reparation_id, demande_id, client_id, auteur, texte, pj, le, lu, mail) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)')
+    ->execute([$c['reparation_id'], $c['demande_id'], $c['client_id'], $auteur, $texte, json_encode($pj, JSON_UNESCAPED_UNICODE), now(), $mail ? 1 : 0]);
+}
+
+function marquer_lus(array $fil, string $auteur): void {
+  [$w, $p] = fil_where($fil);
+  db()->prepare("UPDATE gt_messages SET lu = 1, lu_le = ? WHERE $w AND auteur = ? AND lu = 0")->execute(array_merge([now()], $p, [$auteur]));
+}
+
+function messages(int $rid, string $pour): array { return messages_fil(['r', $rid], $pour); }
+
+function messages_fil(array $fil, string $pour): array {
+  [$w, $p] = fil_where($fil);
+  $s = db()->prepare("SELECT * FROM gt_messages WHERE $w ORDER BY le, id");
+  $s->execute($p);
   return array_map(function ($m) use ($pour) {
     $pj = json_decode((string)$m['pj'], true) ?: [];
     $v = ['id' => (int)$m['id'], 'auteur' => $m['auteur'], 'texte' => (string)$m['texte'], 'le' => $m['le'], 'lu' => (bool)(int)$m['lu'],
@@ -654,6 +682,19 @@ function supprimer_reparation(int $id): void {
   }
   foreach (['gt_messages', 'gt_historique'] as $t) $pdo->prepare("DELETE FROM $t WHERE reparation_id = ?")->execute([$id]);
   $pdo->prepare('DELETE FROM gt_reparations WHERE id = ?')->execute([$id]);
+}
+
+/* E-mail au client pour un message hors réparation (demande ou conversation générale de son espace) */
+function mail_message_espace(string $email, string $nom, string $texte, int $nb_pj, string $contexte): bool {
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+  $site = rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/');
+  $extrait = mb_substr($texte, 0, 600) . (mb_strlen($texte) > 600 ? '…' : '');
+  return mail_pro($email, 'Nouveau message de l’atelier Gouyerian Tech', [
+    'pre' => $extrait !== '' ? $extrait : 'L’atelier vous a envoyé un fichier.', 'etiquette' => $contexte, 'titre' => 'Vous avez un nouveau message',
+    'paras' => [($nom !== '' ? 'Bonjour ' . prenom($nom) : 'Bonjour') . ',', 'L’atelier vous a écrit :'],
+    'citation' => $extrait !== '' ? $extrait : null,
+    'note' => ($nb_pj ? ($nb_pj > 1 ? "$nb_pj fichiers sont joints" : 'Un fichier est joint') . ' au message. ' : '') . 'Pour lire et répondre, connectez-vous à votre espace client (un code par e-mail, sans mot de passe) : les réponses à cet e-mail ne sont pas lues.',
+    'bouton' => ['Lire et répondre dans mon espace', "$site/mon-espace/#messages"]]);
 }
 
 /* E-mail au client quand l'atelier lui écrit (dès qu'une adresse e-mail est connue) */

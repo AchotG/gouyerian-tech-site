@@ -45,7 +45,7 @@ function profil(array $c): array {
   $p = $pdo->prepare('SELECT contenu, maj_le FROM gt_paniers WHERE client_id = ?');
   $p->execute([$c['id']]);
   $pan = $p->fetch();
-  $dq = $pdo->prepare('SELECT d.ref, d.type, d.statut, d.sujet, d.details, d.pj, d.cree_le, d.maj_le, r.numero AS rep_numero FROM gt_demandes d LEFT JOIN gt_reparations r ON r.id = d.reparation_id WHERE d.client_id = ? OR (d.email <> \'\' AND LOWER(d.email) = ?) ORDER BY d.cree_le DESC LIMIT 30');
+  $dq = $pdo->prepare('SELECT d.id, d.ref, d.type, d.statut, d.sujet, d.details, d.pj, d.cree_le, d.maj_le, r.numero AS rep_numero FROM gt_demandes d LEFT JOIN gt_reparations r ON r.id = d.reparation_id WHERE d.client_id = ? OR (d.email <> \'\' AND LOWER(d.email) = ?) ORDER BY d.cree_le DESC LIMIT 30');
   $dq->execute([$c['id'], strtolower($c['email'])]);
   /* Détail affiché au client : ce qu'il a demandé (sans ses coordonnées, déjà connues), le nombre de fichiers, la réparation créée */
   $cache = ['nom', 'téléphone', 'telephone', 'e-mail', 'email', '_subject', '_captcha', '_template', 'suivi par e-mail', 'source', 'page', 'référence', 'reference'];
@@ -59,11 +59,13 @@ function profil(array $c): array {
     }
     return ['ref' => $x['ref'], 'type' => $x['type'], 'sujet' => $x['sujet'], 'statut' => STATUTS_DEMANDE[$x['statut']] ?? 'Reçue',
       'traitee' => in_array($x['statut'], ['traitee', 'archivee'], true), 'cree_le' => $x['cree_le'], 'maj_le' => $x['maj_le'],
-      'details' => array_slice($det, 0, 25), 'nb_pj' => count(json_decode((string)$x['pj'], true) ?: []), 'reparation' => $x['rep_numero']];
+      'details' => array_slice($det, 0, 25), 'nb_pj' => count(json_decode((string)$x['pj'], true) ?: []), 'reparation' => $x['rep_numero'],
+      'messages' => messages_fil(['d', (int)$x['id']], 'client')];
   }, $dq->fetchAll());
   return [
     'ok' => true,
     'demandes' => $dem,
+    'messages_general' => messages_fil(['c', (int)$c['id']], 'client'),
     'client' => ['email' => $c['email'], 'nom' => $c['nom'], 'telephone' => $c['telephone'], 'cree_le' => $c['cree_le']],
     'reparations' => $reps,
     'panier' => $pan ? (json_decode($pan['contenu'], true) ?: []) : [],

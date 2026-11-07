@@ -433,6 +433,9 @@ textarea{min-height:140px;resize:vertical}
 .legal h2{font-size:1.35rem;margin-top:18px}
 
 /* Assistant */
+.cp-at{display:flex;align-items:center;gap:10px;margin:0 12px 4px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--acc) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 35%,var(--line));color:var(--fg);text-decoration:none}
+.cp-at:hover{border-color:var(--acc)}.cp-at .msg-av{flex:none;width:34px;height:34px;border-radius:10px;font-size:.7rem}.cp-at .msg-av::after{display:none}
+.cp-at>span:nth-child(2){flex:1;display:grid;gap:1px;min-width:0}.cp-at small{color:var(--muted);font-size:.76rem}.cp-at>span:last-child{font-size:1.3rem;color:var(--acc)}
 .cb{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:45;width:58px;height:58px;border-radius:50%;border:0;background:var(--inv);color:var(--on-inv);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.45);transition:transform .2s}
 .cb:hover{transform:scale(1.05)}
 .cb svg.i{width:24px;height:24px}
@@ -1609,6 +1612,34 @@ details>.msgs{margin-top:10px}
 .acc-d-l div{display:grid;grid-template-columns:minmax(0,140px) minmax(0,1fr);gap:10px;font-size:.9rem}
 .acc-d-l dt{color:var(--muted)}.acc-d-l dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 @media (max-width:480px){.acc-d-l div{grid-template-columns:minmax(0,1fr);gap:2px}.acc-d>summary{flex-wrap:wrap}.acc-d-t{flex-basis:calc(100% - 30px)}}
+/* Messagerie de l'espace client : liste des conversations et fenêtre de discussion */
+.acc-cl{display:grid;gap:8px}
+.acc-cv,.acc-mb{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--fg);text-align:left;font:inherit;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;transition:border-color .2s,background .2s}
+.acc-cv:hover,.acc-mb:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 5%,var(--bg))}
+.acc-cv .msg-av,.acc-mb .msg-av{flex:none;width:40px;height:40px;border-radius:12px;font-size:.78rem}
+.acc-cv .msg-av::after,.acc-mb .msg-av::after{display:none}
+.acc-cv-b{flex:1;min-width:0;display:grid;gap:2px}
+.acc-cv-1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.acc-cv-1 b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.acc-cv-1 small{flex:none;color:var(--muted);font:500 .72rem var(--f-mono)}
+.acc-cv-s{color:var(--acc);font-size:.76rem;font-weight:600}
+.acc-cv-a{color:var(--muted);font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc-cv.nl{border-color:color-mix(in srgb,var(--acc) 50%,var(--line))}.acc-cv.nl .acc-cv-a{color:var(--fg);font-weight:600}
+.acc-cv-n{flex:none;min-width:24px;height:24px;padding:0 7px;border-radius:12px;display:grid;place-items:center;background:var(--grad);color:#fff;font:800 .76rem var(--f-body)}
+.acc-mb span{display:grid;gap:1px;flex:1;min-width:0}.acc-mb small{color:var(--muted);font-size:.84rem}.acc-mb.nl small{color:var(--acc);font-weight:700}
+.acc-mb-go{flex:none!important;font-size:1.4rem;color:var(--muted)}
+.acc-sec>h3 .msg-nb{margin-left:8px;vertical-align:2px;animation:none}
+html.acc-lock,html.acc-lock body{overflow:hidden}
+.acc-mod{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:rgba(6,12,24,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:accmf .2s ease}
+@keyframes accmf{from{opacity:0}}
+.acc-mod-in{width:min(620px,100%);max-height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;animation:accmi .25s cubic-bezier(.2,.8,.2,1)}
+@keyframes accmi{from{transform:translateY(14px);opacity:.4}}
+.acc-mod-hd{display:flex;align-items:center;gap:12px;color:#fff;min-width:0}.acc-mod-hd b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc-mod-x{flex:none;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font:600 .9rem var(--f-body);cursor:pointer}
+#accmodb{min-height:0;display:grid}#accmodb .msgs{max-height:100%;grid-template-rows:auto minmax(0,1fr) auto}#accmodb .msg-l{max-height:none;min-height:200px}
+@media (max-width:700px){.acc-mod{padding:0;place-items:stretch;background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}.acc-mod-in{width:100%;height:100%;gap:0;grid-template-rows:auto minmax(0,1fr)}
+ .acc-mod-hd{padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:var(--surface);color:var(--fg);border-bottom:1px solid var(--line)}
+ .acc-mod-x{border-color:var(--line);background:var(--bg);color:var(--fg)}
+ #accmodb .msgs{border-radius:0;border:0;box-shadow:none;height:100%}#accmodb .msg-f{padding-bottom:calc(12px + env(safe-area-inset-bottom))}}
+@media (prefers-reduced-motion:reduce){.acc-mod,.acc-mod-in{animation:none}}
 /* Espace client connecté : pleine largeur, réparations et devis côte à côte, puis panier et coordonnées */
 #v-compte.acc-on .trk{grid-template-columns:minmax(0,1fr)}
 #v-compte.acc-on .aside{display:none}
@@ -2461,6 +2492,7 @@ details>.msgs{margin-top:10px}
 <button class="cb" id="cb" type="button" aria-label="Ouvrir l’assistant" aria-expanded="false" aria-controls="cp" data-ic="chat"></button>
 <div class="cp" id="cp" role="dialog" aria-label="Assistant Gouyerian Tech" hidden>
   <div class="ch"><div><b>Assistant Gouyerian Tech</b><small>Réponses automatiques</small></div><button class="icon-btn" id="cx" type="button" aria-label="Fermer l’assistant" data-ic="close"></button></div>
+  <a class="cp-at" href="#compte" id="cpat"><span class="msg-av" aria-hidden="true">GT</span><span><b>Écrire à l’atelier</b><small>Une vraie personne vous répond, dans votre espace client</small></span><span aria-hidden="true">›</span></a>
   <div class="cm" id="cm" aria-live="polite"></div>
   <div class="cq" id="cq"></div>
   <div class="cf"><input id="ci" placeholder="Écrivez votre question" autocomplete="off" aria-label="Votre question"><button id="cs" type="button">Envoyer</button></div>
@@ -3650,7 +3682,7 @@ function msgItems(ms){if(!ms||!ms.length)return `<li class="msg-0"><span class="
     const pj=(m.pj||[]).map(f=>/^video\//.test(f.type)?`<span class="msg-vid" data-mvid="${m.id}-${f.i}" data-nom="${esc(f.nom)}"><span class="msg-vload">▶ Chargement de la vidéo…</span></span>`:/^image\//.test(f.type)?`<button type="button" class="msg-img" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}" aria-label="Ouvrir ${esc(f.nom)}"><span>🖼</span></button>`:`<button type="button" class="msg-pjl" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}">${MSG_IC.file}${esc(f.nom)}</button>`).join("");
     return h+`<li class="msg-r ${a}${cont?" cont":""}${a==="a"&&!m.lu?" new":""}">${a==="a"?'<span class="msg-av" aria-hidden="true">GT</span>':""}<div class="msg-bu"><span class="sr">${a==="a"?"Atelier":"Vous"} :</span>${m.texte?`<p>${esc(m.texte)}</p>`:""}${pj?`<span class="msg-pjs">${pj}</span>`:""}<span class="msg-mt">${esc(msgTime(m.le))}${a==="c"?(m.lu?`<span class="lu" title="Lu par l’atelier">${MSG_IC.lu}</span><span>Lu</span>`:`<span title="Distribué">${MSG_IC.ok}</span><span>Distribué</span>`):""}</span></div></li>`}).join("")}
 function msgUnread(ms){return(ms||[]).filter(m=>m.auteur==="atelier"&&!m.lu).length}
-function msgHTML(ms,n){const u=msgUnread(ms);return `<section class="msgs" data-mn="${esc(n)}" aria-label="Messages avec l’atelier"><header class="msg-hd"><span class="msg-av" aria-hidden="true">GT</span><div><b>Atelier Gouyerian Tech</b><small>Réparation ${esc(n)} · réponse sous 24 h ouvrées</small></div>${u?`<span class="msg-nb">${u} nouveau${u>1?"x":""}</span>`:""}</header><ul class="msg-l" aria-live="polite">${msgItems(ms)}</ul><form class="msg-f" novalidate><div class="msg-sel" hidden></div><div class="msg-bar"><label class="msg-ib" title="Joindre des photos ou un PDF">${MSG_IC.clip}<span class="sr">Joindre des fichiers</span><input type="file" accept="image/*,video/*,application/pdf" multiple hidden></label><label class="sr" for="mt-${esc(n)}">Votre message à l’atelier</label><textarea id="mt-${esc(n)}" rows="1" maxlength="2000" placeholder="Écrire à l’atelier…"></textarea><button class="msg-ib go" type="submit" aria-label="Envoyer">${MSG_IC.send}</button></div><span class="msg-tip">Ctrl + Entrée pour envoyer · photos, vidéos ou PDF, 4 au plus</span><p class="msg" role="alert"></p></form></section>`}
+function msgHTML(ms,n,sub){const u=msgUnread(ms);return `<section class="msgs" data-mn="${esc(n)}" aria-label="Messages avec l’atelier"><header class="msg-hd"><span class="msg-av" aria-hidden="true">GT</span><div><b>Atelier Gouyerian Tech</b><small>${esc(sub||"Réparation "+n)} · réponse sous 24 h ouvrées</small></div>${u?`<span class="msg-nb">${u} nouveau${u>1?"x":""}</span>`:""}</header><ul class="msg-l" aria-live="polite">${msgItems(ms)}</ul><form class="msg-f" novalidate><div class="msg-sel" hidden></div><div class="msg-bar"><label class="msg-ib" title="Joindre des photos ou un PDF">${MSG_IC.clip}<span class="sr">Joindre des fichiers</span><input type="file" accept="image/*,video/*,application/pdf" multiple hidden></label><label class="sr" for="mt-${esc(n)}">Votre message à l’atelier</label><textarea id="mt-${esc(n)}" rows="1" maxlength="2000" placeholder="Écrire à l’atelier…"></textarea><button class="msg-ib go" type="submit" aria-label="Envoyer">${MSG_IC.send}</button></div><span class="msg-tip">Ctrl + Entrée pour envoyer · photos, vidéos ou PDF, 4 au plus</span><p class="msg" role="alert"></p></form></section>`}
 async function msgApi(fd){let r,j;try{r=await fetch("/api/messages.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}})}catch(e){throw new Error("Connexion impossible. Réessayez ou appelez le 06 05 79 48 94.")}
   try{j=await r.json()}catch(e){throw new Error("La messagerie est momentanément indisponible. Appelez le 06 05 79 48 94.")}
   if(!j.ok)throw new Error(j.erreur||"Envoi impossible.");return j}
@@ -4101,8 +4133,23 @@ function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==
   return `<article class="acc-r"><div><span class="eyebrow">${esc(r.numero)} · ${clos?"le "+fdate(r.maj_le):"mis à jour le "+fdate(r.maj_le)}</span><h4>${esc(r.appareil)}${u?`<span class="msg-nb">${u} message${u>1?"s":""}</span>`:""}</h4><p>${esc(r.libelle)}${clos?"":" · "+esc(r.phrase)}</p></div>`
    +(clos||r.etape==="annule"?"":`<ol class="trk-p" style="--n:${steps.length}">${steps.map((e,k)=>`<li class="${k<ci?"done":k===ci?"done cur":""}">${esc(lib[e]||e)}</li>`).join("")}</ol>`)
    +(r.devis==="attente"?`<div class="acc-dv"><b>Votre accord est attendu${r.prix?" : "+esc(r.prix):""}.</b><span>Voir le détail dans l’historique.</span><div class="row2"><button type="button" class="btn sm" data-adv="accepte" data-n="${esc(r.numero)}">J’accepte le devis</button><button type="button" class="btn sm ghost" data-adv="refuse" data-n="${esc(r.numero)}">Je refuse</button></div></div>`:r.devis==="accepte"&&r.etape==="devis"?`<p class="acc-g on">✓ Devis accepté</p>`:"")
-   +g+(clos?`<details${u?" open":""}><summary>Messages avec l’atelier${nm?" ("+nm+")":""}</summary>${msgHTML(r.messages,r.numero)}</details>`:msgHTML(r.messages,r.numero))
+   +g+`<button type="button" class="acc-mb${u?" nl":""}" data-conv="${esc(r.numero)}"><span class="msg-av" aria-hidden="true">GT</span><span><b>Messages avec l’atelier</b><small>${u?u+" nouveau"+(u>1?"x":"")+" message"+(u>1?"s":""):nm?nm+" message"+(nm>1?"s":""):"Posez une question, envoyez une photo"}</small></span><span class="acc-mb-go" aria-hidden="true">›</span></button>`
    +`<details${i===0&&!clos?" open":""}><summary>Historique</summary><ul class="trk-h">${r.historique.slice().reverse().map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></details></article>`}
+/* Conversations de l'espace client : générale, par réparation, par demande. Une ligne → la conversation s'ouvre en grand */
+function accConvs(){const p=ACC;if(!p)return[];const L=[];
+  L.push({k:"c",t:"Atelier Gouyerian Tech",s:"Question, conseil, rendez-vous…",ms:p.messages_general||[]});
+  p.reparations.forEach(r=>{const clos=r.etape==="rendu"||r.etape==="annule";if(!clos||(r.messages||[]).length)L.push({k:r.numero,t:r.appareil,s:"Réparation "+r.numero,ms:r.messages||[]})});
+  (p.demandes||[]).forEach(x=>{if(!x.traitee||(x.messages||[]).length)L.push({k:"d:"+x.ref,t:x.sujet.replace(/^Demande de devis \(espace client\) : /,"Devis : ").replace(/^Demande : /,""),s:"Demande "+x.ref,ms:x.messages||[]})});
+  const last=c=>c.ms.length?c.ms[c.ms.length-1].le:"";return L.sort((a,b)=>(msgUnread(b.ms)-msgUnread(a.ms))||String(last(b)).localeCompare(String(last(a))))}
+function accConvAuth(k){return k==="c"||k.startsWith("d:")?{fil:k}:{numero:k}}
+function accConvSet(k,ms){if(!ACC)return;if(k==="c")ACC.messages_general=ms;else if(k.startsWith("d:")){const d=(ACC.demandes||[]).find(x=>"d:"+x.ref===k);if(d)d.messages=ms}else{const r=ACC.reparations.find(x=>x.numero===k);if(r)r.messages=ms}}
+function accConvOpen(k){const c=accConvs().find(x=>x.k===k);if(!c)return;let m=$("accmod");
+  if(!m){document.body.insertAdjacentHTML("beforeend",`<div class="acc-mod" id="accmod" hidden role="dialog" aria-modal="true" aria-labelledby="accmodt"><div class="acc-mod-in"><div class="acc-mod-hd"><button type="button" class="acc-mod-x" id="accmodx" aria-label="Fermer la conversation">‹ Retour</button><b id="accmodt"></b></div><div id="accmodb"></div></div></div>`);m=$("accmod");
+    $("accmodx").onclick=accConvClose;m.addEventListener("click",e=>{if(e.target===m)accConvClose()});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("accmod").hidden)accConvClose()})}
+  $("accmodt").textContent=c.t;$("accmodb").innerHTML=msgHTML(c.ms,c.k,c.s);m.hidden=false;document.documentElement.classList.add("acc-lock");
+  msgBind($("accmodb"),accConvAuth,accConvSet);setTimeout(()=>{const t=$("accmodb").querySelector("textarea");if(t&&matchMedia("(min-width:700px)").matches)t.focus()},200)}
+document.addEventListener("click",e=>{if(e.target.closest("#cpat")){window.GT_OPEN_C=1;try{sessionStorage.setItem("gt-open-c","1")}catch(_){}const x=$("cx");if(x)x.click()}},true);
+function accConvClose(){const m=$("accmod");if(!m)return;m.hidden=true;document.documentElement.classList.remove("acc-lock");$("accmodb").innerHTML="";if(ACC&&!$("accin").hidden)accDraw()}
 /* Une demande du client : ligne cliquable qui s'ouvre sur le détail (ce qui a été demandé, fichiers, suite donnée) */
 const DEM_EXPL={"Reçue":"L’atelier a bien reçu votre demande : vous êtes rappelé rapidement pour en parler.","En cours de traitement":"L’atelier s’occupe de votre demande : vous êtes recontacté avec la suite (devis, rendez-vous ou disponibilité).","Traitée":"Votre demande a été traitée."};
 function accDem(x){const t=x.sujet.replace(/^Demande de devis \(espace client\) : /,"Devis : ").replace(/^Demande : /,"");
@@ -4113,12 +4160,14 @@ function accDem(x){const t=x.sujet.replace(/^Demande de devis \(espace client\) 
    ${x.nb_pj?`<p class="note">📎 ${x.nb_pj} fichier${x.nb_pj>1?"s":""} envoyé${x.nb_pj>1?"s":""} avec la demande</p>`:""}
    <p class="note">Une précision à ajouter ? Appelez le <a href="tel:+33605794894">06 05 79 48 94</a> en indiquant la référence ${esc(x.ref)}.</p></div></details></li>`}
 function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,cours=rs.filter(r=>r.etape!=="rendu"&&r.etape!=="annule"),fin=rs.filter(r=>r.etape==="rendu"||r.etape==="annule");
-  const dem=p.demandes||[],att=dem.filter(x=>!x.traitee).length,dv=cours.filter(r=>r.devis_etat==="attente").length,nmsg=rs.reduce((a,r)=>a+msgUnread(r.messages),0);
+  const dem=p.demandes||[],att=dem.filter(x=>!x.traitee).length,dv=cours.filter(r=>r.devis_etat==="attente").length,nmsg=rs.reduce((a,r)=>a+msgUnread(r.messages),0)+msgUnread(p.messages_general)+(p.demandes||[]).reduce((a,x)=>a+msgUnread(x.messages),0);
   const stat=(n,t,href)=>`<a class="acc-st" href="${href}"><b>${n}</b><span>${t}</span></a>`;
   $("accin").innerHTML=
    /* 1. En-tête : qui est connecté + résumé */
    `<div class="wcard acc-top"><div class="acc-hd"><div><span class="eyebrow">Mon espace client</span><h2>Bonjour${c.nom?" "+esc(c.nom.split(" ")[0]):""}</h2><p class="note">${esc(c.email)}</p></div><button type="button" class="btn ghost sm" id="accout">Se déconnecter</button></div>`
-   +`<div class="acc-sts">${stat(cours.length,"réparation"+(cours.length>1?"s":"")+" en cours","#acc-rep")}${stat(att,"demande"+(att>1?"s":"")+" en attente","#acc-dem")}${dv?stat(dv,"devis à valider","#acc-rep"):""}${nmsg?stat(nmsg,"nouveau"+(nmsg>1?"x":"")+" message"+(nmsg>1?"s":""),"#acc-rep"):""}${stat(cartCount(),"article"+(cartCount()>1?"s":"")+" au panier","#acc-moi")}</div></div>`
+   +`<div class="acc-sts">${stat(cours.length,"réparation"+(cours.length>1?"s":"")+" en cours","#acc-rep")}${stat(att,"demande"+(att>1?"s":"")+" en attente","#acc-dem")}${dv?stat(dv,"devis à valider","#acc-rep"):""}${stat(nmsg,"nouveau"+(nmsg>1?"x":"")+" message"+(nmsg>1?"s":""),"#acc-msg")}${stat(cartCount(),"article"+(cartCount()>1?"s":"")+" au panier","#acc-moi")}</div></div>`
+   /* Messagerie : toutes les conversations avec l'atelier */
+   +`<section class="wcard acc-sec" id="acc-msg" aria-labelledby="acc-msg-t"><h3 id="acc-msg-t">Messages avec l’atelier${nmsg?`<span class="msg-nb">${nmsg} nouveau${nmsg>1?"x":""}</span>`:""}</h3><div class="acc-cl">${accConvs().map(c=>{const u=msgUnread(c.ms),l=c.ms[c.ms.length-1];return `<button type="button" class="acc-cv${u?" nl":""}" data-conv="${esc(c.k)}"><span class="msg-av" aria-hidden="true">${c.k==="c"?"GT":c.k.startsWith("d:")?"D":"R"}</span><span class="acc-cv-b"><span class="acc-cv-1"><b>${esc(c.t)}</b>${l?`<small>${esc(fdate(l.le))}</small>`:""}</span><small class="acc-cv-s">${esc(c.s)}</small><span class="acc-cv-a">${l?(l.auteur==="client"?"Vous : ":"")+esc(l.texte||"📎 fichier"):"Aucun message : touchez pour écrire"}</span></span>${u?`<span class="acc-cv-n">${u}</span>`:""}</button>`}).join("")}</div></section>`
    /* 2. Réparations et devis, côte à côte sur ordinateur */
    +`<div class="acc-cols">`
    +`<section class="wcard acc-sec" id="acc-rep" aria-labelledby="acc-rep-t"><h3 id="acc-rep-t">Mes réparations</h3>${cours.length?cours.map(accRep).join(""):`<div class="acc-empty"><b>Aucune réparation en cours</b><p>Les réparations enregistrées avec l’adresse ${esc(c.email)} s’affichent ici automatiquement. Déposée sous une autre adresse ? Suivez-la avec son numéro sur <a href="${link("#suivi")}">Suivre ma réparation</a>.</p></div>`}<p class="msg" id="accdm" role="alert"></p>`
@@ -4159,7 +4208,11 @@ function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,co
   $("accpf").onsubmit=async e=>{e.preventDefault();try{const j=await accApi("profil",{nom:$("accn").value,telephone:$("acct").value});ACC.client=j.client;S.nom=CF.nom=j.client.nom;S.tel=CF.tel=j.client.telephone;$("accpm").textContent="Enregistré."}catch(err){$("accpm").textContent=err.message}};
   $("accdel").onclick=()=>{$("accdelc").hidden=false;$("accdel").hidden=true};$("accdel0").onclick=()=>{$("accdelc").hidden=true;$("accdel").hidden=false};
   $("accdel2").onclick=async()=>{try{await accApi("supprimer");accSet(null);accView()}catch(err){$("accdelc").querySelector("b").textContent=err.message}};
-  msgBind($("accin"),n=>({numero:n}),(n,ms)=>{const r=ACC&&ACC.reparations.find(x=>x.numero===n);if(r)r.messages=ms});
+  $("accin").querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>accConvOpen(b.dataset.conv));
+  let oc=window.GT_OPEN_C;try{if(sessionStorage.getItem("gt-open-c")){oc=1;sessionStorage.removeItem("gt-open-c")}}catch(_){}
+  if(oc){window.GT_OPEN_C=0;setTimeout(()=>accConvOpen("c"),150)}
+  $("accin").querySelectorAll('a[href^="#acc-"]').forEach(a=>a.onclick=e=>{const t=document.getElementById(a.getAttribute("href").slice(1));if(t){e.preventDefault();t.scrollIntoView({behavior:"smooth",block:"start"})}});
+  if(location.hash==="#messages"){const t=$("acc-msg");if(t)setTimeout(()=>t.scrollIntoView({block:"start"}),100)}
   $("accin").querySelectorAll("[data-adv]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{const j=await accApi("devis",{numero:b.dataset.n,reponse:b.dataset.adv});accSet(j);accDraw()}catch(err){b.disabled=false;$("accdm").textContent=err.message}})}
 function accView(){if(!$("accf"))return;$("v-compte").classList.toggle("acc-on",!!ACC);if(ACC){accDraw();return}
   $("accin").hidden=true;$("accf").hidden=false;$("accm").textContent="";
