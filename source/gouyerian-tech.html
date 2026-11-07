@@ -3176,6 +3176,7 @@ const FORM="https://formsubmit.co/ajax/"+C.fsmail;
 /* v102 : les demandes arrivent d’abord dans la page de gestion de l’atelier (api/demande.php, base IONOS, pièces jointes comprises).
    Si le serveur ne répond pas, la demande part comme avant par e-mail (FormSubmit) : aucune demande perdue. */
 async function sendForm(data,files){
+  window.GT_LAST_REF="";
   if([...document.querySelectorAll(".hp")].some(i=>i.value))return; /* rempli = robot : rien n’est envoyé */
   if(PG){try{const fd=new FormData();fd.append("data",JSON.stringify(data));(files||[]).forEach(a=>fd.append("f[]",new File([a.blob],a.name,{type:a.type})));
       const r=await fetch("/api/demande.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"},signal:AbortSignal.timeout(files&&files.length?180000:15000)});
@@ -3859,7 +3860,7 @@ async function sendCart(){readCF();
   const b=$("carts"),t0=b.innerHTML;b.disabled=true;b.textContent=F.length?"Envoi des fichiers…":"Envoi en cours…";
   try{await sendForm(data,F);
     const snap=CART.map(x=>({...x})),nom=CF.nom.trim(),tel=CF.tel.trim(),mode=CF.mode;CART=[];saveCart();badge();attClear("cart");b.disabled=false;b.innerHTML=t0;$("cmsg").value="";
-    $("cartok").innerHTML=`<div class="ok-hero"><span class="ok-ic">${svg("check")}</span><h3>Merci ${esc(nom)} !</h3><p>Votre demande <b>n° ${ref}</b> est bien envoyée.</p></div>
+    $("cartok").innerHTML=`<div class="ok-hero"><span class="ok-ic">${svg("check")}</span><h3>Merci ${esc(nom)} !</h3><p>Votre demande <b>n° ${esc(window.GT_LAST_REF||ref)}</b> est bien envoyée.</p></div>
 <div class="ok-recap"><h4>Récapitulatif</h4><ul>${snap.map(x=>`<li><span class="ci-img">${svg(x.ic||"bag")}</span><span>${x.q} × ${esc(x.n)}${x.note.trim()?`<small>${esc(x.note.trim())}</small>`:""}</span><b>${x.p==null?"Sur demande":x.p*x.q+" €"}</b></li>`).join("")}</ul>
 <div class="cart-s"><div><span>${mode==="domicile"?"Livraison":"Retrait à l’atelier"}</span><b>${f.free?"Offerte":f.t}</b></div><div class="tot"><span>Total${ask?" estimé":""}</span><b>${t+f.v} €${ask?" *":""}</b></div></div></div>
 <ol class="ok-next"><li><span><b>Gouyerian Tech vous rappelle</b> au ${esc(tel)} pour confirmer la disponibilité${ask?" et les prix":""}.</span></li><li><span><b>${mode==="domicile"?"Livraison chez vous":"Retrait à l’atelier"}</b>, au jour et à l’heure convenus.</span></li><li><span><b>Paiement ${mode==="domicile"?"à la livraison":"au retrait"}</b>, par carte bancaire ou en espèces.</span></li></ol>
