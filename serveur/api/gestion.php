@@ -4,6 +4,7 @@
    Chaque demande doit porter l'en-tête « X-GT: 1 » (un autre site ne peut pas l'ajouter sans autorisation). */
 declare(strict_types=1);
 require __DIR__ . '/_lib.php';
+$GLOBALS['GT_DIAG'] = true;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') fail('Méthode non autorisée.', 405);
 if (($_SERVER['HTTP_X_GT'] ?? '') !== '1') fail('Demande refusée.', 403);

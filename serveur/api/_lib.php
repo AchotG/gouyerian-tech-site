@@ -63,7 +63,17 @@ function db(): PDO {
     ]);
   } catch (Throwable $e) {
     error_log('GT db: ' . $e->getMessage());
-    fail('Le suivi est momentanément indisponible. Réessayez plus tard ou appelez le 06 05 79 48 94.', 503);
+    $m = 'Le suivi est momentanément indisponible. Réessayez plus tard ou appelez le 06 05 79 48 94.';
+    if (!empty($GLOBALS['GT_DIAG'])) {  // page de gestion seulement : indique quel réglage vérifier, sans rien dévoiler
+      $code = (string)($e->errorInfo[1] ?? $e->getCode());
+      $m = match (true) {
+        in_array($code, ['1045', '1044', '1698'], true) => 'Base de données : utilisateur ou mot de passe refusé. Vérifiez les secrets SUIVI_DB_USER et SUIVI_DB_PASSWORD.',
+        $code === '1049' => 'Base de données : nom de base inconnu. Vérifiez le secret SUIVI_DB_NAME (de la forme dbs…).',
+        in_array($code, ['2002', '2005', '2006'], true) => 'Base de données : serveur introuvable ou injoignable. Vérifiez le secret SUIVI_DB_HOST (de la forme db….hosting-data.io). Une base qui vient d’être créée peut aussi mettre quelques minutes à être prête.',
+        default => 'Base de données injoignable (code ' . preg_replace('/[^A-Za-z0-9]/', '', $code) . '). Une base qui vient d’être créée peut mettre quelques minutes à être prête.',
+      };
+    }
+    fail($m, 503);
   }
   schema($pdo);
   return $pdo;
