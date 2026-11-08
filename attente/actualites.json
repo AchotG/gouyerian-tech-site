@@ -1,1 +1,52 @@
-[]
+[
+ {
+  "d": "2026-11-06",
+  "dl": "6 novembre 2026",
+  "sc": "France",
+  "th": "Internet",
+  "tag": "Réseau mobile",
+  "t": "Fin de la 2G : SFR coupe le 15 novembre, Bouygues Telecom en décembre",
+  "s": "SFR arrête son réseau 2G le 15 novembre 2026 en France métropolitaine. Bouygues Telecom le coupe aussi le 15 novembre à Brest, Guipavas, Nancy et Vandœuvre-lès-Nancy, puis dans le reste de la métropole entre le 1er et le 15 décembre. Les appareils qui ne fonctionnent qu’en 2G ne pourront plus appeler ni envoyer de SMS : vieux téléphones à touches, boîtiers de téléassistance, alarmes, téléphones d’ascenseur ou interphones. Les smartphones récents compatibles 4G ne sont pas concernés.",
+  "tip": "Vérifiez que votre téléphone affiche la 4G et accepte les appels en 4G (VoLTE). Pour une alarme ou une téléassistance, contactez dès maintenant l’entreprise qui l’a installée. En cas de doute sur votre téléphone, Gouyerian Tech peut le vérifier et vous conseiller un modèle adapté.",
+  "src": [
+   [
+    "DirectMag (6 novembre 2026)",
+    "https://www.directmag.com/smartphone-telephonie/info21730/fin-2g-sfr-bouygues-qui-est-concerne.html"
+   ],
+   [
+    "Selectra (27 octobre 2026)",
+    "https://selectra.info/telecom/actualites/marche/ce-qui-change-novembre-2026-2g-tnt-whatsapp"
+   ],
+   [
+    "SFR Business",
+    "https://www.sfrbusiness.fr/room/internet-et-reseaux/fermeture-2g-iot-m2m-telephonie.html"
+   ]
+  ],
+  "ajoute_le": "8 novembre 2026 à 01h55",
+  "par": "recherche",
+  "verif": "Dates SFR (15 novembre) et Bouygues (4 communes le 15 novembre, reste de la métropole du 1er au 15 décembre) identiques chez DirectMag, Selectra (qui cite l’Arcep), Échos du Net et le site officiel SFR Business ; dates Orange/Free volontairement omises car divergentes selon les sources."
+ },
+ {
+  "d": "2026-11-07",
+  "dl": "7 novembre 2026",
+  "sc": "Monde",
+  "th": "Smartphones",
+  "tag": "Samsung",
+  "t": "Samsung : la mise à jour One UI 9 coupe le Wi-Fi ou la carte SIM de certains Galaxy",
+  "s": "Depuis début novembre, des propriétaires de Galaxy signalent des problèmes après l’installation de One UI 9. Sur des modèles haut de gamme comme le Galaxy S26 Ultra ou le Z Fold 7, le Wi-Fi se coupe de façon répétée. Sur des Galaxy A56 et A36, la carte SIM n’est parfois plus détectée, ce qui empêche d’appeler. Au 6 novembre, Samsung n’avait pas encore réagi ni annoncé de correctif.",
+  "tip": "Si votre Galaxy propose One UI 9 et fonctionne bien, attendez un correctif avant de l’installer. Si le problème est déjà là, un redémarrage ou le mode avion le soulage temporairement ; avant de toucher à vos réglages, sauvegardez vos données. Gouyerian Tech peut diagnostiquer votre téléphone en cas de doute.",
+  "src": [
+   [
+    "JeChange (7 novembre 2026)",
+    "https://www.jechange.fr/telecom/mobile/news/one-ui-9-coupe-wifi-perd-sim-galaxy-impossible-revenir-en-arriere-loi-30-jours"
+   ],
+   [
+    "SammyGuru (5 novembre 2026)",
+    "https://sammyguru.com/galaxy-users-face-wi-fi-mobile-data-and-sim-issues-after-one-ui-9-update/"
+   ]
+  ],
+  "ajoute_le": "8 novembre 2026 à 01h55",
+  "par": "recherche",
+  "verif": "Symptômes (coupures Wi-Fi sur S26 Ultra, SIM non détectée sur A56 et A36), absence de réaction de Samsung et soulagement temporaire par redémarrage ou mode avion confirmés par JeChange et SammyGuru ; liste de modèles limitée à ceux cités par les deux, aucune ampleur chiffrée."
+ }
+]
