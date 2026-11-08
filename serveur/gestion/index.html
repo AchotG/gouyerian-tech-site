@@ -350,8 +350,7 @@ $("flash").addEventListener("click",e=>{if(e.target.closest(".fx"))flash("")});
 /* une nouvelle action efface l'erreur précédente (pas le clic qui vient de la provoquer) */
 document.addEventListener("input",()=>{if(FLASH_ERR||FLASH_OK)flash("")},true);
 /* la confirmation (vert) disparaît dès qu'on fait autre chose : bouton, lien, onglet… */
-document.addEventListener("pointerdown",e=>{if(FLASH_OK&&e.target.closest&&e.target.closest("button,a,summary,select,label")&&!e.target.closest("#flash"))flash("")},true);
-function show(v){if(v!==ECRAN&&FLASH_OK)flash("");ECRAN=v;["login","liste","form","fiche","dem","dfiche","msgs","chat","pays","pay"].forEach(x=>$("v"+x).hidden=x!==v);$("bnew").hidden=$("bout").hidden=v==="login";$("tabs").hidden=!(v==="liste"||v==="dem"||v==="msgs"||v==="pays");
+function show(v){if(v!==ECRAN&&(FLASH_OK||FLASH_ERR))flash("");ECRAN=v;["login","liste","form","fiche","dem","dfiche","msgs","chat","pays","pay"].forEach(x=>$("v"+x).hidden=x!==v);$("bnew").hidden=$("bout").hidden=v==="login";$("tabs").hidden=!(v==="liste"||v==="dem"||v==="msgs"||v==="pays");
   const t={dem:"dem",liste:"rep",msgs:"msg",pays:"pay"}[v];$("tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.t===t)));scrollTo(0,0)}
 
 /* Connexion */
