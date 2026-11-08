@@ -1659,6 +1659,17 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
 .msg-lk{color:inherit;text-decoration:underline;overflow-wrap:anywhere}
 .msg-pay{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:9px 14px;border-radius:12px;background:var(--grad);color:#fff!important;font-weight:700;text-decoration:none;box-shadow:0 6px 16px -8px color-mix(in srgb,var(--acc) 80%,transparent)}
 .msg-r.c .msg-pay{background:#fff;color:var(--acc)!important}
+/* Illustrations des articles (forme exacte des prises) */
+.art{display:block;width:100%;height:auto;--art-t:var(--muted);--art-bg:var(--surface);--art-c:var(--c,var(--acc))}
+:root[data-theme="dark"] .art,:root[data-theme="dark"] .art-f{--art-h:#59657a;--art-hl:#738099;--art-w:#e8edf3;--art-o:#8995a8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .art,:root:not([data-theme="light"]) .art-f{--art-h:#59657a;--art-hl:#738099;--art-w:#e8edf3;--art-o:#8995a8}}
+.cf-art{margin:0 0 4px;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.cf-art figcaption{font-size:.72rem;color:var(--muted);text-align:center;margin-top:2px}
+.cf-thumb{margin:-6px -6px 0;padding:6px;border-radius:14px;background:color-mix(in srgb,var(--c) 6%,var(--bg));border:1px solid var(--line)}
+.cf-thumb .art{max-height:170px}
+.cf-o button{grid-template-columns:auto}
+.cf-fc{display:flex;gap:4px;margin-bottom:2px}.art-f{width:40px;height:24px}
+.prod-art{margin:-8px -8px 0;padding:6px;border-radius:14px;background:color-mix(in srgb,var(--c) 6%,var(--bg));border:1px solid var(--line)}
 /* Espace client connecté : pleine largeur, réparations et devis côte à côte, puis panier et coordonnées */
 #v-compte.acc-on .trk{grid-template-columns:minmax(0,1fr)}
 #v-compte.acc-on .aside{display:none}
@@ -2981,7 +2992,7 @@ function drawShop(){
   if(!$("shop"))return;
   $("bseg").innerHTML=BCATS.map(c=>`<button type="button" data-bc="${c}" aria-pressed="${c===bcat}">${BCATL[c]||c}</button>`).join("");
   drawCfg();
-  $("shop").innerHTML=SHOP.map((it,i)=>[it,i]).filter(([it])=>bcat==="Tout"||it.c===bcat).map(([it,i])=>`<article class="prod"><span class="pic">${svg(it.ic)}</span><span class="eyebrow">${BCATL[it.c]||it.c}</span><h3>${it.n}</h3><p>${it.d}</p><div class="pfoot"><span class="pp">${it.p||"Prix sur demande"}</span>${it.need?`<a class="btn sm ghost" href="${shopHref(it)}" data-shopneed="${it.need}">Demander une estimation</a>`:`<button type="button" class="btn sm ghost" data-add="${i}">${svg("bag")}Ajouter au panier</button>`}</div></article>`).join("");
+  $("shop").innerHTML=SHOP.map((it,i)=>[it,i]).filter(([it])=>bcat==="Tout"||it.c===bcat).map(([it,i])=>`<article class="prod">${ART.shop({plug:"plug",case:"case",screen:"screen",mouse:"mouse"}[it.ic],it.n)?`<div class="prod-art">${ART.shop({plug:"plug",case:"case",screen:"screen",mouse:"mouse"}[it.ic],it.n)}</div>`:`<span class="pic">${svg(it.ic)}</span>`}<span class="eyebrow">${BCATL[it.c]||it.c}</span><h3>${it.n}</h3><p>${it.d}</p><div class="pfoot"><span class="pp">${it.p||"Prix sur demande"}</span>${it.need?`<a class="btn sm ghost" href="${shopHref(it)}" data-shopneed="${it.need}">Demander une estimation</a>`:`<button type="button" class="btn sm ghost" data-add="${i}">${svg("bag")}Ajouter au panier</button>`}</div></article>`).join("");
 }
 if($("bseg")){{const b=BCATS.find(c=>norm(c)===QP.get("b"));if(b)bcat=b}
 $("bseg").onclick=e=>{const b=e.target.closest("button");if(b){bcat=b.dataset.bc;drawShop()}};}
@@ -3063,13 +3074,117 @@ const CFG=[
  groups:s=>[["type","Modèle",[["usb","Graveur CD et DVD","Prise USB classique"],["usbc","Graveur CD et DVD","Câble USB et USB-C"],["bluray","Graveur Blu-ray","Lit et grave aussi CD et DVD"]]]],
  info:s=>({name:{usb:"Lecteur graveur CD et DVD externe USB",usbc:"Lecteur graveur CD et DVD externe USB et USB-C",bluray:"Lecteur graveur Blu-ray externe"}[s.type],
    txt:s.type==="bluray"?"Lit et grave les Blu-ray, les CD et les DVD. Alimenté par le câble, sans prise secteur.":"Lit et grave les CD et les DVD : idéal pour les ordinateurs portables sans lecteur. Alimenté par le câble, sans prise secteur.",price:PRIX.graveur[s.type]})}];
+/* Illustrations des articles de la boutique : dessins vectoriels qui montrent la forme exacte des prises
+   (USB, USB-C, Lightning, micro-USB, HDMI, jack, Ethernet, antenne) pour que le client reconnaisse l'article. */
+const ART=(()=>{
+  const M="#c3cad4",MD="#8d96a3",GOLD="#d8b25a",H="var(--art-h,#2b3442)",HL="var(--art-hl,#3a4556)",W="var(--art-w,#f4f6f9)";
+  const T=(x,y,t,a="middle",sz=10)=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="${sz}" font-family="IBM Plex Mono,ui-monospace,monospace" letter-spacing=".6" fill="var(--art-t,currentColor)">${t}</text>`;
+  /* Prise vue de côté (mâle), dessinée vers la droite à partir de (x,y) = centre de la base du boîtier ; d=-1 la retourne vers la gauche */
+  function male(k,x,y,d=1,nb=false,z=1.35){const g=(s)=>`<g transform="translate(${x} ${y}) scale(${d*z} ${z})">${s}</g>`;
+    const boot=(w=34,h=16,c=H)=>nb?"":`<rect x="-${w}" y="-${h/2}" width="${w}" height="${h}" rx="4" fill="${c}"${c===W?' stroke="var(--art-o,#c9d1dc)"':""}/><rect x="-${w-4}" y="-${h/2-3}" width="${w-12}" height="2" rx="1" fill="${c===W?"#e3e8ef":HL}"/>`;
+    switch(k){
+      case"usba":return g(boot()+`<rect x="0" y="-7" width="26" height="14" rx="1" fill="${M}" stroke="${MD}"/><rect x="5" y="-3" width="17" height="3" fill="${MD}"/>`);
+      case"usbc":return g(boot(30,13)+`<rect x="0" y="-4" width="16" height="8" rx="4" fill="${M}" stroke="${MD}"/><rect x="3" y="-1" width="10" height="2" rx="1" fill="${MD}"/>`);
+      case"lightning":return g(boot(30,13,W)+`<rect x="0" y="-3.5" width="17" height="7" rx="3" fill="${M}" stroke="${MD}"/>${[3,6,9,12].map(i=>`<rect x="${i}" y="-2" width="1.6" height="4" fill="${GOLD}"/>`).join("")}`);
+      case"micro":return g(boot(28,12)+`<path d="M0-4h13l2 2v4l-2 2H0z" fill="${M}" stroke="${MD}"/>`);
+      case"hdmi":return g(boot(38,18)+`<path d="M0-8h22v12l-3 4H3l-3-4z" fill="${M}" stroke="${MD}"/><rect x="4" y="-5" width="14" height="4" fill="${MD}"/>`);
+      case"jack":return g(boot(26,11)+`<rect x="0" y="-2.4" width="24" height="4.8" rx="2.4" fill="${M}" stroke="${MD}"/>${[8,13,18].map(i=>`<rect x="${i}" y="-2.4" width="1.2" height="4.8" fill="${H}"/>`).join("")}`);
+      case"rj45":return g(boot(26,14)+`<rect x="0" y="-8" width="20" height="16" rx="1.5" fill="rgba(200,215,235,.55)" stroke="${MD}"/>${[0,1,2,3,4,5,6,7].map(i=>`<rect x="13" y="${-6.5+i*1.7}" width="5" height="1" fill="${GOLD}"/>`).join("")}<path d="M6-8l8-6" stroke="${MD}" stroke-width="2"/>`);
+      case"coax":return g(boot(30,16)+`<rect x="0" y="-8" width="14" height="16" rx="1" fill="${M}" stroke="${MD}"/>${[3,6,9].map(i=>`<path d="M${i}-8v16" stroke="${MD}"/>`).join("")}<rect x="14" y="-1" width="9" height="2" fill="${M}" stroke="${MD}"/>`);
+    }return""}
+  /* Prise vue de face (le « trou » qu'on voit sur l'appareil ou au bout du câble) */
+  function face(k,cx,cy,z=1.6){return`<g transform="translate(${cx} ${cy}) scale(${z}) translate(${-cx} ${-cy})">${face0(k,cx,cy)}</g>`}
+  function face0(k,cx,cy){
+    switch(k){
+      case"usba":return`<rect x="${cx-15}" y="${cy-6}" width="30" height="12" rx="1.5" fill="${M}" stroke="${MD}"/><rect x="${cx-11}" y="${cy-6}" width="22" height="5" fill="${H}"/>`;
+      case"usbc":return`<rect x="${cx-12}" y="${cy-5}" width="24" height="10" rx="5" fill="${M}" stroke="${MD}"/><rect x="${cx-7}" y="${cy-1.3}" width="14" height="2.6" rx="1.3" fill="${H}"/>`;
+      case"lightning":return`<rect x="${cx-11}" y="${cy-4}" width="22" height="8" rx="4" fill="${M}" stroke="${MD}"/>${[-6,-2,2,6].map(i=>`<rect x="${cx+i-.8}" y="${cy-2.4}" width="1.6" height="4.8" fill="${GOLD}"/>`).join("")}`;
+      case"micro":return`<path d="M${cx-10} ${cy-4}h20l-3 8h-14z" fill="${M}" stroke="${MD}"/><rect x="${cx-6}" y="${cy-1.5}" width="12" height="2" fill="${H}"/>`;
+      case"hdmi":return`<path d="M${cx-16} ${cy-6}h32v6l-4 6h-24l-4-6z" fill="${M}" stroke="${MD}"/><rect x="${cx-11}" y="${cy-2}" width="22" height="3" fill="${H}"/>`;
+      case"jack":return`<circle cx="${cx}" cy="${cy}" r="7" fill="${M}" stroke="${MD}"/><circle cx="${cx}" cy="${cy}" r="3.2" fill="${H}"/>`;
+      case"rj45":return`<path d="M${cx-11} ${cy-8}h22v13h-6v4h-10v-4h-6z" fill="${M}" stroke="${MD}"/>${[0,1,2,3,4,5,6,7].map(i=>`<rect x="${cx-8.4+i*2.3}" y="${cy-7}" width="1" height="4" fill="${GOLD}"/>`).join("")}`;
+      case"coax":return`<circle cx="${cx}" cy="${cy}" r="9" fill="${M}" stroke="${MD}"/><circle cx="${cx}" cy="${cy}" r="5" fill="${W}" stroke="${MD}"/><circle cx="${cx}" cy="${cy}" r="1.4" fill="${MD}"/>`;
+      case"sd":return`<path d="M${cx-11} ${cy-7}h22v14h-22z" fill="${H}"/><path d="M${cx-9} ${cy-1}h18" stroke="${M}" stroke-width="2"/>`;
+    }return""}
+  const NOM={usba:"USB",usbc:"USB-C",lightning:"LIGHTNING",micro:"MICRO-USB",hdmi:"HDMI",jack:"JACK 3,5",rj45:"ETHERNET",coax:"ANTENNE",sd:"SD"};
+  /* Câble complet : prise A à gauche, prise B à droite, gaine entre les deux, et les deux faces en légende */
+  function cable(a,b,lab="",x1=88,x2=232){const y=64,i1=x1+40,i2=x2-40;
+    return`<path d="M${i1} ${y}C${i1+26} ${y} ${i1+6} 116 160 116S${i2-26} ${y} ${i2} ${y}" fill="none" stroke="${H}" stroke-width="7" stroke-linecap="round"/>`+male(a,x1,y,-1)+male(b,x2,y,1)
+      +face(a,62,150)+face(b,258,150)+T(62,182,NOM[a])+T(258,182,NOM[b])+(lab?`<rect x="136" y="128" width="48" height="18" rx="9" fill="var(--art-bg,#fff)" stroke="var(--art-o,#c9d1dc)"/>`+T(160,141,lab,"middle",11):"")}
+  /* Prise secteur européenne avec sa sortie (vue en perspective simple) */
+  function prise(port,x=160,y=88,big=false){const p=port==="usbc"?"usbc":"usba";
+    return`<g><rect x="${x-34}" y="${y-38}" width="68" height="76" rx="12" fill="${W}" stroke="var(--art-o,#c9d1dc)" stroke-width="1.5"/>
+      <rect x="${x-34}" y="${y-38}" width="68" height="14" rx="7" fill="rgba(0,0,0,.04)"/>
+      <rect x="${x-22}" y="${y+38}" width="5" height="16" rx="2.5" fill="${M}" stroke="${MD}"/><rect x="${x+17}" y="${y+38}" width="5" height="16" rx="2.5" fill="${M}" stroke="${MD}"/>
+      ${face(p,x,y)}${big?T(x,y+24,p==="usbc"?"20 W":"5 W","middle",9):""}</g>`}
+  function chargeur(s){const p=s.type==="typec"?"usbc":"usba",q=s.port;
+    if(s.art==="cable")return cable(p,q);
+    if(s.art==="prise")return prise(p,160,82,true)+T(160,182,"SORTIE "+NOM[p]);
+    /* prise + câble */
+    const y=70;return prise(p,62,76,true)+T(62,182,"PRISE "+NOM[p])+T(122,80,"+","middle",18)
+      +`<path d="M190 ${y}C206 ${y} 196 118 216 118S226 ${y} 244 ${y}" fill="none" stroke="${H}" stroke-width="7" stroke-linecap="round"/>`+male(p,152,y,-1,false,1.1)+male(q,282,y,1,false,1.1)
+      +face(p,170,152)+face(q,262,152)+T(216,182,"CÂBLE "+NOM[p]+" › "+NOM[q],"middle",9)}
+  function adaptateur(s){const k=s.type==="hub"?"hub"+s.ports:s.type;
+    if(k==="hub4"||k==="hub7"){const n=k==="hub7";
+      const box=`<rect x="120" y="44" width="150" height="74" rx="14" fill="${H}"/><rect x="120" y="44" width="150" height="10" rx="5" fill="${HL}"/>`;
+      const ports=n?face("usba",146,72,1)+face("usba",180,72,1)+face("hdmi",228,72,1)+`<rect x="134" y="96" width="30" height="4" rx="1" fill="#0e131b"/><rect x="172" y="96" width="20" height="4" rx="1" fill="#0e131b"/>`+face("usbc",228,98,1)
+        :[146,174,202,230,0].slice(0,4).map(x=>`<rect x="${x-11}" y="74" width="22" height="10" rx="1.5" fill="${M}" stroke="${MD}"/><rect x="${x-8}" y="74" width="16" height="4" fill="${H}"/>`).join("");
+      return box+ports+`<path d="M120 81C96 81 92 81 80 81" stroke="${H}" stroke-width="6" stroke-linecap="round"/>`+male("usbc",80,81,-1)+face("usbc",36,150)+T(36,176,"USB-C")
+        +T(195,150,n?"USB · HDMI · SD · USB-C":"4 × USB")+T(195,166,n?"7 EN 1":"4 PORTS","middle",9)}
+    const P={cjack:["usbc","jack"],cusb:["usbc","usba"],chdmi:["usbc","hdmi"],ceth:["usbc","rj45"],ljack:["lightning","jack"],lusb:["lightning","usba"],usbc:["usba","usbc"]}[k];
+    /* adaptateur court : prise mâle d'un côté, prise femelle (boîtier + face) de l'autre */
+    return male(P[0],120,80,-1)+`<path d="M120 80H170" stroke="${H}" stroke-width="6" stroke-linecap="round"/><rect x="170" y="56" width="84" height="48" rx="10" fill="${H}"/>`
+      +`<g transform="translate(254 80) rotate(90)"><rect x="-16" y="-3" width="32" height="6" rx="3" fill="${HL}"/></g>`+face(P[1],212,80)
+      +face(P[0],70,150)+T(70,176,"BRANCHE SUR "+NOM[P[0]],"middle",9)+face(P[1],230,150)+T(230,176,"VOUS BRANCHEZ "+NOM[P[1]],"middle",9)}
+  function tv(s){return s.art==="hdmi"?cable("hdmi","hdmi",s.len.replace(".",",")+" m"):cable("coax","coax",s.len.replace(".",",")+" m")}
+  function batterie(s){const C={"5000":"5 000","10000":"10 000","20000":"20 000"}[s.cap],w={"5000":96,"10000":120,"20000":150}[s.cap];
+    const x=160-w/2,po=s.w==="w10"?["usba"]:["usbc","usba"];
+    return`<rect x="${x}" y="38" width="${w}" height="92" rx="16" fill="${H}"/><rect x="${x}" y="38" width="${w}" height="14" rx="7" fill="${HL}"/>`
+      +[0,1,2,3].map(i=>`<circle cx="${160-15+i*10}" cy="114" r="2.6" fill="${i<3?"#4ade80":"#334155"}"/>`).join("")
+      +T(160,84,C,"middle",14).replace('fill="var(--art-t,currentColor)"','fill="#e9eef6"')+T(160,98,"mAh","middle",9).replace('fill="var(--art-t,currentColor)"','fill="#9fb0c8"')
+      +po.map((p,i)=>face(p,po.length>1?134+i*52:160,152)).join("")+T(160,180,po.map(p=>NOM[p]).join(" + ")+" · "+{w10:"10 W",w20:"20 W",w65:"65 W"}[s.w])}
+  function cle(s){const tips=s.con==="double"?["usba","usbc"]:[s.con==="usbc"?"usbc":"usba"];
+    let o=`<rect x="122" y="62" width="86" height="36" rx="10" fill="${H}"/><rect x="132" y="70" width="40" height="4" rx="2" fill="${HL}"/>`+T(165,90,s.cap+" Go","middle",11).replace('fill="var(--art-t,currentColor)"','fill="#e9eef6"');
+    o+=male(tips[0],208,80,1,true,1.3);if(tips[1])o+=male(tips[1],122,80,-1,true,1.3);
+    return o+tips.map((p,i)=>face(p,tips.length>1?(i?110:210):160,150)).join("")+T(160,178,tips.map(p=>NOM[p]).join(" + "))}
+  function microsd(s){return`<path d="M128 40h52l12 12v8l-4 4v4l4 4v52h-64z" fill="${H}"/><rect x="134" y="46" width="44" height="10" rx="2" fill="${HL}"/>`
+    +[0,1,2,3,4,5,6,7].map(i=>`<rect x="${133+i*6}" y="44" width="4" height="9" rx="1" fill="${GOLD}"/>`).join("")
+    +T(160,104,s.cap+" Go","middle",13).replace('fill="var(--art-t,currentColor)"','fill="#e9eef6"')+T(160,118,"microSD","middle",9).replace('fill="var(--art-t,currentColor)"','fill="#9fb0c8"')+T(160,168,"TAILLE RÉELLE : 15 × 11 MM")}
+  function graveur(s){const t=s.type==="usbc"?["usba","usbc"]:["usba"];
+    return`<rect x="70" y="58" width="180" height="40" rx="8" fill="${H}"/><rect x="70" y="58" width="180" height="8" rx="4" fill="${HL}"/><rect x="92" y="80" width="120" height="3" rx="1.5" fill="#0e131b"/>`
+      +`<circle cx="232" cy="80" r="3" fill="#4ade80"/>`+T(160,76,s.type==="bluray"?"BLU-RAY":"CD · DVD","middle",9).replace('fill="var(--art-t,currentColor)"','fill="#9fb0c8"')
+      +`<circle cx="120" cy="140" r="26" fill="url(#dsk)"/><circle cx="120" cy="140" r="6" fill="var(--art-bg,#fff)"/>`
+      +t.map((p,i)=>face(p,t.length>1?192+i*54:220,140)).join("")+T(220,170,"CÂBLE "+t.map(p=>NOM[p]).join(" + "),"middle",9)}
+  const DEFS=`<defs><radialGradient id="dsk"><stop offset=".25" stop-color="#e8eef7"/><stop offset=".55" stop-color="#b9c7dc"/><stop offset=".75" stop-color="#e6d9f2"/><stop offset="1" stop-color="#cfe6e9"/></radialGradient></defs>`;
+  const svgw=(inner,lab)=>`<svg class="art" viewBox="0 0 320 196" role="img" aria-label="${lab}">${DEFS}${inner}</svg>`;
+  /* Articles simples de la boutique */
+  const SH={
+    plug:()=>`<rect x="100" y="56" width="80" height="50" rx="10" fill="${H}"/><rect x="100" y="56" width="80" height="9" rx="4.5" fill="${HL}"/><circle cx="168" cy="96" r="3" fill="#4ade80"/>`
+      +`<path d="M180 81C214 81 206 132 236 132S252 104 262 104" fill="none" stroke="${H}" stroke-width="6" stroke-linecap="round"/>`+male("usbc",262,104,1,false,1.1)
+      +`<path d="M100 81H72" stroke="${H}" stroke-width="5"/>`+`<rect x="40" y="66" width="34" height="30" rx="8" fill="${W}" stroke="var(--art-o,#c9d1dc)"/><rect x="28" y="72" width="12" height="4" rx="2" fill="${M}"/><rect x="28" y="86" width="12" height="4" rx="2" fill="${M}"/>`
+      +T(160,170,"USB-C, ROND OU MAGNÉTIQUE SELON L’ORDINATEUR","middle",9),
+    case:()=>`<rect x="118" y="26" width="84" height="150" rx="18" fill="var(--art-c,#2563eb)" opacity=".9"/><rect x="126" y="34" width="68" height="134" rx="12" fill="${H}"/><rect x="132" y="40" width="56" height="122" rx="8" fill="#0e1622"/>`
+      +`<rect x="140" y="34" width="22" height="28" rx="8" fill="var(--art-c,#2563eb)"/><circle cx="151" cy="44" r="4.5" fill="#0e1622"/><circle cx="151" cy="55" r="3" fill="#0e1622"/>`+T(250,108,"COQUE","middle",10),
+    screen:()=>`<rect x="128" y="36" width="70" height="136" rx="12" fill="${H}"/><rect x="134" y="42" width="58" height="124" rx="8" fill="#0e1622"/>`
+      +`<g transform="translate(-14 -10)"><rect x="134" y="42" width="58" height="124" rx="8" fill="rgba(170,210,255,.35)" stroke="rgba(120,170,230,.9)" stroke-width="1.5"/><path d="M146 56l14-10M146 70l26-20" stroke="#fff" stroke-width="2" opacity=".7" stroke-linecap="round"/></g>`
+      +T(236,100,"VERRE","start",10)+T(236,114,"TREMPÉ","start",10),
+    mouse:()=>`<rect x="40" y="70" width="150" height="64" rx="10" fill="${H}"/>`+[0,1,2,3].map(r=>[...Array(r===3?6:11)].map((_,i)=>`<rect x="${(r===3?62:50)+i*(r===3?18:12.5)}" y="${80+r*12}" width="${r===3?(i===2?44:14):9}" height="8" rx="2" fill="${HL}"/>`).join("")).join("")
+      +`<path d="M232 66c18 0 28 14 28 34v24c0 20-12 32-28 32s-28-12-28-32v-24c0-20 10-34 28-34z" fill="${H}"/><path d="M232 66v30M204 96h56" stroke="${HL}" stroke-width="2"/>`};
+  const F={chargeur,adaptateur,tv,batterie,cle,microsd,graveur};
+  return{cfg:(id,s,lab)=>F[id]?svgw(F[id](s),lab):"",shop:(k,lab)=>SH[k]?svgw(SH[k](),lab):"",face:(k)=>`<svg class="art-f" viewBox="0 0 40 24" aria-hidden="true">${face(k,20,12)}</svg>`}})();
+
 const CHEV='<svg class="i cf-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+/* Petite image de la prise sur les boutons de choix (Lightning, USB-C, micro-USB…) */
+const CFFACE={chargeur:{port:{lightning:"lightning",usbc:"usbc",micro:"micro"},type:{usb:"usba",typec:"usbc"}},cle:{con:{usb:"usba",usbc:"usbc",double:"usba usbc"}},
+  graveur:{type:{usb:"usba",usbc:"usba usbc",bluray:"usba"}},adaptateur:{type:{hub:"usbc",cjack:"jack",cusb:"usba",chdmi:"hdmi",ceth:"rj45",ljack:"jack",lusb:"usba",usbc:"usbc"}},tv:{art:{hdmi:"hdmi",antenne:"coax"}},
+  batterie:{w:{w10:"usba",w20:"usbc",w65:"usbc"}}};
 function cfgHTML(f){const s=f.sel;if(f.fix)f.fix(s);
-  const G=f.groups(s),I=f.info(s);
-  const row=([k,lab,opts],i)=>`<div class="cf-row"><span class="cf-l">${i+1}. ${lab}</span><div class="cf-o" role="group" aria-label="${lab}">${opts.map(([v,t,sm])=>`<button type="button" data-k="${k}" data-v="${v}" aria-pressed="${s[k]===v}"><b>${t}</b>${sm?`<small>${sm}</small>`:""}</button>`).join("")}</div></div>`;
-  return `<div class="cfg${f.open?" open":""}" data-f="${f.id}"><div class="cf-h"><span class="pic">${svg(f.ic)}</span><div class="cf-ht"><span class="eyebrow">${f.eb} · dès ${f.min()} €</span><h2>${f.t}</h2><p>${f.open?"Faites votre choix : le prix s’affiche aussitôt.":f.s}</p></div><button type="button" class="btn${f.open?" ghost":""} cf-tog" aria-expanded="${!!f.open}" aria-controls="cfb-${f.id}">${f.open?"Fermer":f.b}${CHEV}</button></div>
+  const G=f.groups(s),I=f.info(s),FM=CFFACE[f.id]||{};
+  const ico=(k,v)=>FM[k]&&FM[k][v]?`<span class="cf-fc">${FM[k][v].split(" ").map(ART.face).join("")}</span>`:"";
+  const row=([k,lab,opts],i)=>`<div class="cf-row"><span class="cf-l">${i+1}. ${lab}</span><div class="cf-o" role="group" aria-label="${lab}">${opts.map(([v,t,sm])=>`<button type="button" data-k="${k}" data-v="${v}" aria-pressed="${s[k]===v}">${ico(k,v)}<b>${t}</b>${sm?`<small>${sm}</small>`:""}</button>`).join("")}</div></div>`;
+  return `<div class="cfg${f.open?" open":""}" data-f="${f.id}">${f.open?"":`<div class="cf-thumb" aria-hidden="true">${ART.cfg(f.id,s,"")}</div>`}<div class="cf-h"><span class="pic">${svg(f.ic)}</span><div class="cf-ht"><span class="eyebrow">${f.eb} · dès ${f.min()} €</span><h2>${f.t}</h2><p>${f.open?"Faites votre choix : le prix s’affiche aussitôt.":f.s}</p></div><button type="button" class="btn${f.open?" ghost":""} cf-tog" aria-expanded="${!!f.open}" aria-controls="cfb-${f.id}">${f.open?"Fermer":f.b}${CHEV}</button></div>
 <div class="cf-grid" id="cfb-${f.id}"${f.open?"":" hidden"}><div class="cf-steps">${G.map(row).join("")}</div>
-<aside class="cf-sum" aria-live="polite"><span class="eyebrow">Votre sélection</span><h3>${I.name}</h3><p>${I.txt}</p><span class="cf-p">${I.price} €</span><small>Prix net, TVA non applicable. Selon le stock du moment.</small><button type="button" class="btn" data-addcart="${esc(I.name)}" data-price="${I.price}" data-ic="${f.ic}">${svg("bag")}Ajouter au panier</button></aside></div></div>`}
+<aside class="cf-sum" aria-live="polite"><figure class="cf-art">${ART.cfg(f.id,s,I.name)}<figcaption>Illustration : la forme des prises. Couleur et marque selon le stock.</figcaption></figure><span class="eyebrow">Votre sélection</span><h3>${I.name}</h3><p>${I.txt}</p><span class="cf-p">${I.price} €</span><small>Prix net, TVA non applicable. Selon le stock du moment.</small><button type="button" class="btn" data-addcart="${esc(I.name)}" data-price="${I.price}" data-ic="${f.ic}">${svg("bag")}Ajouter au panier</button></aside></div></div>`}
 function drawCfg(){const el=$("cfgs");if(!el)return;el.innerHTML=CFG.filter(f=>bcat==="Tout"||f.c===bcat).map(cfgHTML).join("")}
 if($("cfgs"))$("cfgs").addEventListener("click",e=>{const box=e.target.closest(".cfg");if(!box)return;const f=CFG.find(x=>x.id===box.dataset.f);
   const at=()=>$("cfgs").querySelector(`[data-f="${f.id}"]`);
