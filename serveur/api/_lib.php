@@ -263,7 +263,8 @@ function notifier_atelier(string $titre, string $ligne): bool {
   meta_set('notif_le', (string)time());
   $c = cfg();
   $site = rtrim($c['site'] ?? 'https://gouyerian-tech.fr', '/');
-  return mail_pro($c['mail_reply'] ?? 'contact@gouyerian-tech.fr', "Gouyerian Tech : $titre", [
+  /* alertes de l'atelier : vers la boîte Gmail d'Achot (notifications sur son téléphone) ; les clients, eux, reçoivent toujours depuis contact@ */
+  return mail_pro($c['mail_atelier'] ?? 'gouyerian.tech@gmail.com', "Gouyerian Tech : $titre", [
     'atelier' => true, 'pre' => $ligne, 'etiquette' => 'À traiter', 'titre' => ucfirst($titre),
     'paras' => [$ligne], 'bouton' => ['Ouvrir la gestion', "$site/gestion/"],
     'note' => 'Réglage de ces e-mails (à chaque demande, regroupés, jamais) : onglet Demandes de la gestion.']);
