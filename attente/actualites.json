@@ -1,1 +1,48 @@
-[]
+[
+ {
+  "d": "2026-11-06",
+  "dl": "6 novembre 2026",
+  "sc": "Monde",
+  "th": "Sécurité",
+  "tag": "Fuite de données",
+  "t": "Delcampe : noms, adresses et achats de membres dérobés lors d’une cyberattaque",
+  "s": "Le site de vente d’objets de collection Delcampe a confirmé à ses utilisateurs qu’un tiers non autorisé a téléchargé des fichiers dans la nuit du 5 au 6 novembre 2026. Une partie des membres est concernée : identifiants et pseudonymes, noms et prénoms, langue du compte, adresse de livraison et certains détails d’achats (objets, dates, prix). Selon Delcampe, les mots de passe, les vraies adresses e-mail, les numéros de téléphone et les données bancaires ne sont pas touchés. Le site dit avoir bloqué l’accès et n’avoir constaté aucune prise de contrôle de compte.",
+  "tip": "Méfiez-vous des courriers, appels ou messages qui citent vos achats Delcampe pour gagner votre confiance : connectez-vous uniquement en tapant www.delcampe.net et ne cliquez pas sur les liens reçus. En cas de doute sur un message ou un ordinateur qui se comporte bizarrement, Gouyerian Tech peut vérifier et nettoyer votre appareil.",
+  "src": [
+   [
+    "Cyberattaque.org (6 novembre 2026)",
+    "https://cyberattaque.org/delcampe-les-adresses-et-les-achats-de-collectionneurs-derobes-lors-dune-cyberattaque"
+   ],
+   [
+    "Fuites Infos (6 novembre 2026)",
+    "https://fuitesinfos.fr/article/2026-11-06-delcampe"
+   ]
+  ],
+  "ajoute_le": "8 novembre 2026 à 11h56",
+  "par": "recherche",
+  "verif": "Date de l’incident, données touchées et non touchées et réaction de Delcampe identiques dans les deux articles, Fuites Infos reproduisant l’e-mail officiel envoyé aux membres ; nombre de membres non communiqué donc non indiqué."
+ },
+ {
+  "d": "2026-11-02",
+  "dl": "2 novembre 2026",
+  "sc": "France",
+  "th": "Internet",
+  "tag": "Box TV",
+  "t": "TFOU MAX : le service jeunesse de TF1 s’arrête le 24 novembre sur les box",
+  "s": "TF1 ferme TFOU MAX, sa plateforme payante de vidéos pour enfants proposée à 3,99 € par mois, notamment sur les box Free, Orange, Bouygues Telecom et SFR. Le service reste accessible jusqu’au mardi 24 novembre 2026. Les abonnés au mois n’ont rien à faire : l’abonnement s’arrête et les prélèvements cessent automatiquement. Les abonnés à l’année doivent demander leur remboursement via le formulaire de l’aide TF1+, et TF1 invite les familles à se tourner vers TF1+, gratuit avec publicités.",
+  "tip": "Si vous avez un abonnement annuel, faites la demande de remboursement depuis le site d’aide de TF1 sans attendre. Besoin d’installer TF1+ ou une autre application sur votre box, votre téléviseur ou votre tablette ? Gouyerian Tech peut vous aider à tout configurer.",
+  "src": [
+   [
+    "Tom’s Guide (2 novembre 2026)",
+    "https://www.tomsguide.fr/tf1-met-fin-a-ce-service-historique-sur-les-freebox-bbox-livebox-et-box-sfr/"
+   ],
+   [
+    "Échos du Net (2 novembre 2026)",
+    "https://www.echosdunet.net/tv/actualites/tfou-max-fermeture-24-novembre-2026-tf1"
+   ]
+  ],
+  "ajoute_le": "8 novembre 2026 à 11h56",
+  "par": "recherche",
+  "verif": "Date de fermeture, prix, arrêt automatique des abonnements mensuels, remboursement sur demande des annuels et renvoi vers TF1+ concordent dans Tom’s Guide, Échos du Net, Clubic et Bbox-Mag ; le calcul du remboursement, non précisé par TF1, n’est pas mentionné."
+ }
+]
