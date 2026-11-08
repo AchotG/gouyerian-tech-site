@@ -331,6 +331,9 @@ add("/contact/", "contact", VIEW["contact"], "Contact et atelier · Gouyerian Te
 add("/mon-espace/", "compte", VIEW["compte"], "Mon espace client · Gouyerian Tech",
     "Espace client Gouyerian Tech : suivez vos réparations, acceptez vos devis, retrouvez vos garanties et votre panier. Connexion par code reçu par e-mail.",
     [HOME, ("Mon espace", "/mon-espace/")], prio="0.3", index=False)
+add("/paiement/", "paiement", VIEW["paiement"], "Paiement en ligne · Gouyerian Tech",
+    "Réglez votre réparation ou votre commande Gouyerian Tech par carte bancaire, sur la page sécurisée de SumUp.",
+    [HOME, ("Paiement", "/paiement/")], prio="0.1", index=False)
 add("/suivi/", "suivi", VIEW["suivi"], "Suivre ma réparation · Gouyerian Tech",
     "Suivez l’avancée de la réparation de votre téléphone, tablette, ordinateur ou console chez Gouyerian Tech avec le numéro et le code de votre bon de dépôt.",
     [HOME, ("Suivre ma réparation", "/suivi/")], prio="0.4")
@@ -500,7 +503,7 @@ urls = [pd for pd in PAGES if pd["index"]]
 """, encoding="utf-8")
 # Fichier de validation Google Search Console (ne pas supprimer)
 (DIST / "googlec2ee2d1354c69554.html").write_text("google-site-verification: googlec2ee2d1354c69554.html", encoding="utf-8")
-(DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /gestion/\n\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
+(DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /gestion/\nDisallow: /paiement/\n\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
 # Suivi des réparations : serveur PHP (api/) et page de gestion de l'atelier (gestion/), copiés tels quels
 SRV = B.parent / "serveur"
 for sub in ("api", "gestion"):

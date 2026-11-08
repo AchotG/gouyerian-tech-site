@@ -1640,6 +1640,21 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
  .acc-mod-x{border-color:var(--line);background:var(--bg);color:var(--fg)}
  #accmodb .msgs{border-radius:0;border:0;box-shadow:none;height:100%}#accmodb .msg-f{padding-bottom:calc(12px + env(safe-area-inset-bottom))}}
 @media (prefers-reduced-motion:reduce){.acc-mod,.acc-mod-in{animation:none}}
+/* Paiement en ligne */
+.pay-w{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,.85fr);gap:24px;align-items:start}
+@media (max-width:900px){.pay-w{grid-template-columns:minmax(0,1fr)}}
+.pay{display:grid;gap:12px;justify-items:start}
+.pay-m{font:800 clamp(2.2rem,6vw,3.2rem)/1.05 var(--f-disp);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0}
+.pay-l{margin:0;font-size:1.05rem}
+.pay-go{font-size:1.05rem;padding:16px 26px}
+.pay-ok{display:grid;gap:10px;justify-items:start}.pay-ok h2{margin:0}
+.pay-ic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#16a34a;color:#fff;font:800 1.5rem/1 var(--f-body)}
+.pay-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:var(--grad);color:#fff!important;font-weight:700;text-decoration:none}
+.pay-done{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--ok,#17734a) 14%,transparent);color:var(--ok,#17734a);font-weight:700;font-size:.88rem}
+.acc-pays{display:grid;gap:8px}
+.msg-lk{color:inherit;text-decoration:underline;overflow-wrap:anywhere}
+.msg-pay{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:9px 14px;border-radius:12px;background:var(--grad);color:#fff!important;font-weight:700;text-decoration:none;box-shadow:0 6px 16px -8px color-mix(in srgb,var(--acc) 80%,transparent)}
+.msg-r.c .msg-pay{background:#fff;color:var(--acc)!important}
 /* Espace client connecté : pleine largeur, réparations et devis côte à côte, puis panier et coordonnées */
 #v-compte.acc-on .trk{grid-template-columns:minmax(0,1fr)}
 #v-compte.acc-on .aside{display:none}
@@ -2378,6 +2393,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
     <p>Le client reste responsable de la sauvegarde de ses données avant de confier son appareil. Une sauvegarde par Gouyerian Tech n’est réalisée que si elle est prévue au devis, et si l’état de l’appareil le permet. Gouyerian Tech ne consulte pas les fichiers du client au-delà de ce que l’intervention exige ; les mots de passe confiés servent uniquement à l’intervention.</p>
     <h2>Article 8 – Paiement</h2>
     <p>Le paiement se fait par carte bancaire ou en espèces ; les chèques ne sont pas acceptés. Il intervient à la restitution de l’appareil, au retrait ou à la livraison des articles. Si une pièce doit être commandée spécialement, un acompte ou la totalité du prix peut être demandé à la commande ; son montant est indiqué sur le devis. Une facture est remise pour chaque prestation ou vente.</p>
+    <p><b>Paiement en ligne :</b> Gouyerian Tech peut aussi envoyer un lien de paiement (par e-mail, dans la messagerie ou sur la page de suivi) pour régler un acompte, une réparation ou une commande par carte bancaire. Le paiement est traité sur la page sécurisée de SumUp (SumUp Limited, prestataire de paiement agréé) ; Gouyerian Tech n’a jamais accès aux données de la carte. Un reçu est envoyé par e-mail dès le paiement ; la facture est remise avec l’appareil ou les articles. Le montant d’un lien est fixé par l’atelier et ne peut pas être modifié.</p>
     <p><b>Professionnels :</b> les factures sont payables à réception, sauf accord écrit. Tout retard de paiement entraîne des pénalités au taux de refinancement de la Banque centrale européenne majoré de 10 points, et une indemnité forfaitaire de 40 € pour frais de recouvrement.</p>
     <h2>Article 9 – Prestations pour les professionnels</h2>
     <p>Pour les professionnels, Gouyerian Tech propose la prévention et le nettoyage des virus, l’extension du réseau Wi-Fi ou Ethernet entre bâtiments ou bureaux, et la résolution des problèmes informatiques courants. Le nettoyage de virus est facturé 30 € par poste ; les autres interventions font l’objet d’un devis gratuit qui précise le prix, le matériel fourni et le délai. Le matériel (bornes Wi-Fi, répéteurs, câbles…) est facturé selon le devis accepté. Le déplacement suit le barème de l’article 4 ; au-delà de 40 km, il est indiqué sur le devis.</p>
@@ -2420,6 +2436,14 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
     </aside>
   </div></section>
 </div>
+<div class="view" id="v-paiement" hidden>
+  <header class="phead"><div class="wrap"><span class="crumb"><a href="#home">Accueil</a> / Paiement</span><h1>Paiement en ligne</h1><p class="lead">Réglez par carte bancaire sur la page sécurisée de SumUp, notre prestataire de paiement. Gouyerian Tech ne voit jamais vos données de carte.</p></div></header>
+  <section class="sec tight"><div class="wrap pay-w">
+    <div class="wcard pay" id="payc" aria-live="polite"><p class="note">Chargement du paiement…</p></div>
+    <aside class="aside"><div class="acard"><h3>Paiement sécurisé</h3><ul class="acc-why"><li>Page de paiement SumUp (3D Secure)</li><li>Visa, Mastercard, CB, Apple Pay, Google Pay</li><li>Reçu envoyé par e-mail dès le paiement</li><li>Vous pouvez aussi régler à l’atelier</li></ul></div>
+    <div class="acard inv"><span class="eyebrow">Une question ?</span><b class="num">06 05 79 48 94</b><div class="row2"><a class="btn sm" data-act="tel" data-ic="handset">Appeler</a></div></div></aside>
+  </div></section>
+</div>
 <div class="view" id="v-suivi" hidden>
   <header class="phead"><div class="wrap"><span class="crumb"><a href="#home">Accueil</a> / Suivre ma réparation</span><h1>Suivre ma réparation</h1><p class="lead">Entrez le numéro de suivi et le code indiqués sur votre bon de dépôt ou dans l’e-mail reçu : vous voyez où en est votre appareil, à tout moment.</p></div></header>
   <section class="sec tight"><div class="wrap trk">
@@ -2455,6 +2479,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
     <p>Lorsque vous confiez un appareil à l’atelier, une fiche de réparation est créée : votre nom, votre téléphone, votre e-mail si vous le donnez, l’appareil, la panne, le prix annoncé et les étapes de la réparation. Elle est enregistrée dans une base de données hébergée par IONOS en Europe, et sert à suivre la réparation et à vous en informer. Sur la page « Suivre ma réparation », le numéro de suivi et le code affichent seulement l’appareil, les étapes et les messages de l’atelier, jamais vos coordonnées.</p>
     <p>Les e-mails de suivi ne sont envoyés que si vous l’avez demandé (case à cocher lors de la demande ou à l’atelier). Chaque e-mail contient un lien pour ne plus les recevoir. Les fiches sont effacées automatiquement 24 mois après la fin de la réparation, durée utile pour la garantie et le service après-vente. Si vous cochez « Se souvenir de ce suivi », le numéro et le code sont gardés seulement sur votre appareil.</p>
     <p>La messagerie de chaque réparation (sur la page de suivi et dans l’espace client) enregistre vos messages et les photos ou fichiers que vous joignez dans la même base de données et sur le même hébergement privé IONOS ; seul l’atelier peut les lire. Quand l’atelier vous écrit, un e-mail vous en prévient si votre adresse est connue. Les messages sont effacés avec la fiche de réparation.</p>
+    <p><b>Paiement en ligne :</b> pour un paiement par carte, vos données bancaires sont saisies uniquement chez SumUp, notre prestataire de paiement, qui les traite selon sa propre politique de confidentialité. Le site ne conserve que le montant, l’objet, la date et la référence de la transaction, pour la comptabilité.</p>
     <h3 id="conf-compte">Espace client</h3>
     <p>Si vous créez votre espace client, votre adresse e-mail, et si vous les indiquez votre nom et votre téléphone, sont enregistrés dans la même base de données hébergée par IONOS, ainsi que le contenu de votre panier. La connexion se fait par un code à usage unique envoyé par e-mail, valable 15 minutes ; un cookie de connexion, strictement nécessaire, garde votre appareil connecté 30 jours. Votre espace affiche les réparations enregistrées avec votre adresse e-mail. Vous pouvez supprimer votre espace à tout moment depuis la page « Mon espace » ; les fiches de réparation restent conservées 24 mois pour la garantie.</p>
     <p>L’assistant automatique du site utilise des réponses préparées : les messages saisis ne sont ni enregistrés ni transmis.</p>
@@ -2551,7 +2576,7 @@ const $=id=>document.getElementById(id);
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 /* Mode : aperçu (adresses en #) ou site en ligne (vraies adresses, page décrite par window.GT_PAGE) */
 const PG=window.GT_PAGE||null,ASSETS=PG?"/assets/":"assets/",QP=new URLSearchParams(location.search);
-const ROUTES={home:"/",services:"/services/",boutique:"/boutique/",demande:"/rendez-vous/",zone:"/zone-intervention/",secteurs:"/communes/",contact:"/contact/",legal:"/mentions-legales/",suivi:"/suivi/",compte:"/mon-espace/",faq:"/faq/",pro:"/professionnels/",conseils:"/infos-pratiques/",actus:"/actualites/",cgv:"/cgv/",avis:"/#avis-sec",atelier:"/contact/#atelier-sec","pro-virus":"/professionnels/#pro-virus","pro-reseau":"/professionnels/#pro-reseau","pro-depannage":"/professionnels/#pro-depannage","pro-devis":"/professionnels/#pro-devis"};
+const ROUTES={home:"/",services:"/services/",boutique:"/boutique/",demande:"/rendez-vous/",zone:"/zone-intervention/",secteurs:"/communes/",contact:"/contact/",legal:"/mentions-legales/",suivi:"/suivi/",paiement:"/paiement/",compte:"/mon-espace/",faq:"/faq/",pro:"/professionnels/",conseils:"/infos-pratiques/",actus:"/actualites/",cgv:"/cgv/",avis:"/#avis-sec",atelier:"/contact/#atelier-sec","pro-virus":"/professionnels/#pro-virus","pro-reseau":"/professionnels/#pro-reseau","pro-depannage":"/professionnels/#pro-depannage","pro-devis":"/professionnels/#pro-devis"};
 const link=h=>{if(!PG)return h;const k=h.replace(/^#/,"");if(k.startsWith("actu-"))return "/actualites/"+k.slice(5)+"/";return ROUTES[k]||(ART_SLUGS.includes(k)?"/infos-pratiques/"+k+"/":"/communes/"+k+"/")};
 function fixLinks(){if(!PG)return;document.querySelectorAll('a[href^="#"]').forEach(a=>{const h=a.getAttribute("href");if(h.length<2||h==="#main")return;let u=link(h);if(a.dataset.cat&&a.dataset.cat!=="Tous"&&h==="#services")u="/services/"+norm(a.dataset.cat)+"/";if(a.dataset.bcat&&a.dataset.bcat!=="Tout")u+="?b="+norm(a.dataset.bcat);if(a.dataset.shopneed)u+="?besoin="+encodeURIComponent(a.dataset.shopneed);if(a.dataset.commune)u+="?commune="+encodeURIComponent(a.dataset.commune);a.setAttribute("href",u)})}
 /* Infos pratiques (articles). Pour ajouter un article : copier un bloc, changer « s » (adresse), le titre et le texte. */
@@ -3649,8 +3674,8 @@ if($("prof"))$("prof").addEventListener("submit",async e=>{e.preventDefault();co
   finally{b.disabled=false;b.innerHTML=t0}});
 
 /* Routes */
-const VIEWS=["home","services","boutique","demande","zone","contact","legal","suivi","compte","secteurs","commune","faq","pro","conseils","article","actus","cgv","actu"],ALIAS={avis:["home","avis-sec"],atelier:["contact","atelier-sec"],"pro-virus":["pro","pro-virus"],"pro-reseau":["pro","pro-reseau"],"pro-depannage":["pro","pro-depannage"],"pro-devis":["pro","pro-devis"]};
-const TITLE={compte:"Mon espace · Gouyerian Tech",suivi:"Suivre ma réparation · Gouyerian Tech",home:"Gouyerian Tech · Réparation informatique à Saint-Fort-sur-le-Né",services:"Services et tarifs · Gouyerian Tech",boutique:"Boutique · Gouyerian Tech",demande:"Prendre rendez-vous · Gouyerian Tech",zone:"Zone d’intervention · Gouyerian Tech",secteurs:"Communes desservies · Gouyerian Tech",contact:"Contact · Gouyerian Tech",legal:"Mentions légales · Gouyerian Tech",faq:"Questions fréquentes · Gouyerian Tech",pro:"Professionnels : virus, réseau et dépannage · Gouyerian Tech",conseils:"Infos pratiques · Gouyerian Tech",actus:"Actualités tech · Gouyerian Tech",cgv:"Conditions générales de vente · Gouyerian Tech"};
+const VIEWS=["home","services","boutique","demande","zone","contact","legal","suivi","paiement","compte","secteurs","commune","faq","pro","conseils","article","actus","cgv","actu"],ALIAS={avis:["home","avis-sec"],atelier:["contact","atelier-sec"],"pro-virus":["pro","pro-virus"],"pro-reseau":["pro","pro-reseau"],"pro-depannage":["pro","pro-depannage"],"pro-devis":["pro","pro-devis"]};
+const TITLE={paiement:"Paiement en ligne · Gouyerian Tech",compte:"Mon espace · Gouyerian Tech",suivi:"Suivre ma réparation · Gouyerian Tech",home:"Gouyerian Tech · Réparation informatique à Saint-Fort-sur-le-Né",services:"Services et tarifs · Gouyerian Tech",boutique:"Boutique · Gouyerian Tech",demande:"Prendre rendez-vous · Gouyerian Tech",zone:"Zone d’intervention · Gouyerian Tech",secteurs:"Communes desservies · Gouyerian Tech",contact:"Contact · Gouyerian Tech",legal:"Mentions légales · Gouyerian Tech",faq:"Questions fréquentes · Gouyerian Tech",pro:"Professionnels : virus, réseau et dépannage · Gouyerian Tech",conseils:"Infos pratiques · Gouyerian Tech",actus:"Actualités tech · Gouyerian Tech",cgv:"Conditions générales de vente · Gouyerian Tech"};
 /* v99 : suivi des réparations (/suivi/) : numéro + code, réponse du serveur PHP (api/suivi.php, base MySQL chez IONOS) */
 var TRK_LAST=null,TRK_K="gt-suivi",TRK_P=["recu","diagnostic","devis","reparation","prete","rendu"];
 function trkSaved(){try{const v=JSON.parse(localStorage.getItem(TRK_K)||"null");return v&&v.n&&v.c?v:null}catch(e){return null}}
@@ -3680,7 +3705,9 @@ function msgTime(s){const d=new Date(String(s).replace(" ","T"));return isNaN(d)
 function msgItems(ms){if(!ms||!ms.length)return `<li class="msg-0"><span class="msg-av">GT</span><b>Une question sur votre réparation ?</b><span>Écrivez directement à l’atelier : vous pouvez joindre des photos, la réponse s’affiche ici.</span></li>`;
   let day="",prev="";return ms.map(m=>{const dd=msgDay(m.le),a=m.auteur==="atelier"?"a":"c",cont=prev===a&&day===dd;let h="";if(dd!==day){h+=`<li class="msg-day">${esc(dd)}</li>`;day=dd}prev=a;
     const pj=(m.pj||[]).map(f=>/^video\//.test(f.type)?`<span class="msg-vid" data-mvid="${m.id}-${f.i}" data-nom="${esc(f.nom)}"><span class="msg-vload">▶ Chargement de la vidéo…</span></span>`:/^image\//.test(f.type)?`<button type="button" class="msg-img" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}" aria-label="Ouvrir ${esc(f.nom)}"><span>🖼</span></button>`:`<button type="button" class="msg-pjl" data-mpj="${m.id}-${f.i}" data-nom="${esc(f.nom)}">${MSG_IC.file}${esc(f.nom)}</button>`).join("");
-    return h+`<li class="msg-r ${a}${cont?" cont":""}${a==="a"&&!m.lu?" new":""}">${a==="a"?'<span class="msg-av" aria-hidden="true">GT</span>':""}<div class="msg-bu"><span class="sr">${a==="a"?"Atelier":"Vous"} :</span>${m.texte?`<p>${esc(m.texte)}</p>`:""}${pj?`<span class="msg-pjs">${pj}</span>`:""}<span class="msg-mt">${esc(msgTime(m.le))}${a==="c"?(m.lu?`<span class="lu" title="Lu par l’atelier">${MSG_IC.lu}</span><span>Lu</span>`:`<span title="Distribué">${MSG_IC.ok}</span><span>Distribué</span>`):""}</span></div></li>`}).join("")}
+    return h+`<li class="msg-r ${a}${cont?" cont":""}${a==="a"&&!m.lu?" new":""}">${a==="a"?'<span class="msg-av" aria-hidden="true">GT</span>':""}<div class="msg-bu"><span class="sr">${a==="a"?"Atelier":"Vous"} :</span>${m.texte?`<p>${msgLinks(m.texte)}</p>`:""}${pj?`<span class="msg-pjs">${pj}</span>`:""}<span class="msg-mt">${esc(msgTime(m.le))}${a==="c"?(m.lu?`<span class="lu" title="Lu par l’atelier">${MSG_IC.lu}</span><span>Lu</span>`:`<span title="Distribué">${MSG_IC.ok}</span><span>Distribué</span>`):""}</span></div></li>`}).join("")}
+/* Liens dans les messages : un lien de paiement devient un bouton « Payer » */
+function msgLinks(t){return esc(t).replace(/https:\/\/[^\s<]+/g,u=>{const raw=u.replace(/&amp;/g,"&");return /\/paiement\/\?t=[a-f0-9]{32}/.test(raw)?`<a class="msg-pay" href="${u}">💳 Payer par carte</a>`:`<a class="msg-lk" href="${u}" target="_blank" rel="noopener">${u}</a>`})}
 function msgUnread(ms){return(ms||[]).filter(m=>m.auteur==="atelier"&&!m.lu).length}
 function msgHTML(ms,n,sub){const u=msgUnread(ms);return `<section class="msgs" data-mn="${esc(n)}" aria-label="Messages avec l’atelier"><header class="msg-hd"><span class="msg-av" aria-hidden="true">GT</span><div><b>Atelier Gouyerian Tech</b><small>${esc(sub||"Réparation "+n)} · réponse sous 24 h ouvrées</small></div>${u?`<span class="msg-nb">${u} nouveau${u>1?"x":""}</span>`:""}</header><ul class="msg-l" aria-live="polite">${msgItems(ms)}</ul><form class="msg-f" novalidate><div class="msg-sel" hidden></div><div class="msg-bar"><label class="msg-ib" title="Joindre des photos ou un PDF">${MSG_IC.clip}<span class="sr">Joindre des fichiers</span><input type="file" accept="image/*,video/*,application/pdf" multiple hidden></label><label class="sr" for="mt-${esc(n)}">Votre message à l’atelier</label><textarea id="mt-${esc(n)}" rows="1" maxlength="2000" placeholder="Écrire à l’atelier…"></textarea><button class="msg-ib go" type="submit" aria-label="Envoyer">${MSG_IC.send}</button></div><span class="msg-tip">Ctrl + Entrée pour envoyer · photos, vidéos ou PDF, 4 au plus</span><p class="msg" role="alert"></p></form></section>`}
 async function msgApi(fd){let r,j;try{r=await fetch("/api/messages.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}})}catch(e){throw new Error("Connexion impossible. Réessayez ou appelez le 06 05 79 48 94.")}
@@ -3717,6 +3744,8 @@ function msgBind(root,auth,upd){root.querySelectorAll(".msgs").forEach(box=>{con
       const j=await msgApi(fd);put(j.messages);ta.value="";sel=[];drawSel();grow()}
     catch(err){er.textContent=err.message}
     bt.disabled=false}})}
+/* Demandes de paiement d'une réparation : bouton « Payer » ou « Payé » */
+function payList(ps){ps=ps||[];if(!ps.length)return"";return `<div class="acc-pays">${ps.map(p=>p.statut==="paye"?`<span class="pay-done">✓ Payé en ligne : ${euros(p.montant)} · ${esc(p.libelle)}</span>`:`<a class="pay-btn" href="${esc(p.lien.replace(/^https?:\/\/[^/]+/,""))}">💳 Payer ${euros(p.montant)} par carte · ${esc(p.libelle)}</a>`).join("")}</div>`}
 function trkShow(j){
   const seen=new Set(j.historique.map(h=>h.etape)),steps=TRK_P.slice();
   if(seen.has("piece")||j.etape==="piece")steps.splice(steps.indexOf("reparation"),0,"piece");
@@ -3725,6 +3754,7 @@ function trkShow(j){
    +(j.etape==="annule"?`<p class="trk-x">Cette réparation a été annulée. Pour toute question, appelez le 06 05 79 48 94.</p>`:`<ol class="trk-p" style="--n:${steps.length}" aria-label="Étapes de la réparation">${steps.map((e,i)=>`<li class="${i<ci?"done":i===ci?"done cur":""}"${i===ci?' aria-current="step"':""}>${esc(lib[e]||e)}</li>`).join("")}</ol>`)
    +(j.etape==="prete"?`<p class="trk-ok">Votre appareil vous attend : appelez-nous pour convenir de l’heure de passage ou d’une livraison.</p>`:"")
    +(j.devis==="attente"?`<div class="trk-dv"><b>Votre accord est attendu pour lancer la réparation${j.prix?" : "+esc(j.prix):""}.</b><span>Le détail du devis est dans l’historique ci-dessous.</span><div class="row2"><button type="button" class="btn" data-dv="accepte">J’accepte le devis</button><button type="button" class="btn ghost" data-dv="refuse">Je refuse</button></div><p class="msg" id="trkdm" role="alert"></p></div>`:j.devis==="accepte"&&j.etape==="devis"?`<p class="trk-ok">Devis accepté : merci, la réparation va commencer.</p>`:j.devis==="refuse"&&j.etape==="devis"?`<p class="trk-x">Vous avez refusé le devis. Nous vous rappelons pour la restitution de l’appareil.</p>`:"")
+   +payList(j.paiements)
    +(j.garantie_fin?`<p class="trk-ok">Garantie jusqu’au ${esc(new Date(j.garantie_fin+"T12:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}))}.</p>`:"")
    +(j.etape==="annule"&&!(j.messages||[]).length?"":msgHTML(j.messages,j.numero))
    +`<div><h3 style="margin-bottom:12px">Historique</h3><ul class="trk-h">${hist.map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></div>`
@@ -3737,6 +3767,24 @@ function trkShow(j){
     if(r&&r.ok)trkShow(r);else{b.disabled=false;$("trkdm").textContent=(r&&r.erreur)||"Erreur."}});
   $("trkx").onclick=()=>{try{localStorage.removeItem(TRK_K)}catch(e){}$("trkres").hidden=true;$("trkf").hidden=false;$("trkn").value="";$("trkc").value="";$("trkr").checked=false;$("trkn").focus()};
 }
+/* Paiement en ligne SumUp : /paiement/?t=JETON (le montant est fixé par l'atelier côté serveur) */
+const euros=n=>Number(n).toLocaleString("fr-FR",{style:"currency",currency:"EUR"});
+async function payApi(d){let r,j;try{r=await fetch("/api/paiement.php",{method:"POST",headers:{"Content-Type":"application/json","X-GT":"1"},body:JSON.stringify(d)})}catch(e){throw new Error("Connexion impossible. Vérifiez votre connexion Internet.")}
+  try{j=await r.json()}catch(e){throw new Error("Le paiement en ligne est momentanément indisponible. Appelez le 06 05 79 48 94.")}if(!j.ok)throw new Error(j.erreur||"Erreur.");return j}
+window.payOpen=async function(){const c=$("payc");if(!c)return;const q=new URLSearchParams(location.search),t=q.get("t")||"",retour=q.has("retour");
+  const draw=(p,actif)=>{const m=euros(p.montant);
+    if(p.statut==="paye"){c.innerHTML=`<div class="pay-ok"><span class="pay-ic" aria-hidden="true">✓</span><h2>Paiement reçu, merci !</h2><p>${m} réglés le ${esc(fdate(p.paye_le))} pour : ${esc(p.libelle)}.</p><p class="note">Un reçu vous a été envoyé par e-mail.${p.transaction?" Référence SumUp : "+esc(p.transaction)+".":""}</p><div class="row2"><a class="btn" href="${link("#compte")}">Mon espace client</a><a class="btn ghost" href="${link("#suivi")}">Suivre ma réparation</a></div></div>`;return}
+    if(p.statut!=="attente"){c.innerHTML=`<h2>Paiement annulé</h2><p>Cette demande de paiement a été annulée par l’atelier. Pour toute question : 06 05 79 48 94.</p>`;return}
+    c.innerHTML=`<span class="eyebrow">Paiement par carte</span><h2 class="pay-m">${m}</h2><p class="pay-l">${esc(p.libelle)}</p>
+      ${retour?`<p class="msg" role="alert">Le paiement n’a pas abouti ou n’est pas encore confirmé. Vous pouvez réessayer : aucune somme n’est prélevée deux fois.</p>`:""}
+      ${actif?`<button class="btn pay-go" type="button" id="paygo">🔒 Payer ${m} par carte</button><p class="note">Vous allez être redirigé vers la page sécurisée de SumUp, puis ramené ici.</p>`:`<p class="msg">Le paiement en ligne n’est pas encore ouvert. Vous pouvez régler à l’atelier ou appeler le 06 05 79 48 94.</p>`}
+      <p class="msg" id="paym" role="alert"></p>`;
+    const b=$("paygo");if(b)b.onclick=async()=>{b.disabled=true;b.textContent="Ouverture de la page de paiement…";try{const j=await payApi({action:"payer",jeton:t});if(j.url)location.href=j.url;else draw(j.paiement,actif)}catch(err){$("paym").textContent=err.message;b.disabled=false;b.textContent="🔒 Payer "+m+" par carte"}}};
+  if(!/^[a-f0-9]{32}$/.test(t)){c.innerHTML=`<h2>Lien incomplet</h2><p>Ouvrez le lien de paiement reçu par e-mail ou dans votre messagerie, en entier. Besoin d’aide : 06 05 79 48 94.</p>`;return}
+  try{let j=await payApi({action:"voir",jeton:t});
+    /* retour de SumUp : la confirmation peut prendre quelques secondes */
+    for(let i=0;retour&&j.paiement.statut==="attente"&&i<5;i++){c.innerHTML=`<p class="note">Vérification du paiement auprès de SumUp…</p>`;await new Promise(r=>setTimeout(r,2000));j=await payApi({action:"voir",jeton:t})}
+    draw(j.paiement,j.actif)}catch(err){c.innerHTML=`<h2>Paiement introuvable</h2><p>${esc(err.message)}</p>`}};
 window.suiviOpen=function(){
   if(!$("trkf"))return;
   let n="",c="";
@@ -3760,8 +3808,9 @@ function route(){
   if(np)renderNews(np);
   VIEWS.forEach(v=>{const el=$("v-"+v);if(el)el.hidden=v!==h});
   /* Bandeau « Un appareil en panne ? » du bas : masqué sur les pages qui ont déjà leur encadré téléphone, pour ne pas l'afficher deux fois */
-  {const bd=document.querySelector("section.band");if(bd)bd.hidden=["demande","contact","pro","compte","suivi"].includes(h)}
+  {const bd=document.querySelector("section.band");if(bd)bd.hidden=["demande","contact","pro","compte","suivi","paiement"].includes(h)}
   if(h==="suivi"&&window.suiviOpen)suiviOpen();
+  if(h==="paiement"&&window.payOpen)payOpen();
   if(h==="compte"&&window.accOpen)accOpen();
   const grp=h0==="avis"?"infos":({services:"services",boutique:"boutique",demande:"contact",suivi:"services",zone:"contact",secteurs:"contact",commune:"contact",contact:"contact",pro:"pro",faq:"infos",conseils:"infos",article:"infos",actus:"infos",actu:"infos"})[h]||h;
   document.querySelectorAll("[data-nav]").forEach(el=>{const on=el.dataset.nav===grp;el.classList.toggle("cur",on);if(el.tagName==="A"){if(on)el.setAttribute("aria-current","page");else el.removeAttribute("aria-current")}});
@@ -4137,7 +4186,7 @@ function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==
   return `<article class="acc-r"><div><span class="eyebrow">${esc(r.numero)} · ${clos?"le "+fdate(r.maj_le):"mis à jour le "+fdate(r.maj_le)}</span><h4>${esc(r.appareil)}${u?`<span class="msg-nb">${u} message${u>1?"s":""}</span>`:""}</h4><p>${esc(r.libelle)}${clos?"":" · "+esc(r.phrase)}</p></div>`
    +(clos||r.etape==="annule"?"":`<ol class="trk-p" style="--n:${steps.length}">${steps.map((e,k)=>`<li class="${k<ci?"done":k===ci?"done cur":""}">${esc(lib[e]||e)}</li>`).join("")}</ol>`)
    +(r.devis==="attente"?`<div class="acc-dv"><b>Votre accord est attendu${r.prix?" : "+esc(r.prix):""}.</b><span>Voir le détail dans l’historique.</span><div class="row2"><button type="button" class="btn sm" data-adv="accepte" data-n="${esc(r.numero)}">J’accepte le devis</button><button type="button" class="btn sm ghost" data-adv="refuse" data-n="${esc(r.numero)}">Je refuse</button></div></div>`:r.devis==="accepte"&&r.etape==="devis"?`<p class="acc-g on">✓ Devis accepté</p>`:"")
-   +g+`<button type="button" class="acc-mb${u?" nl":""}" data-conv="${esc(r.numero)}"><span class="msg-av" aria-hidden="true">GT</span><span><b>Messages avec l’atelier</b><small>${u?u+" nouveau"+(u>1?"x":"")+" message"+(u>1?"s":""):nm?nm+" message"+(nm>1?"s":""):"Posez une question, envoyez une photo"}</small></span><span class="acc-mb-go" aria-hidden="true">›</span></button>`
+   +payList(r.paiements)+g+`<button type="button" class="acc-mb${u?" nl":""}" data-conv="${esc(r.numero)}"><span class="msg-av" aria-hidden="true">GT</span><span><b>Messages avec l’atelier</b><small>${u?u+" nouveau"+(u>1?"x":"")+" message"+(u>1?"s":""):nm?nm+" message"+(nm>1?"s":""):"Posez une question, envoyez une photo"}</small></span><span class="acc-mb-go" aria-hidden="true">›</span></button>`
    +`<details${i===0&&!clos?" open":""}><summary>Historique</summary><ul class="trk-h">${r.historique.slice().reverse().map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></details></article>`}
 /* Conversations de l'espace client : générale, par réparation, par demande. Une ligne → la conversation s'ouvre en grand */
 function accConvs(){const p=ACC;if(!p)return[];const L=[];

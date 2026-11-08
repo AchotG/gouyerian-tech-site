@@ -69,6 +69,7 @@ function vue(array $r, bool $complet = false): array {
   if ($complet) {
     $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
       'messages' => messages((int)$r['id'], 'atelier'),
+      'paiements' => paiements_de('reparation_id', (int)$r['id']),
       'historique' => array_map(fn($h) => $h + ['libelle' => ETAPES[$h['etape']][0] ?? $h['etape']], historique((int)$r['id']))];
   }
   return $v;
@@ -115,6 +116,13 @@ function vue_demande(array $r, bool $complet = false): array {
   return $v;
 }
 
+function paiements_fil(array $fil): array {
+  if ($fil[0] !== 'c') return paiements_de($fil[0] === 'r' ? 'reparation_id' : 'demande_id', (int)$fil[1]);
+  $s = db()->prepare("SELECT * FROM gt_paiements WHERE client_id = ? AND reparation_id = 0 AND demande_id = 0 AND statut <> 'annule' ORDER BY id DESC");
+  $s->execute([(int)$fil[1]]);
+  return array_map('vue_paiement', $s->fetchAll());
+}
+
 /* Description d'une conversation pour la gestion (clé r:ID, d:ID ou c:ID) */
 function fil_gestion(array $x): ?array {
   $pdo = db();
@@ -151,7 +159,7 @@ function fil_ouvrir(string $cle): array {
 
 /* ---------- Sans connexion : état, connexion ---------- */
 if ($action === 'etat') {
-  out(['ok' => true, 'connecte' => connecte($COOKIE), 'etapes' => array_map(fn($k, $v) => ['etape' => $k, 'libelle' => $v[0]], array_keys(ETAPES), ETAPES)]);
+  out(['ok' => true, 'sumup' => sumup_actif(), 'connecte' => connecte($COOKIE), 'etapes' => array_map(fn($k, $v) => ['etape' => $k, 'libelle' => $v[0]], array_keys(ETAPES), ETAPES)]);
 }
 if ($action === 'connexion') {
   $hash = cfg()['admin_hash'] ?? '';
@@ -253,7 +261,45 @@ switch ($action) {
     [$fil, $ctx] = fil_ouvrir(txt($d['fil'] ?? '', 20));
     $ms = messages_fil($fil, 'atelier');
     marquer_lus($fil, 'client');
-    out(['ok' => true, 'fil' => $ctx, 'messages' => $ms]);
+    out(['ok' => true, 'fil' => $ctx, 'messages' => $ms, 'paiements' => paiements_fil($fil)]);
+
+  /* ---------- Paiement en ligne (SumUp) ---------- */
+  case 'paiement_creer':
+    [$fil, $ctx] = fil_ouvrir(txt($d['fil'] ?? '', 20));
+    $montant = round((float)str_replace(',', '.', (string)($d['montant'] ?? 0)), 2);
+    if ($montant < 1 || $montant > 5000) fail('Montant entre 1 € et 5 000 €.');
+    $lib = txt($d['libelle'] ?? '', 200);
+    if ($lib === '') $lib = $ctx['sujet'];
+    $cols = fil_cols($fil);
+    $jeton = bin2hex(random_bytes(16));
+    $pdo->prepare('INSERT INTO gt_paiements (jeton, reparation_id, demande_id, client_id, nom, email, libelle, montant, statut, cree_le, maj_le) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      ->execute([$jeton, $cols['reparation_id'], $cols['demande_id'], $cols['client_id'], (string)$ctx['nom'], strtolower((string)$ctx['email']), $lib, $montant, 'attente', now(), now()]);
+    $p = paiement_par_jeton($jeton);
+    $m = number_format($montant, 2, ',', ' ') . ' €';
+    $mail = false;
+    if (!empty($d['mail']) && $p['email'] !== '') $mail = mail_pro($p['email'], "Paiement en ligne : $m", ['pre' => "Réglez $m par carte, en toute sécurité.", 'etiquette' => 'Paiement en ligne', 'titre' => "Votre paiement de $m",
+      'paras' => [($p['nom'] !== '' ? 'Bonjour ' . prenom($p['nom']) : 'Bonjour') . ',', "Vous pouvez régler par carte bancaire, en ligne : $lib."],
+      'infos' => [['Montant', $m], ['Objet', $lib]], 'bouton' => ["Payer $m par carte", lien_paiement($p)],
+      'note' => 'Le paiement se fait sur la page sécurisée de SumUp : Gouyerian Tech ne voit jamais vos données de carte. Vous pouvez aussi régler à l’atelier.']);
+    ajouter_message($fil, 'atelier', "💳 Demande de paiement : $m ($lib)\nPayer par carte : " . lien_paiement($p), [], $mail);
+    out(['ok' => true, 'paiement' => vue_paiement($p), 'mail' => $mail, 'messages' => messages_fil($fil, 'atelier'), 'paiements' => paiements_fil($fil)]);
+
+  case 'paiement_annuler':
+    $p = paiement_par_jeton(txt($d['jeton'] ?? '', 40));
+    if (!$p) fail('Paiement introuvable.', 404);
+    $p = paiement_verifier($p);
+    if ($p['statut'] === 'paye') fail('Ce paiement est déjà réglé : il ne peut plus être annulé ici (remboursement depuis SumUp).');
+    $pdo->prepare("UPDATE gt_paiements SET statut = 'annule', maj_le = ? WHERE id = ?")->execute([now(), $p['id']]);
+    out(['ok' => true]);
+
+  case 'paiement_verifier':
+    $p = paiement_par_jeton(txt($d['jeton'] ?? '', 40));
+    if (!$p) fail('Paiement introuvable.', 404);
+    out(['ok' => true, 'paiement' => vue_paiement(paiement_verifier($p))]);
+
+  case 'paiements':
+    $rows = $pdo->query("SELECT * FROM gt_paiements WHERE statut <> 'annule' ORDER BY id DESC LIMIT 100")->fetchAll();
+    out(['ok' => true, 'paiements' => array_map(fn($p) => vue_paiement(paiement_verifier($p)) + ['nom' => $p['nom']], $rows)]);
 
   case 'fil_envoyer':
     [$fil, $ctx] = fil_ouvrir(txt($d['fil'] ?? '', 20));
@@ -267,7 +313,7 @@ switch ($action) {
     }
     ajouter_message($fil, 'atelier', $texte, $pj, $mail);
     marquer_lus($fil, 'client');
-    out(['ok' => true, 'fil' => $ctx, 'messages' => messages_fil($fil, 'atelier'), 'mail' => $mail]);
+    out(['ok' => true, 'fil' => $ctx, 'messages' => messages_fil($fil, 'atelier'), 'paiements' => paiements_fil($fil), 'mail' => $mail]);
 
   case 'demandes':
     $vue = txt($d['vue'] ?? 'a_traiter', 12);

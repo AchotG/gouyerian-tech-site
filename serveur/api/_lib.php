@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 7;
+const SCHEMA_VERSION = 8;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -182,6 +182,24 @@ function schema(PDO $pdo): void {
   ajouter_colonne($pdo, 'gt_messages', 'lu_le', 'DATETIME NULL');               // v5 : date de lecture
   ajouter_colonne($pdo, 'gt_messages', 'demande_id', 'INT NOT NULL DEFAULT 0');  // v6 : conversation d'une demande (reparation_id = 0)
   ajouter_colonne($pdo, 'gt_messages', 'client_id', 'INT NOT NULL DEFAULT 0');   // v6 : conversation générale d'un client (sans réparation ni demande)
+  /* v8 : paiements en ligne SumUp (une demande de paiement = un lien /paiement/?t=…) */
+  $pdo->exec("CREATE TABLE IF NOT EXISTS gt_paiements (
+    id $id,
+    jeton VARCHAR(40) NOT NULL UNIQUE,
+    reparation_id INT NOT NULL DEFAULT 0,
+    demande_id INT NOT NULL DEFAULT 0,
+    client_id INT NOT NULL DEFAULT 0,
+    nom VARCHAR(120) NOT NULL DEFAULT '',
+    email VARCHAR(190) NOT NULL DEFAULT '',
+    libelle VARCHAR(200) NOT NULL DEFAULT '',
+    montant DECIMAL(10,2) NOT NULL,
+    statut VARCHAR(12) NOT NULL DEFAULT 'attente',
+    checkout_id VARCHAR(64) NOT NULL DEFAULT '',
+    transaction_code VARCHAR(40) NOT NULL DEFAULT '',
+    cree_le DATETIME NOT NULL,
+    maj_le DATETIME NOT NULL,
+    paye_le DATETIME NULL
+  )$opt");
   /* v7 : les conversations des demandes devenues réparations rejoignent la conversation de la réparation */
   foreach ($pdo->query('SELECT id, reparation_id FROM gt_demandes WHERE reparation_id IS NOT NULL AND reparation_id > 0')->fetchAll() as $x) {
     $pdo->prepare('UPDATE gt_messages SET reparation_id = ?, demande_id = 0 WHERE reparation_id = 0 AND demande_id = ?')->execute([(int)$x['reparation_id'], (int)$x['id']]);
@@ -288,6 +306,63 @@ function marquer_lus(array $fil, string $auteur): void {
 /* Une demande devient une réparation : sa conversation continue dans celle de la réparation (même historique) */
 function fusionner_demande(int $did, int $rid): void {
   db()->prepare('UPDATE gt_messages SET reparation_id = ?, demande_id = 0 WHERE reparation_id = 0 AND demande_id = ?')->execute([$rid, $did]);
+  db()->prepare('UPDATE gt_paiements SET reparation_id = ? WHERE reparation_id = 0 AND demande_id = ?')->execute([$rid, $did]);
+}
+
+/* ---------- Paiement en ligne SumUp (page de paiement hébergée par SumUp) ---------- */
+const STATUTS_PAIEMENT = ['attente' => 'En attente', 'paye' => 'Payé', 'annule' => 'Annulé'];
+function sumup_actif(): bool { $c = cfg(); return !empty($c['sumup_key']) && !empty($c['sumup_merchant']); }
+function sumup(string $methode, string $chemin, ?array $corps = null): array {
+  $c = cfg();
+  $url = rtrim($c['sumup_api'] ?? 'https://api.sumup.com', '/') . $chemin;
+  $ctx = stream_context_create(['http' => ['method' => $methode, 'ignore_errors' => true, 'timeout' => 20,
+    'header' => "Authorization: Bearer {$c['sumup_key']}\r\nContent-Type: application/json\r\nAccept: application/json\r\n",
+    'content' => $corps !== null ? json_encode($corps, JSON_UNESCAPED_UNICODE) : '']]);
+  $rep = @file_get_contents($url, false, $ctx);
+  $code = 0;
+  foreach ($http_response_header ?? [] as $hd) if (preg_match('#^HTTP/\S+\s+(\d+)#', $hd, $m)) $code = (int)$m[1];
+  $j = json_decode((string)$rep, true);
+  return [$code, is_array($j) ? $j : []];
+}
+function paiement_par_jeton(string $jeton): ?array {
+  if (!preg_match('/^[a-f0-9]{32}$/', $jeton)) return null;
+  $s = db()->prepare('SELECT * FROM gt_paiements WHERE jeton = ?');
+  $s->execute([$jeton]);
+  return $s->fetch() ?: null;
+}
+function lien_paiement(array $p): string { return rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/') . '/paiement/?t=' . $p['jeton']; }
+function vue_paiement(array $p): array {
+  return ['jeton' => $p['jeton'], 'libelle' => $p['libelle'], 'montant' => (float)$p['montant'], 'statut' => $p['statut'],
+    'statut_libelle' => STATUTS_PAIEMENT[$p['statut']] ?? $p['statut'], 'cree_le' => $p['cree_le'], 'paye_le' => $p['paye_le'], 'lien' => lien_paiement($p),
+    'transaction' => $p['transaction_code']];
+}
+function paiements_de(string $col, int $id): array {
+  if (!in_array($col, ['reparation_id', 'demande_id', 'client_id'], true)) return [];
+  $s = db()->prepare("SELECT * FROM gt_paiements WHERE $col = ? AND statut <> 'annule' ORDER BY id DESC");
+  $s->execute([$id]);
+  return array_map('vue_paiement', $s->fetchAll());
+}
+/* Relit l'état chez SumUp ; quand le paiement est fait : statut « payé », e-mails au client et à l'atelier, message dans la conversation */
+function paiement_verifier(array $p): array {
+  if ($p['statut'] !== 'attente' || $p['checkout_id'] === '' || !sumup_actif()) return $p;
+  [$code, $co] = sumup('GET', '/v0.1/checkouts/' . rawurlencode($p['checkout_id']));
+  if ($code !== 200 || ($co['status'] ?? '') !== 'PAID') return $p;
+  $tx = '';
+  foreach ($co['transactions'] ?? [] as $t) if (($t['status'] ?? '') === 'SUCCESSFUL') $tx = (string)($t['transaction_code'] ?? '');
+  $pdo = db();
+  $u = $pdo->prepare("UPDATE gt_paiements SET statut = 'paye', paye_le = ?, maj_le = ?, transaction_code = ? WHERE id = ? AND statut = 'attente'");
+  $u->execute([now(), now(), $tx, $p['id']]);
+  if ($u->rowCount() !== 1) return paiement_par_jeton($p['jeton']) ?? $p;
+  $p = paiement_par_jeton($p['jeton']);
+  $m = number_format((float)$p['montant'], 2, ',', ' ') . ' €';
+  $fil = (int)$p['reparation_id'] ? ['r', (int)$p['reparation_id']] : ((int)$p['demande_id'] ? ['d', (int)$p['demande_id'], (int)$p['client_id']] : ((int)$p['client_id'] ? ['c', (int)$p['client_id']] : null));
+  if ($fil) ajouter_message($fil, 'atelier', "✅ Paiement reçu : $m ({$p['libelle']}). Merci !", []);
+  if ($p['email'] !== '') mail_pro($p['email'], "Paiement reçu : $m", ['pre' => "Nous avons bien reçu votre paiement de $m.", 'etiquette' => 'Paiement en ligne', 'titre' => 'Paiement reçu, merci !',
+    'paras' => [($p['nom'] !== '' ? 'Bonjour ' . prenom($p['nom']) : 'Bonjour') . ',', "Nous avons bien reçu votre paiement par carte de $m pour : {$p['libelle']}."],
+    'infos' => array_values(array_filter([['Montant', $m], ['Date', date('d/m/Y à H:i')], $tx !== '' ? ['Transaction SumUp', $tx] : null])),
+    'note' => 'Gardez cet e-mail comme justificatif. La facture vous est remise avec votre appareil.']);
+  notifier_atelier("paiement reçu $m", "Paiement en ligne reçu : $m de " . ($p['nom'] ?: $p['email']) . " ({$p['libelle']}).");
+  return $p;
 }
 
 function messages(int $rid, string $pour): array { return messages_fil(['r', $rid], $pour); }
@@ -378,6 +453,7 @@ function vue_client(array $r): array {
     'historique' => array_map(fn($h) => ['etape' => $h['etape'], 'libelle' => ETAPES[$h['etape']][0] ?? $h['etape'], 'note' => (string)$h['note'], 'le' => $h['le']], historique((int)$r['id'])),
     'avis_email' => (bool)(int)$r['avis_email'],
     'messages' => messages((int)$r['id'], 'client'),
+    'paiements' => paiements_de('reparation_id', (int)$r['id']),
   ];
 }
 
