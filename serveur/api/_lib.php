@@ -311,7 +311,19 @@ function fusionner_demande(int $did, int $rid): void {
 
 /* ---------- Paiement en ligne SumUp (page de paiement hébergée par SumUp) ---------- */
 const STATUTS_PAIEMENT = ['attente' => 'En attente', 'paye' => 'Payé', 'annule' => 'Annulé'];
-function sumup_actif(): bool { $c = cfg(); return !empty($c['sumup_key']) && !empty($c['sumup_merchant']); }
+function sumup_actif(): bool { return !empty(cfg()['sumup_key']) && sumup_marchand() !== ''; }
+/* Code marchand : celui du secret SUMUP_MERCHANT_CODE, sinon lu une fois chez SumUp (GET /v0.1/me) puis gardé */
+function sumup_marchand(): string {
+  $c = cfg();
+  if (!empty($c['sumup_merchant'])) return (string)$c['sumup_merchant'];
+  if (empty($c['sumup_key'])) return '';
+  $m = meta('sumup_marchand', '');
+  if ($m !== '') return $m;
+  [$code, $me] = sumup('GET', '/v0.1/me');
+  $m = (string)($me['merchant_profile']['merchant_code'] ?? '');
+  if ($code === 200 && $m !== '') meta_set('sumup_marchand', $m);
+  return $m;
+}
 function sumup(string $methode, string $chemin, ?array $corps = null): array {
   $c = cfg();
   $url = rtrim($c['sumup_api'] ?? 'https://api.sumup.com', '/') . $chemin;

@@ -40,7 +40,7 @@ if ($action === 'payer') {
     'checkout_reference' => 'GT-' . $p['id'] . '-' . substr(bin2hex(random_bytes(4)), 0, 8),
     'amount' => round((float)$p['montant'], 2),
     'currency' => 'EUR',
-    'merchant_code' => $c['sumup_merchant'],
+    'merchant_code' => sumup_marchand(),
     'description' => mb_substr('Gouyerian Tech : ' . $p['libelle'], 0, 120),
     'return_url' => "$site/api/paiement.php?sumup=" . $p['jeton'],
     'redirect_url' => lien_paiement($p) . '&retour=1',

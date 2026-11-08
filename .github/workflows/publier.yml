@@ -93,8 +93,8 @@ jobs:
             ];
             /* Envoi par le serveur SMTP d IONOS (authentifié avec la boîte d expédition) si le secret SUIVI_SMTP_PASSWORD existe */
             if (getenv("SMTP_PASS")) $c += ["smtp_host" => "smtp.ionos.fr", "smtp_port" => 465, "smtp_user" => $c["mail_from"], "smtp_pass" => getenv("SMTP_PASS")];
-            /* Paiement en ligne SumUp si les secrets SUMUP_API_KEY et SUMUP_MERCHANT_CODE existent */
-            if (getenv("SUMUP_KEY") && getenv("SUMUP_MERCHANT")) $c += ["sumup_key" => getenv("SUMUP_KEY"), "sumup_merchant" => getenv("SUMUP_MERCHANT")];
+            /* Paiement en ligne SumUp si le secret SUMUP_API_KEY existe (SUMUP_MERCHANT_CODE facultatif : sinon lu chez SumUp) */
+            if (getenv("SUMUP_KEY")) $c += ["sumup_key" => getenv("SUMUP_KEY"), "sumup_merchant" => (string)getenv("SUMUP_MERCHANT")];
             file_put_contents("gt-config.php", "<?php\n/* Configuration du suivi des réparations (écrite par GitHub, ne pas modifier à la main) */\nreturn " . var_export($c, true) . ";\n");'
           php -l gt-config.php >/dev/null
           printf 'Require all denied\n' > htaccess-prive

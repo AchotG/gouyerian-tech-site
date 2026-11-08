@@ -46,6 +46,11 @@ if ($to !== '' && !empty($d['variantes'])) {
   $res['mb_nom'] = mb_encode_mimeheader('Gouyerian Tech (ne pas répondre)', 'UTF-8');
   $res['variantes'] = $v;
 }
+/* SumUp : clé présente ? code marchand trouvé ? (jamais la clé elle-même) */
+$res['sumup'] = ['cle' => !empty($c['sumup_key']), 'marchand' => ($m = sumup_marchand()) !== '' ? substr($m, 0, 2) . '…' . substr($m, -2) : '', 'actif' => sumup_actif()];
+if (!empty($c['sumup_key'])) { [$code] = sumup('GET', '/v0.1/me'); $res['sumup']['api_me'] = $code; }
+$f = prive_dir() . '/sumup.log';
+if (is_file($f)) $res['sumup']['erreurs'] = array_map('trim', array_slice(file($f) ?: [], -5));
 $log = prive_dir() . '/mail.log';
 $res['journal'] = is_file($log) ? array_map('trim', array_slice(file($log) ?: [], -40)) : [];
 out($res);
