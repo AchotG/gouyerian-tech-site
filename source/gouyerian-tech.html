@@ -3284,7 +3284,7 @@ const ART=(()=>{
     const S=scene(26,32,4.8,300,214);let inner=charger(S,[-24,0,-4],-34,p,col,1.15);
     const A=[10,0,30],B=[44,0,26],dA=nrm([.5,0,-1]),dB=nrm([-.1,0,-1]);
     const pa=plug(S,p,A,dA,{col}),pb=plug(S,q,B,dB,{col}),y=pa.end[1],w=pa.r*1.6*4.8/1.35;
-    const pts=[pa.end,add(pa.end,mul(dA,12)),[34,y,-12],[44,y,-26],[56,y,-44],[80,y,-36],[76,y,-20],[72,y,-6],[50,y,-14],[40,y,-30],[30,y,-46],[50,y,-60],[70,y,-56],[86,y,-50],[70,y,-12],add(pb.end,mul(dB,12)),pb.end];
+    const pts=[pa.end,add(pa.end,mul(dA,12)),[34,y,-12],[44,y,-26],[56,y,-44],[80,y,-36],[76,y,-20],[72,y,-6],[50,y,-14],[40,y,-30],[30,y,-46],[50,y,-60],[70,y,-56],[86,y,-50],[88,y,-30],[66,y,-24],[52,y,-20],add(pb.end,mul(dB,12)),pb.end];
     inner+=tube(S,path3(S,pts),w,col)+pa.svg+pb.svg;
     return wrap(S,inner,"Prise et câble",{bot:`Prise ${NOM[p]} + câble ${NOM[p]} ⟷ ${NOM[q]}`,bsz:16})}
 
@@ -3582,7 +3582,7 @@ const ART=(()=>{
           capFx:`<rect x="-80" y="-1" width="120" height="2" rx="1" fill="#05060a"/><circle cx="66" cy="0" r="4.5" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/><circle cx="66" cy="0" r="9" fill="#3b82f6" opacity=".18"/><g transform="translate(-60 9) scale(.5)">${port(S,"usba")}</g><g transform="translate(-44 9) scale(.5)">${port(S,"usbc")}</g>`});
         o+=plane(S,add(O,[0,H/2+.02,0]),U,neg(d),`<rect x="${-L/2+8}" y="${-Wd/2+8}" width="${L-16}" height="${Wd-16}" rx="8" fill="#fff" opacity=".04"/>${[...Array(9)].map((_,i)=>`<rect x="${-60+i*14}" y="${-Wd/2+12}" width="8" height="26" rx="3" fill="#05060a" opacity=".7"/>`).join("")}`);
         const ph=plug(S,"hdmi",[92,0,62],nrm([-.4,0,-1]));
-        o=tube(S,path3(S,[[O[0]+L/2-30,5,O[2]-Wd/2],[O[0]+L/2+10,5,O[2]-Wd/2-30],[140,5,-30],[ph.end[0]+20,5,ph.end[2]-40],ph.end]),3.6*1.7)+o+ph.svg;
+        o=tube(S,path3(S,[[O[0]+L/2-30,5,O[2]-Wd/2],[O[0]+L/2+10,5,O[2]-Wd/2-30],[ph.end[0]+20,5,ph.end[2]-40],ph.end]),3.6*1.7)+o+ph.svg;
         /* manette (dessinée en vue de dessus, posée devant) */
         const c=S.cam.P([-150,6,96]);S.cam.grow(c[0]-90,c[1]-60);S.cam.grow(c[0]+90,c[1]+60);
         o+=`<g transform="translate(${f1(c[0])} ${f1(c[1])}) rotate(-6) scale(1,.82)"><ellipse cx="4" cy="22" rx="92" ry="40" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/><path d="M-60 -34C-34 -44 34 -44 60 -34C84 -26 96 10 92 36C88 58 66 62 52 44L36 24H-36L-52 44C-66 62 -88 58 -92 36C-96 10 -84 -26 -60 -34Z" fill="${m.black}"/><path d="M-58 -30C-34 -38 34 -38 58 -30" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2.5" stroke-linecap="round"/>`+
