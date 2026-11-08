@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 9;
+const SCHEMA_VERSION = 10;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -210,6 +210,8 @@ function schema(PDO $pdo): void {
   )$opt");
   ajouter_colonne($pdo, 'gt_paiements', 'transaction_id', "VARCHAR(64) NOT NULL DEFAULT ''");
   ajouter_colonne($pdo, 'gt_paiements', 'rembourse', 'DECIMAL(10,2) NOT NULL DEFAULT 0');
+  /* v10 : détail du prix d'une réparation (lignes de travaux, JSON) */
+  ajouter_colonne($pdo, 'gt_reparations', 'travaux', 'TEXT NULL');
   /* v7 : les conversations des demandes devenues réparations rejoignent la conversation de la réparation */
   foreach ($pdo->query('SELECT id, reparation_id FROM gt_demandes WHERE reparation_id IS NOT NULL AND reparation_id > 0')->fetchAll() as $x) {
     $pdo->prepare('UPDATE gt_messages SET reparation_id = ?, demande_id = 0 WHERE reparation_id = 0 AND demande_id = ?')->execute([(int)$x['reparation_id'], (int)$x['id']]);
@@ -273,14 +275,27 @@ function prive_dir(): string {
   return $GLOBALS['GT_CFG_DIR'] ?? (__DIR__ . '/../../prive');
 }
 
-/* Réponse du client au devis (depuis le suivi ou son espace) ; prévient l'atelier par e-mail. */
+/* Lignes d'historique qui ne sont pas des étapes (changement de prix ou de travaux) */
+const HISTO_EXTRA = ['travaux' => 'Devis mis à jour'];
+function lib_histo(string $e): string { return ETAPES[$e][0] ?? HISTO_EXTRA[$e] ?? $e; }
+
+/* Détail du prix : [['l' => libellé, 'p' => prix], …] */
+function travaux_de(array $r): array {
+  $t = json_decode((string)($r['travaux'] ?? ''), true);
+  return is_array($t) ? array_values(array_filter($t, fn($x) => is_array($x) && isset($x['l'], $x['p']))) : [];
+}
+function euros(float $n): string { return str_replace(',00', '', number_format($n, 2, ',', ' ')) . ' €'; }
+
+/* Réponse du client au devis (depuis le suivi ou son espace) ; prévient l'atelier par e-mail.
+   Un devis peut aussi être redemandé en cours de réparation (prix modifié, travaux en plus) : devis_etat = attente. */
 function repondre_devis(array $r, string $rep): array {
   if (!in_array($rep, ['accepte', 'refuse'], true)) fail('Réponse inconnue.');
-  if ($r['etape'] !== 'devis' || !in_array($r['devis_etat'], ['attente', ''], true)) fail('Ce devis n’attend plus de réponse. Appelez le 06 05 79 48 94 si besoin.');
+  $avenant = $r['etape'] !== 'devis';
+  if (!($r['devis_etat'] === 'attente' || (!$avenant && $r['devis_etat'] === ''))) fail('Ce devis n’attend plus de réponse. Appelez le 06 05 79 48 94 si besoin.');
   $pdo = db();
   $pdo->prepare('UPDATE gt_reparations SET devis_etat = ?, devis_le = ?, maj_le = ? WHERE id = ?')->execute([$rep, now(), now(), $r['id']]);
-  $note = $rep === 'accepte' ? 'Devis accepté en ligne par le client.' : 'Devis refusé en ligne par le client.';
-  $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, 0)')->execute([$r['id'], 'devis', $note, now()]);
+  $note = ($avenant ? 'Nouveau devis' : 'Devis') . ($rep === 'accepte' ? ' accepté' : ' refusé') . ' en ligne par le client' . ($r['prix'] !== '' ? ' (' . $r['prix'] . ').' : '.');
+  $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, 0)')->execute([$r['id'], $avenant ? 'travaux' : 'devis', $note, now()]);
   $pdo->prepare('UPDATE gt_reparations SET devis_vu = 0 WHERE id = ?')->execute([$r['id']]);
   notifier_atelier(($rep === 'accepte' ? 'devis accepté' : 'devis refusé') . " ({$r['numero']})",
     "{$r['nom']} a " . ($rep === 'accepte' ? 'ACCEPTÉ' : 'refusé') . " le devis de la réparation {$r['numero']} ({$r['appareil']}).");
@@ -490,11 +505,11 @@ function vue_client(array $r): array {
   return [
     'numero' => $r['numero'], 'appareil' => $r['appareil'], 'etape' => $r['etape'],
     'libelle' => ETAPES[$r['etape']][0] ?? $r['etape'], 'phrase' => ETAPES[$r['etape']][1] ?? '',
-    'maj_le' => $r['maj_le'], 'cree_le' => $r['cree_le'], 'prix' => $r['prix'],
+    'maj_le' => $r['maj_le'], 'cree_le' => $r['cree_le'], 'prix' => $r['prix'], 'travaux' => travaux_de($r),
     'devis' => $r['etape'] === 'devis' ? ($r['devis_etat'] ?: 'attente') : (string)$r['devis_etat'],
     'garantie_mois' => (int)$r['garantie_mois'], 'garantie_fin' => fin_garantie($r),
     'parcours' => array_map(fn($e) => ['etape' => $e, 'libelle' => ETAPES[$e][0]], PARCOURS),
-    'historique' => array_map(fn($h) => ['etape' => $h['etape'], 'libelle' => ETAPES[$h['etape']][0] ?? $h['etape'], 'note' => (string)$h['note'], 'le' => $h['le']], historique((int)$r['id'])),
+    'historique' => array_map(fn($h) => ['etape' => $h['etape'], 'libelle' => lib_histo($h['etape']), 'note' => (string)$h['note'], 'le' => $h['le']], historique((int)$r['id'])),
     'avis_email' => (bool)(int)$r['avis_email'],
     'messages' => messages((int)$r['id'], 'client'),
     'paiements' => paiements_de('reparation_id', (int)$r['id']),
@@ -779,6 +794,23 @@ function mail_etape(array $r, string $etape, string $note, bool $force = false):
   elseif ($etape === 'rendu') { $m['bouton'] = ['Laisser un avis Google', 'https://search.google.com/local/writereview?placeid=ChIJY1Q5ZwBhAEgRGG3fYcH4qpk']; $m['lien2'] = ['Voir ma garantie dans mon espace', rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/') . '/mon-espace/']; }
   else $m['bouton'] = ['Suivre ma réparation', lien_suivi($r)];
   return mail_pro($r['email'], "Votre réparation {$r['numero']} : $lib", $m);
+}
+
+/* Prix ou travaux modifiés : e-mail au client avec le détail ; $accord = le client doit accepter en ligne */
+function mail_travaux(array $r, array $lignes, string $avant, string $note, bool $accord): bool {
+  if ($r['email'] === '') return false;
+  $total = euros(array_sum(array_map(fn($x) => (float)$x['p'], $lignes)));
+  $infos = array_map(fn($x) => [$x['l'], euros((float)$x['p'])], $lignes);
+  $infos[] = ['Total', $total];
+  $m = ['pre' => ($accord ? 'Votre accord est demandé : ' : 'Nouveau montant : ') . $total, 'etiquette' => "Réparation {$r['numero']}",
+    'titre' => $accord ? 'Nouveau devis à valider' : 'Votre devis a été mis à jour',
+    'paras' => ['Bonjour ' . prenom($r['nom']) . ',', "Le devis de votre {$r['appareil']} a été mis à jour" . ($avant !== '' && $avant !== $total ? " : $total au lieu de $avant." : " : $total.")],
+    'citation' => $note !== '' ? $note : null, 'infos' => $infos,
+    'bouton' => [$accord ? 'Voir et accepter le devis' : 'Suivre ma réparation', lien_suivi($r)],
+    'note' => $accord ? 'Les travaux continuent dès votre accord. Une question ? Écrivez-nous depuis la page de suivi ou appelez le 06 05 79 48 94.' : 'Une question ? Écrivez-nous depuis la page de suivi ou appelez le 06 05 79 48 94.',
+    'stop' => (int)$r['avis_email'] ? lien_stop($r) : null];
+  if ($note !== '') array_splice($m['paras'], 2, 0, ['Message de l’atelier :']);
+  return mail_pro($r['email'], ($accord ? 'Nouveau devis à valider' : 'Devis mis à jour') . " : réparation {$r['numero']}", $m);
 }
 
 function mail_bienvenue(array $r): bool {

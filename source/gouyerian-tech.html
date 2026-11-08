@@ -1454,7 +1454,7 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .trk-h li{display:grid;gap:2px;padding-left:14px;border-left:3px solid var(--line)}
 .trk-h li:first-child{border-left-color:var(--acc)}
 .trk-h small{font:500 .78rem/1.3 var(--f-mono);color:var(--muted)}
-.trk-h p{color:var(--fg)}
+.trk-h p{color:var(--fg);white-space:pre-line}
 .trk-x{border-radius:12px;padding:12px 14px;background:var(--warn-bg);color:var(--warn);font-weight:600}
 .trk-ok{border-radius:12px;padding:12px 14px;background:var(--ok-bg);color:var(--ok);font-weight:600}
 
@@ -1490,6 +1490,11 @@ body.lock .cookie:not(#insth),body.insth-on .cookie:not(#insth){display:none!imp
 .acc-r{display:grid;gap:12px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
 .acc-r .eyebrow{font-size:.7rem}
 .acc-r h4{margin:0;font:700 1.08rem/1.3 var(--f-disp)}
+.trv{display:grid;gap:6px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.trv ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}.trv li,.trv-t{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.trv li span{color:var(--muted);min-width:0}.trv li b{font-weight:600;white-space:nowrap}.trv-t{padding-top:6px;border-top:1px dashed var(--line)}.trv-t b{font-size:1.15rem;white-space:nowrap}.trv-t span{font-weight:600}
+.live{color:#16a34a;font-weight:700;letter-spacing:.02em;animation:livep 2.4s ease-in-out infinite}@keyframes livep{50%{opacity:.45}}@media (prefers-reduced-motion:reduce){.live{animation:none}}
+.acc-cta{display:flex;align-items:center;gap:14px;width:100%;margin:14px 0 4px;padding:16px 18px;border:0;border-radius:16px;background:var(--grad,linear-gradient(120deg,#2563eb,#7c3aed));color:#fff;text-align:left;font:inherit;cursor:pointer;box-shadow:0 10px 26px -12px color-mix(in srgb,#2563eb 70%,transparent);transition:transform .15s}.acc-cta:active{transform:scale(.985)}
+.acc-cta-ic{display:grid;place-items:center;width:46px;height:46px;flex:none;border-radius:14px;background:rgba(255,255,255,.18);font-size:1.4rem}.acc-cta b{display:block;font-size:1.08rem}.acc-cta small{display:block;opacity:.9;font-size:.86rem}.acc-cta>span:nth-child(2){min-width:0;flex:1}.acc-cta-go{font-size:1.8rem;line-height:1;opacity:.85}
+.acc-r{scroll-margin-top:96px}.acc-r.flash{animation:accfl 1.6s ease}@keyframes accfl{0%,40%{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 55%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
 .acc-dv{display:grid;gap:10px;padding:14px;border-radius:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--acc) 30%,var(--line))}
 .acc-dv b{color:var(--fg)}
 .acc-g{font-size:.88rem;color:var(--muted)}
@@ -4255,8 +4260,14 @@ async function trkLoad(n,c,auto){
   b.disabled=false;b.textContent="Voir l’avancée";
   if(!j||!j.ok){m.textContent=(j&&j.erreur)||"Erreur, réessayez.";$("trkres").hidden=true;$("trkf").hidden=false;return}
   try{if($("trkr").checked)localStorage.setItem(TRK_K,JSON.stringify({n,c}));else if(!auto)localStorage.removeItem(TRK_K)}catch(e){}
-  TRK_LAST={n,c};trkShow(j);
+  TRK_LAST={n,c};trkShow(j);TRK_SIG=trkSig(j);
 }
+/* Suivi en direct : la page se met à jour toute seule (étape, devis, prix, historique) sans rien perdre de ce qu'on écrit */
+let TRK_SIG="";const trkSig=j=>[j.etape,j.maj_le,j.devis,j.prix,(j.historique||[]).length,(j.paiements||[]).map(p=>p.statut).join("")].join("/");
+setInterval(async()=>{if(document.hidden||!TRK_LAST||!$("trkres")||$("trkres").hidden||$("v-suivi").hidden)return;
+  const a=document.activeElement;if(a&&$("trkres").contains(a)&&/INPUT|TEXTAREA|SELECT|BUTTON/.test(a.tagName))return;
+  try{const r=await fetch("/api/suivi.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({numero:TRK_LAST.n,code:TRK_LAST.c})}),j=await r.json();
+    if(j&&j.ok&&trkSig(j)!==TRK_SIG){TRK_SIG=trkSig(j);const y=scrollY;trkShow(j);scrollTo(0,y)}}catch(e){}},20000);
 /* v103 : messagerie client ↔ atelier, une conversation par réparation (api/messages.php) */
 const MSG_IC={clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>',
   send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>',
@@ -4323,10 +4334,10 @@ function trkShow(j){
   const seen=new Set(j.historique.map(h=>h.etape)),steps=TRK_P.slice();
   if(seen.has("piece")||j.etape==="piece")steps.splice(steps.indexOf("reparation"),0,"piece");
   const lib=Object.fromEntries(j.parcours.map(p=>[p.etape,p.libelle])),ci=steps.indexOf(j.etape),hist=j.historique.slice().reverse();
-  $("trkres").innerHTML=`<div class="trk-hd"><span class="eyebrow">${esc(j.numero)} · ${esc(j.appareil)}</span><h2>${esc(j.libelle)}</h2><p>${esc(j.phrase)}</p><small>Mis à jour le ${esc(trkFmt(j.maj_le))}</small></div>`
+  $("trkres").innerHTML=`<div class="trk-hd"><span class="eyebrow">${esc(j.numero)} · ${esc(j.appareil)}</span><h2>${esc(j.libelle)}</h2><p>${esc(j.phrase)}</p><small><span class="live">● En direct</span> · mis à jour le ${esc(trkFmt(j.maj_le))}</small></div>`
    +(j.etape==="annule"?`<p class="trk-x">Cette réparation a été annulée. Pour toute question, appelez le 06 05 79 48 94.</p>`:`<ol class="trk-p" style="--n:${steps.length}" aria-label="Étapes de la réparation">${steps.map((e,i)=>`<li class="${i<ci?"done":i===ci?"done cur":""}"${i===ci?' aria-current="step"':""}>${esc(lib[e]||e)}</li>`).join("")}</ol>`)
    +(j.etape==="prete"?`<p class="trk-ok">Votre appareil vous attend : appelez-nous pour convenir de l’heure de passage ou d’une livraison.</p>`:"")
-   +(j.devis==="attente"?`<div class="trk-dv"><b>Votre accord est attendu pour lancer la réparation${j.prix?" : "+esc(j.prix):""}.</b><span>Le détail du devis est dans l’historique ci-dessous.</span><div class="row2"><button type="button" class="btn" data-dv="accepte">J’accepte le devis</button><button type="button" class="btn ghost" data-dv="refuse">Je refuse</button></div><p class="msg" id="trkdm" role="alert"></p></div>`:j.devis==="accepte"&&j.etape==="devis"?`<p class="trk-ok">Devis accepté : merci, la réparation va commencer.</p>`:j.devis==="refuse"&&j.etape==="devis"?`<p class="trk-x">Vous avez refusé le devis. Nous vous rappelons pour la restitution de l’appareil.</p>`:"")
+   +travHTML(j)+(j.devis==="attente"?`<div class="trk-dv"><b>${dvTitre(j)}${j.prix?" : "+esc(j.prix):""}.</b><span>Le détail est juste au-dessus et dans l’historique ci-dessous.</span><div class="row2"><button type="button" class="btn" data-dv="accepte">J’accepte le devis</button><button type="button" class="btn ghost" data-dv="refuse">Je refuse</button></div><p class="msg" id="trkdm" role="alert"></p></div>`:j.devis==="accepte"&&j.etape==="devis"?`<p class="trk-ok">Devis accepté : merci, la réparation va commencer.</p>`:j.devis==="refuse"&&j.etape==="devis"?`<p class="trk-x">Vous avez refusé le devis. Nous vous rappelons pour la restitution de l’appareil.</p>`:"")
    +payList(j.paiements,j)
    +(j.garantie_fin?`<p class="trk-ok">Garantie jusqu’au ${esc(new Date(j.garantie_fin+"T12:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}))}.</p>`:"")
    +(j.etape==="annule"&&!(j.messages||[]).length?"":msgHTML(j.messages,j.numero))
@@ -4752,15 +4763,20 @@ function accCartMerge(p){if(!p||!Array.isArray(p.panier))return;
   else if(CART.length)accCartPush(true)}
 window.accCartPush=function(now){if(!ACC)return;clearTimeout(accPushT);accPushT=setTimeout(()=>{accApi("panier",{items:CART}).catch(()=>{})},now?0:800)};
 const fdate=s=>s?new Date(String(s).replace(" ","T")).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}):"";
+/* Détail du prix (lignes de travaux) et demande d'accord, communs au suivi et à l'espace client */
+const eurC=n=>(Math.round(n*100)/100).toLocaleString("fr-FR",{minimumFractionDigits:Number.isInteger(Math.round(n*100)/100)?0:2,maximumFractionDigits:2})+" €";
+function travHTML(r){const t=r.travaux||[];if(!t.length)return r.prix?`<div class="trv"><div class="trv-t"><span>Prix</span><b>${esc(r.prix)}</b></div></div>`:"";
+  return `<div class="trv"><span class="eyebrow">Détail du prix</span><ul>${t.map(x=>`<li><span>${esc(x.l)}</span><b>${eurC(+x.p)}</b></li>`).join("")}</ul><div class="trv-t"><span>Total</span><b>${esc(r.prix||eurC(t.reduce((a,x)=>a+(+x.p),0)))}</b></div></div>`}
+const dvTitre=r=>r.etape==="devis"?"Votre accord est attendu pour lancer la réparation":"Nouveau devis : votre accord est attendu pour continuer";
 function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==="piece")||r.etape==="piece")steps.splice(steps.indexOf("reparation"),0,"piece");
   const lib=Object.fromEntries(r.parcours.map(p=>[p.etape,p.libelle])),ci=steps.indexOf(r.etape),clos=r.etape==="rendu"||r.etape==="annule";
   const g=r.garantie_fin?(new Date(r.garantie_fin+"T23:59")>new Date()?`<p class="acc-g on">✓ Garantie jusqu’au ${fdate(r.garantie_fin)}</p>`:`<p class="acc-g">Garantie terminée le ${fdate(r.garantie_fin)}</p>`):(r.garantie_mois&&!clos?`<p class="acc-g">Garantie de ${r.garantie_mois} mois à partir de la restitution</p>`:"");
   const u=msgUnread(r.messages),nm=(r.messages||[]).length;
-  return `<article class="acc-r"><div><span class="eyebrow">${esc(r.numero)} · ${clos?"le "+fdate(r.maj_le):"mis à jour le "+fdate(r.maj_le)}</span><h4>${esc(r.appareil)}${u?`<span class="msg-nb">${u} message${u>1?"s":""}</span>`:""}</h4><p>${esc(r.libelle)}${clos?"":" · "+esc(r.phrase)}</p></div>`
+  return `<article class="acc-r" id="acc-r-${esc(r.numero)}"><div><span class="eyebrow">${clos?"":'<span class="live" title="Mis à jour automatiquement">● En direct</span> · '}${esc(r.numero)} · ${clos?"le "+fdate(r.maj_le):"mis à jour le "+fdate(r.maj_le)}</span><h4>${esc(r.appareil)}${u?`<span class="msg-nb">${u} message${u>1?"s":""}</span>`:""}</h4><p>${esc(r.libelle)}${clos?"":" · "+esc(r.phrase)}</p></div>`
    +(clos||r.etape==="annule"?"":`<ol class="trk-p" style="--n:${steps.length}">${steps.map((e,k)=>`<li class="${k<ci?"done":k===ci?"done cur":""}">${esc(lib[e]||e)}</li>`).join("")}</ol>`)
-   +(r.devis==="attente"?`<div class="acc-dv"><b>Votre accord est attendu${r.prix?" : "+esc(r.prix):""}.</b><span>Voir le détail dans l’historique.</span><div class="row2"><button type="button" class="btn sm" data-adv="accepte" data-n="${esc(r.numero)}">J’accepte le devis</button><button type="button" class="btn sm ghost" data-adv="refuse" data-n="${esc(r.numero)}">Je refuse</button></div></div>`:r.devis==="accepte"&&r.etape==="devis"?`<p class="acc-g on">✓ Devis accepté</p>`:"")
+   +travHTML(r)+(r.devis==="attente"?`<div class="acc-dv"><b>${dvTitre(r)}${r.prix?" : "+esc(r.prix):""}.</b><span>Le détail est juste au-dessus et dans l’historique.</span><div class="row2"><button type="button" class="btn sm" data-adv="accepte" data-n="${esc(r.numero)}">J’accepte le devis</button><button type="button" class="btn sm ghost" data-adv="refuse" data-n="${esc(r.numero)}">Je refuse</button></div></div>`:r.devis==="accepte"&&r.etape==="devis"?`<p class="acc-g on">✓ Devis accepté</p>`:"")
    +payList(r.paiements,r)+g+`<button type="button" class="acc-mb${u?" nl":""}" data-conv="${esc(r.numero)}"><span class="msg-av" aria-hidden="true">GT</span><span><b>Messages avec l’atelier</b><small>${u?u+" nouveau"+(u>1?"x":"")+" message"+(u>1?"s":""):nm?nm+" message"+(nm>1?"s":""):"Posez une question, envoyez une photo"}</small></span><span class="acc-mb-go" aria-hidden="true">›</span></button>`
-   +`<details${i===0&&!clos?" open":""}><summary>Historique</summary><ul class="trk-h">${r.historique.slice().reverse().map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></details></article>`}
+   +`<details class="acc-hi"${!clos?" open":""}><summary>Historique complet</summary><ul class="trk-h">${r.historique.slice().reverse().map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></details></article>`}
 /* Conversations de l'espace client : générale, par réparation, par demande. Une ligne → la conversation s'ouvre en grand */
 function accConvs(){const p=ACC;if(!p)return[];const L=[];
   L.push({k:"c",t:"Atelier Gouyerian Tech",s:"Question, conseil, rendez-vous…",ms:p.messages_general||[]});
@@ -4777,10 +4793,13 @@ function accConvOpen(k){const c=accConvs().find(x=>x.k===k);if(!c)return;let m=$
   msgBind($("accmodb"),accConvAuth,accConvSet);setTimeout(()=>{const t=$("accmodb").querySelector("textarea");if(t&&matchMedia("(min-width:700px)").matches)t.focus()},200)}
 document.addEventListener("click",e=>{if(e.target.closest("#cpat")){window.GT_OPEN_C=1;try{sessionStorage.setItem("gt-open-c","1")}catch(_){}const x=$("cx");if(x)x.click()}},true);
 /* Espace ouvert : nouveaux messages de l'atelier affichés sans recharger la page (toutes les 30 s) */
-const accMsgSig=()=>ACC?accConvs().map(c=>c.k+":"+(c.ms||[]).map(m=>m.id+(m.lu?"l":"")).join(".")).join("|"):"";
+const accMsgSig=()=>ACC?accConvs().map(c=>c.k+":"+(c.ms||[]).map(m=>m.id+(m.lu?"l":"")).join(".")).join("|")
+  /* avancée des réparations et des demandes : l'espace se met à jour tout seul (étape, devis, prix, historique) */
+  +"#"+(ACC.reparations||[]).map(r=>[r.numero,r.etape,r.maj_le,r.devis,r.prix,(r.historique||[]).length,(r.paiements||[]).map(p=>p.statut).join("")].join("/")).join(";")
+  +"#"+(ACC.demandes||[]).map(d=>d.ref+(d.statut||"")+(d.reparation||"")).join(";"):"";
 setInterval(async()=>{if(document.hidden||!ACC||!$("accin")||$("accin").hidden||$("v-compte").hidden)return;const m=$("accmod");if(m&&!m.hidden)return;
   const a=document.activeElement;if(a&&$("accin").contains(a)&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
-  try{const before=accMsgSig(),j=await accApi("moi");accSet(j);if(accMsgSig()!==before){const y=scrollY;accDraw();scrollTo(0,y)}}catch(e){}},30000);
+  try{const before=accMsgSig(),j=await accApi("moi");accSet(j);if(accMsgSig()!==before){const y=scrollY;accDraw();scrollTo(0,y)}}catch(e){}},20000);
 function accConvClose(){const m=$("accmod");if(!m)return;m.hidden=true;document.documentElement.classList.remove("acc-lock");$("accmodb").innerHTML="";if(ACC&&!$("accin").hidden)accDraw()}
 /* Une demande du client : ligne cliquable qui s'ouvre sur le détail (ce qui a été demandé, fichiers, suite donnée) */
 const DEM_EXPL={"Reçue":"L’atelier a bien reçu votre demande : vous êtes rappelé rapidement pour en parler.","En cours de traitement":"L’atelier s’occupe de votre demande : vous êtes recontacté avec la suite (devis, rendez-vous ou disponibilité).","Traitée":"Votre demande a été traitée."};
@@ -4797,6 +4816,7 @@ function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,co
   $("accin").innerHTML=
    /* 1. En-tête : qui est connecté + résumé */
    `<div class="wcard acc-top"><div class="acc-hd"><div><span class="eyebrow">Mon espace client</span><h2>Bonjour${c.nom?" "+esc(c.nom.split(" ")[0]):""}</h2><p class="note">${esc(c.email)}</p></div><button type="button" class="btn ghost sm" id="accout">Se déconnecter</button></div>`
+   +(cours.length?`<button type="button" class="acc-cta" id="acccta"><span class="acc-cta-ic" aria-hidden="true">🔧</span><span><b>${cours.length>1?"Suivi de mes "+cours.length+" réparations":"Suivi de ma réparation"}</b><small>${cours.length>1?"Étapes, prix et historique, mis à jour en direct":esc(cours[0].appareil)+" · "+esc(cours[0].libelle)+(cours[0].devis==="attente"?" · votre accord est attendu":"")}</small></span><span class="acc-cta-go" aria-hidden="true">›</span></button>`:"")
    +`<div class="acc-sts">${stat(cours.length,"réparation"+(cours.length>1?"s":"")+" en cours","#acc-rep")}${stat(att,"demande"+(att>1?"s":"")+" en attente","#acc-dem")}${dv?stat(dv,"devis à valider","#acc-rep"):""}${stat(nmsg,"nouveau"+(nmsg>1?"x":"")+" message"+(nmsg>1?"s":""),"#acc-msg")}${stat(cartCount(),"article"+(cartCount()>1?"s":"")+" au panier","#acc-moi")}</div></div>`
    /* Messagerie : toutes les conversations avec l'atelier */
    +`<section class="wcard acc-sec" id="acc-msg" aria-labelledby="acc-msg-t"><h3 id="acc-msg-t">Messages avec l’atelier${nmsg?`<span class="msg-nb">${nmsg} nouveau${nmsg>1?"x":""}</span>`:""}</h3><div class="acc-cl">${accConvs().map(c=>{const u=msgUnread(c.ms),l=c.ms[c.ms.length-1];return `<button type="button" class="acc-cv${u?" nl":""}" data-conv="${esc(c.k)}"><span class="msg-av" aria-hidden="true">${c.k==="c"?"GT":c.k.startsWith("d:")?"D":"R"}</span><span class="acc-cv-b"><span class="acc-cv-1"><b>${esc(c.t)}</b>${l?`<small>${esc(fdate(l.le))}</small>`:""}</span><small class="acc-cv-s">${esc(c.s)}</small><span class="acc-cv-a">${l?(l.auteur==="client"?"Vous : ":"")+esc(l.texte||"📎 fichier"):"Aucun message : touchez pour écrire"}</span></span>${u?`<span class="acc-cv-n">${u}</span>`:""}</button>`}).join("")}</div></section>`
@@ -4845,6 +4865,7 @@ function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,co
   if(oc){window.GT_OPEN_C=0;setTimeout(()=>accConvOpen("c"),150)}
   $("accin").querySelectorAll('a[href^="#acc-"]').forEach(a=>a.onclick=e=>{const t=document.getElementById(a.getAttribute("href").slice(1));if(t){e.preventDefault();t.scrollIntoView({behavior:"smooth",block:"start"})}});
   if(location.hash==="#messages"){const t=$("acc-msg");if(t)setTimeout(()=>t.scrollIntoView({block:"start"}),100)}
+  if($("acccta"))$("acccta").onclick=()=>{const r=$("acc-rep").querySelector(".acc-r");if(!r)return;r.querySelectorAll("details.acc-hi").forEach(d=>d.open=true);r.scrollIntoView({behavior:"smooth",block:"start"});r.classList.remove("flash");void r.offsetWidth;r.classList.add("flash")};
   $("accin").querySelectorAll("[data-adv]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{const j=await accApi("devis",{numero:b.dataset.n,reponse:b.dataset.adv});accSet(j);accDraw()}catch(err){b.disabled=false;$("accdm").textContent=err.message}})}
 function accView(){if(!$("accf"))return;$("v-compte").classList.toggle("acc-on",!!ACC);if(ACC){accDraw();return}
   $("accin").hidden=true;$("accf").hidden=false;$("accm").textContent="";

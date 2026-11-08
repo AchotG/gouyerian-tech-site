@@ -81,10 +81,10 @@ function vue(array $r, bool $complet = false): array {
     'non_lus' => non_lus((int)$r['id']),
   ];
   if ($complet) {
-    $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'adresse' => adresse_reparation((int)$r['id']), 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
+    $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'travaux' => travaux_de($r), 'adresse' => adresse_reparation((int)$r['id']), 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
       'messages' => messages((int)$r['id'], 'atelier'),
       'paiements' => paiements_de('reparation_id', (int)$r['id']),
-      'historique' => array_map(fn($h) => $h + ['libelle' => ETAPES[$h['etape']][0] ?? $h['etape']], historique((int)$r['id']))];
+      'historique' => array_map(fn($h) => $h + ['libelle' => lib_histo($h['etape'])], historique((int)$r['id']))];
   }
   return $v;
 }
@@ -465,6 +465,37 @@ switch ($action) {
       ->execute([$etape, now(), in_array($etape, CLOS, true) ? now() : null, $etape === 'devis' ? 'attente' : (string)$r['devis_etat'], $r['id']]);
     $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, ?)')
       ->execute([$r['id'], $etape, $note, now(), $mail ? 1 : 0]);
+    out(['ok' => true, 'fiche' => vue(fiche((int)$r['id']), true), 'mail' => $mail]);
+
+  /* Prix et travaux : détail ligne par ligne ; mode interne (rien au client), informer (historique + e-mail) ou accord (le client doit accepter) */
+  case 'travaux':
+    $r = fiche((int)($d['id'] ?? 0));
+    $mode = txt($d['mode'] ?? 'interne', 10);
+    if (!in_array($mode, ['interne', 'informer', 'accord'], true)) fail('Choix inconnu.');
+    $lignes = [];
+    foreach (array_slice(is_array($d['lignes'] ?? null) ? $d['lignes'] : [], 0, 20) as $x) {
+      $l = txt((string)($x['l'] ?? ''), 120);
+      $p = round((float)str_replace([',', ' '], ['.', ''], (string)($x['p'] ?? '')), 2);
+      if ($l === '' && !$p) continue;
+      if ($l === '') fail('Donnez un nom à chaque ligne (ex. : Remplacement de l’écran).');
+      if ($p < 0 || $p > 10000) fail("Prix impossible pour « $l ».");
+      $lignes[] = ['l' => $l, 'p' => $p];
+    }
+    if (!$lignes) fail('Ajoutez au moins une ligne avec son prix.');
+    if ($mode === 'accord' && in_array($r['etape'], CLOS, true)) fail('Cette réparation est terminée : impossible de demander un nouvel accord.');
+    $avant = (string)$r['prix'];
+    $total = euros(array_sum(array_column($lignes, 'p')));
+    $note = txt($d['note'] ?? '', 1000);
+    $pdo->prepare('UPDATE gt_reparations SET travaux = ?, prix = ?, maj_le = ?' . ($mode === 'accord' ? ", devis_etat = 'attente', devis_vu = 1" : '') . ' WHERE id = ?')
+      ->execute([json_encode($lignes, JSON_UNESCAPED_UNICODE), $total, now(), $r['id']]);
+    $mail = false;
+    if ($mode !== 'interne') {
+      $r2 = fiche((int)$r['id']);
+      $mail = !empty($d['mail']) ? mail_travaux($r2, $lignes, $avant, $note, $mode === 'accord') : false;
+      $h = ($mode === 'accord' ? 'Votre accord est demandé. ' : '') . 'Nouveau montant : ' . $total . ($avant !== '' && $avant !== $total ? " (avant : $avant)" : '') . '.'
+        . "\n" . implode("\n", array_map(fn($x) => '• ' . $x['l'] . ' : ' . euros($x['p']), $lignes)) . ($note !== '' ? "\n\n" . $note : '');
+      $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, ?)')->execute([$r['id'], 'travaux', $h, now(), $mail ? 1 : 0]);
+    }
     out(['ok' => true, 'fiche' => vue(fiche((int)$r['id']), true), 'mail' => $mail]);
 
   case 'modifier':

@@ -47,6 +47,12 @@ input,textarea,select{width:100%;min-height:46px;padding:10px 12px;border:1px so
 textarea{min-height:84px;resize:vertical}
 input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
 .chk{display:flex;gap:10px;align-items:flex-start;font-weight:500}
+.tvl{display:grid;gap:8px;margin:10px 0}.tvr{display:grid;grid-template-columns:minmax(0,1fr) 108px 44px;gap:8px;align-items:center}.tvr input{margin:0;min-width:0}
+.tvr .tvp{position:relative}.tvr .tvp input{padding-right:28px;text-align:right}.tvr .tvp:after{content:"€";position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.tvx{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:1.2rem;cursor:pointer}
+.tvtot{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:14px 0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface));border:1px solid var(--line)}.tvtot span{font-weight:600}.tvtot b{font-size:1.35rem;margin-left:auto}.tvtot small{flex-basis:100%;text-align:right;color:var(--muted)}
+.tvm{display:grid;gap:8px;margin:0 0 12px}.tvm label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;cursor:pointer}.tvm label:has(input:checked){border-color:var(--acc);background:color-mix(in srgb,var(--acc) 7%,transparent)}.tvm label{display:flex!important;grid-template-columns:none;text-align:left}.tvm input[type=radio]{width:20px!important;height:20px;min-height:0;flex:none;margin:2px 0 0;padding:0;accent-color:var(--acc)}.tvm label>span{flex:1;min-width:0}.tvm b{display:block}.tvm small{color:var(--muted)}
+.tvst{padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#f59e0b 14%,transparent);border:1px solid color-mix(in srgb,#f59e0b 40%,transparent);font-weight:600}.tvst.ok{background:color-mix(in srgb,#22c55e 12%,transparent);border-color:color-mix(in srgb,#22c55e 40%,transparent)}.tvst.no{background:color-mix(in srgb,#ef4444 12%,transparent);border-color:color-mix(in srgb,#ef4444 40%,transparent)}
 .chk input{width:22px;height:22px;min-height:0;margin:0;flex:none;accent-color:var(--acc)}
 .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .chips button{flex:none;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);font:500 .9rem system-ui,sans-serif;cursor:pointer}
@@ -127,7 +133,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box
 .hist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .hist li{display:grid;gap:2px;padding-left:14px;border-left:3px solid var(--line)}
 .hist li:last-child{border-left-color:var(--acc)}
-.hist small{color:var(--muted)}
+.hist small{color:var(--muted)}.hist span{white-space:pre-line}
 .kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:.95rem}
 .kv dt{color:var(--muted)}.kv dd{margin:0;overflow-wrap:anywhere}
 .code{font:700 1.15rem ui-monospace,Consolas,monospace;letter-spacing:.08em}
@@ -299,6 +305,23 @@ a{color:var(--acc)}
       <div id="fgps"></div>
       <div class="row"><button class="btn g" type="button" id="bedit">Modifier</button><button class="btn g" type="button" id="bprint">Bon de dépôt</button><button class="btn" type="button" id="bchat">💬 Écrire au client</button><button class="btn g" type="button" id="bcopy">Copier le lien de suivi</button><button class="btn g" type="button" id="bresend" hidden>Renvoyer l’e-mail de suivi</button></div>
     </div>
+    <div class="card" style="margin-top:14px" id="ftrav">
+      <h2>💶 Prix et travaux</h2>
+      <p class="tvst" id="tvst" hidden></p>
+      <div class="tvl" id="tvl"></div>
+      <button class="btn g" type="button" id="tvadd">+ Ajouter une réparation ou une pièce</button>
+      <div class="tvtot"><span>Total</span><b id="tvtot">0 €</b><small id="tvold"></small></div>
+      <div class="tvm" role="radiogroup" aria-label="Que faire du changement ?">
+        <label><input type="radio" name="tvm" value="interne" checked><span><b>Enregistrer seulement</b><small>Rien n’est envoyé au client (prix pas encore sûr, correction…)</small></span></label>
+        <label><input type="radio" name="tvm" value="informer"><span><b>Informer le client</b><small>Le nouveau prix et le détail apparaissent dans son suivi</small></span></label>
+        <label><input type="radio" name="tvm" value="accord"><span><b>Demander son accord</b><small>Il doit accepter le nouveau devis en ligne avant la suite des travaux</small></span></label>
+      </div>
+      <div id="tvplus" hidden>
+        <label><span>Message au client <small>(facultatif)</small></span><textarea id="tvnote" maxlength="1000" placeholder="Ex. : En démontant, la batterie est gonflée : il faut aussi la remplacer."></textarea></label>
+        <label class="chk"><input type="checkbox" id="tvmail" checked><span id="tvmail-l">Envoyer l’e-mail au client</span></label>
+      </div>
+      <button class="btn" type="button" id="tvsave">Enregistrer le prix</button>
+    </div>
     <div class="card" style="margin-top:14px">
       <h2>Changer l’étape</h2>
       <div class="steps" id="steps"></div>
@@ -403,7 +426,7 @@ function prixNum(p){const m=String(p||"").replace(/\s/g,"").match(/(\d+(?:[.,]\d
 function rendre(f){
   FICHE=f;SEL=null;$("fnum").textContent=f.numero;$("fapp").textContent=f.appareil;$("ftag").className="tag "+f.etape;$("ftag").textContent=f.libelle;
   $("finfo").innerHTML=`<dt>Client</dt><dd>${esc(f.nom)}</dd>${f.telephone?`<dt>Téléphone</dt><dd><a href="tel:${esc(f.telephone.replace(/[^\d+]/g,""))}">${esc(f.telephone)}</a></dd>`:""}${f.email?`<dt>E-mail</dt><dd>${esc(f.email)}${f.avis_email?" · suivi par e-mail ✓":" · pas d’e-mails"}</dd>`:""}${f.prix?`<dt>Prix</dt><dd>${esc(f.prix)}</dd>`:""}${f.etape==="devis"?`<dt>Devis</dt><dd>${f.devis_etat==="accepte"?"<b style='color:var(--ok)'>✓ Accepté par le client</b>":f.devis_etat==="refuse"?"<b style='color:var(--bad)'>✗ Refusé par le client</b>":"En attente de la réponse du client"}</dd>`:""}${f.garantie_mois?`<dt>Garantie</dt><dd>${f.garantie_mois} mois${f.garantie_fin?" · jusqu’au "+new Date(f.garantie_fin+"T12:00").toLocaleDateString("fr-FR"):""}</dd>`:""}${f.panne?`<dt>Panne</dt><dd>${esc(f.panne)}</dd>`:""}${f.note_interne?`<dt>Note interne</dt><dd>${esc(f.note_interne)}</dd>`:""}<dt>Code client</dt><dd class="code">${esc(f.code)}</dd><dt>Créée</dt><dd>${dt(f.cree_le)}</dd>`;
-  $("bresend").hidden=!f.avis_email;gps($("fgps"),f.adresse);
+  $("bresend").hidden=!f.avis_email;gps($("fgps"),f.adresse);tvInit(f);
   payPanel($("fpay"),"r:"+f.id,f.paiements||[],f.email,prixNum(f.prix),"Réparation "+f.appareil+" ("+f.numero+")",()=>ouvrir(f.id));
   $("steps").innerHTML=PARCOURS.map(k=>{const e=ETAPES.find(x=>x.etape===k);return `<button type="button" data-e="${k}" aria-pressed="false" class="${k===f.etape?"cur":""}">${esc(e?e.libelle:k)}</button>`}).join("");
   $("snote").value="";$("smail").checked=!!f.avis_email;$("smail").disabled=!f.email;$("smail-l").textContent=!f.email?"Pas d’e-mail pour ce client : il verra l’étape dans son suivi":f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Envoyer quand même un e-mail ("+f.email+") : le client n’a pas coché le suivi par e-mail";$("ssave").disabled=true;
@@ -417,6 +440,31 @@ function rendre(f){
   $("bon").innerHTML=`<h2>Gouyerian Tech · Bon de dépôt</h2><p>1 route de Segonzac, 16130 Saint-Fort-sur-le-Né · 06 05 79 48 94</p><div class="box"><p>Numéro de suivi : <b class="code">${esc(f.numero)}</b></p><p>Code : <b class="code">${esc(f.code)}</b></p><p>Suivez votre réparation sur <b>gouyerian-tech.fr/suivi</b></p></div><div class="box"><p>Client : ${esc(f.nom)}${f.telephone?" · "+esc(f.telephone):""}</p><p>Appareil : ${esc(f.appareil)}</p>${f.panne?`<p>Demande : ${esc(f.panne)}</p>`:""}${f.prix?`<p>Prix annoncé : ${esc(f.prix)}</p>`:""}<p>Déposé le ${new Date(f.cree_le.replace(" ","T")).toLocaleDateString("fr-FR")}</p></div><p style="margin-top:12px;font-size:12px">Conservez ce bon : il est demandé pour récupérer l’appareil. Conditions générales de vente : gouyerian-tech.fr/cgv</p>`;
 }
 $("steps").onclick=e=>{const b=e.target.closest("button");if(!b)return;SEL=b.dataset.e;$("steps").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));$("ssave").disabled=false};
+/* ---------- Prix et travaux (détail ligne par ligne) ---------- */
+let TV=[];
+const tvEur=n=>(Math.round(n*100)/100).toLocaleString("fr-FR",{minimumFractionDigits:Number.isInteger(Math.round(n*100)/100)?0:2,maximumFractionDigits:2})+" €";
+const tvNum=v=>{const x=parseFloat(String(v).replace(/\s/g,"").replace(",","."));return isNaN(x)?0:x};
+function tvTot(){const t=TV.reduce((a,x)=>a+tvNum(x.p),0);$("tvtot").textContent=tvEur(t);const o=FICHE&&FICHE.prix;$("tvold").textContent=o&&o!==tvEur(t)?"Prix actuel : "+o:""}
+function tvDraw(){$("tvl").innerHTML=TV.map((x,i)=>`<div class="tvr"><input type="text" data-i="${i}" data-k="l" maxlength="120" placeholder="Ex. : Remplacement de l’écran" value="${esc(x.l)}" aria-label="Réparation ou pièce"><span class="tvp"><input type="text" inputmode="decimal" data-i="${i}" data-k="p" placeholder="0" value="${esc(String(x.p))}" aria-label="Prix en euros"></span><button type="button" class="tvx" data-del="${i}" aria-label="Retirer cette ligne"${TV.length<2?" disabled":""}>×</button></div>`).join("");tvTot()}
+$("tvl").addEventListener("input",e=>{const t=e.target;if(t.dataset.i==null)return;TV[+t.dataset.i][t.dataset.k]=t.value;tvTot()});
+$("tvl").addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(!b)return;TV.splice(+b.dataset.del,1);tvDraw()});
+$("tvadd").onclick=()=>{TV.push({l:"",p:""});tvDraw();const ins=$("tvl").querySelectorAll('input[data-k="l"]');ins[ins.length-1].focus()};
+function tvMode(){const m=document.querySelector('input[name="tvm"]:checked').value,f=FICHE||{};$("tvplus").hidden=m==="interne";
+  $("tvmail").disabled=!f.email;$("tvmail-l").textContent=f.email?"Envoyer l’e-mail au client ("+f.email+")":"Pas d’e-mail pour ce client : il verra le changement dans son suivi";if(!f.email)$("tvmail").checked=false;
+  $("tvsave").textContent=m==="interne"?"Enregistrer le prix":m==="informer"?"Enregistrer et informer le client":"Enregistrer et demander son accord"}
+document.querySelectorAll('input[name="tvm"]').forEach(r=>r.onchange=tvMode);
+function tvInit(f){TV=(f.travaux||[]).map(x=>({l:x.l,p:String(x.p).replace(".",",")}));
+  if(!TV.length)TV=[{l:f.prix?(f.panne||"Réparation").split("\n")[0].slice(0,120):"",p:prixNum(f.prix).replace(".",",")}];
+  document.querySelector('input[name="tvm"][value="interne"]').checked=true;$("tvnote").value="";$("tvmail").checked=!!f.email;
+  const st=$("tvst"),fin=f.etape==="rendu"||f.etape==="annule";
+  if(f.devis_etat==="attente"){st.className="tvst";st.textContent="⏳ En attente de l’accord du client"+(f.prix?" ("+f.prix+")":"");st.hidden=false}
+  else if(f.devis_etat==="accepte"){st.className="tvst ok";st.textContent="✓ Devis accepté par le client"+(f.prix?" ("+f.prix+")":"");st.hidden=false}
+  else if(f.devis_etat==="refuse"){st.className="tvst no";st.textContent="✕ Devis refusé par le client";st.hidden=false}else st.hidden=true;
+  document.querySelector('input[name="tvm"][value="accord"]').disabled=fin;tvDraw();tvMode()}
+$("tvsave").onclick=async()=>{if(!FICHE)return;const m=document.querySelector('input[name="tvm"]:checked').value,b=$("tvsave");b.disabled=true;
+  try{const j=await api("travaux",{id:FICHE.id,mode:m,lignes:TV,note:$("tvnote").value,mail:$("tvmail").checked});rendre(j.fiche);
+    flash("Prix enregistré : "+j.fiche.prix+"."+(m==="accord"?" Le client doit maintenant accepter le nouveau devis.":m==="informer"?" Le client le voit dans son suivi.":"")+(j.mail?" E-mail envoyé.":""))}
+  catch(err){flash(err.message,false)}b.disabled=false};
 $("ssave").onclick=async()=>{if(!SEL||!FICHE)return;$("ssave").disabled=true;
   try{const j=await api("etape",{id:FICHE.id,etape:SEL,note:$("snote").value,mail:$("smail").checked});rendre(j.fiche);flash("Étape « "+j.fiche.libelle+" » enregistrée."+(j.mail?" E-mail envoyé au client.":""))}
   catch(err){flash(err.message,false);$("ssave").disabled=false}};
