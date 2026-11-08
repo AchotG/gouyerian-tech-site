@@ -174,7 +174,8 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .slide.on .ro-bar i{animation:ro 2.4s cubic-bezier(.3,.6,.2,1) .3s forwards}
 @keyframes ro{to{transform:scaleX(1)}}
 .p-pair{width:min(460px,100%);color:var(--fg)}
-.p-pair svg{display:block;width:100%;height:auto;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.p-pair svg.ba-art{display:block;width:100%;height:auto}
+.p-pair svg:not(.ba-art){display:block;width:100%;height:auto;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .radar{display:block;width:min(340px,100%);height:auto;overflow:visible}
 .rd-z{fill:color-mix(in srgb,var(--fg) 5%,transparent);stroke:var(--fg);stroke-width:.45}
 .rd-r{fill:none;stroke:var(--line);stroke-width:.3}
@@ -320,7 +321,8 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .pay .no{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--muted)}
 .bas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .ba{margin:0;padding:18px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
-.ba svg{display:block;width:100%;height:auto;color:var(--fg);fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ba svg.ba-art{display:block;width:100%;height:auto}
+.ba svg:not(.ba-art){display:block;width:100%;height:auto;color:var(--fg);fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .ba figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:10px}
 .ba small{color:var(--muted);font-size:.78rem}
 @media (max-width:860px){.bas{grid-template-columns:minmax(0,1fr)}}
@@ -529,7 +531,7 @@ h1{background:linear-gradient(95deg,var(--fg) 0%,var(--fg) 40%,var(--acc) 85%,va
 .rd-z{fill:color-mix(in srgb,var(--acc) 7%,transparent);stroke:var(--acc)}
 .rd-sw{fill:color-mix(in srgb,var(--acc2) 26%,transparent)}
 .rd-hl,.rd-c{fill:var(--acc)}.rd-hk,.rd-k{stroke:var(--acc)}
-.p-pair svg path[stroke-width="3"]{stroke:var(--ok)}
+.p-pair svg:not(.ba-art) path[stroke-width="3"]{stroke:var(--ok)}
 
 /* Confiance, cartes : une couleur par catégorie */
 .trust>div:nth-child(1) svg.i{color:var(--ok)}
@@ -568,7 +570,7 @@ h1{background:linear-gradient(95deg,var(--fg) 0%,var(--fg) 40%,var(--acc) 85%,va
 .faq summary::after{background:linear-gradient(var(--acc),var(--acc)) center/12px 1.5px no-repeat,linear-gradient(var(--acc),var(--acc)) center/1.5px 12px no-repeat}
 .faq summary:hover{color:var(--acc)}
 .fees td:last-child{color:var(--acc)}
-.ba svg path[stroke-width="3"]{stroke:var(--ok)}
+.ba svg:not(.ba-art) path[stroke-width="3"]{stroke:var(--ok)}
 
 /* Rendez-vous, formulaires */
 .prog li.done::before,.prog li.cur::before{background:var(--grad)}
@@ -1664,7 +1666,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
 :root[data-theme="dark"] .art,:root[data-theme="dark"] .art-f{--art-h:#59657a;--art-hl:#738099;--art-w:#e8edf3;--art-o:#8995a8}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .art,:root:not([data-theme="light"]) .art-f{--art-h:#59657a;--art-hl:#738099;--art-w:#e8edf3;--art-o:#8995a8}}
 .cf-art{margin:0 0 4px;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
-.cf-art figcaption{font-size:.72rem;color:var(--muted);text-align:center;margin-top:2px}
+.cf-art figcaption{font-size:.72rem;color:var(--muted);text-align:center;margin-top:4px}.cf-art figcaption b{display:block;font:600 .8rem/1.35 var(--f-mono);color:var(--fg);margin-bottom:3px}
 .cf-thumb{margin:-6px -6px 0;padding:6px;border-radius:14px;background:color-mix(in srgb,var(--c) 6%,var(--bg));border:1px solid var(--line)}
 .cf-thumb .art{max-height:170px}
 .cf-o button{grid-template-columns:auto}
@@ -2992,7 +2994,7 @@ function drawShop(){
   if(!$("shop"))return;
   $("bseg").innerHTML=BCATS.map(c=>`<button type="button" data-bc="${c}" aria-pressed="${c===bcat}">${BCATL[c]||c}</button>`).join("");
   drawCfg();
-  $("shop").innerHTML=SHOP.map((it,i)=>[it,i]).filter(([it])=>bcat==="Tout"||it.c===bcat).map(([it,i])=>`<article class="prod">${ART.shop({plug:"plug",case:"case",screen:"screen",mouse:"mouse"}[it.ic],it.n)?`<div class="prod-art">${ART.shop({plug:"plug",case:"case",screen:"screen",mouse:"mouse"}[it.ic],it.n)}</div>`:`<span class="pic">${svg(it.ic)}</span>`}<span class="eyebrow">${BCATL[it.c]||it.c}</span><h3>${it.n}</h3><p>${it.d}</p><div class="pfoot"><span class="pp">${it.p||"Prix sur demande"}</span>${it.need?`<a class="btn sm ghost" href="${shopHref(it)}" data-shopneed="${it.need}">Demander une estimation</a>`:`<button type="button" class="btn sm ghost" data-add="${i}">${svg("bag")}Ajouter au panier</button>`}</div></article>`).join("");
+  $("shop").innerHTML=SHOP.map((it,i)=>[it,i]).filter(([it])=>bcat==="Tout"||it.c===bcat).map(([it,i])=>`<article class="prod">${(a=>a?`<div class="prod-art">${a}</div>`:`<span class="pic">${svg(it.ic)}</span>`)(ART.shop(it.ic,it.n))}<span class="eyebrow">${BCATL[it.c]||it.c}</span><h3>${it.n}</h3><p>${it.d}</p><div class="pfoot"><span class="pp">${it.p||"Prix sur demande"}</span>${it.need?`<a class="btn sm ghost" href="${shopHref(it)}" data-shopneed="${it.need}">Demander une estimation</a>`:`<button type="button" class="btn sm ghost" data-add="${i}">${svg("bag")}Ajouter au panier</button>`}</div></article>`).join("");
 }
 if($("bseg")){{const b=BCATS.find(c=>norm(c)===QP.get("b"));if(b)bcat=b}
 $("bseg").onclick=e=>{const b=e.target.closest("button");if(b){bcat=b.dataset.bc;drawShop()}};}
@@ -3074,104 +3076,546 @@ const CFG=[
  groups:s=>[["type","Modèle",[["usb","Graveur CD et DVD","Prise USB classique"],["usbc","Graveur CD et DVD","Câble USB et USB-C"],["bluray","Graveur Blu-ray","Lit et grave aussi CD et DVD"]]]],
  info:s=>({name:{usb:"Lecteur graveur CD et DVD externe USB",usbc:"Lecteur graveur CD et DVD externe USB et USB-C",bluray:"Lecteur graveur Blu-ray externe"}[s.type],
    txt:s.type==="bluray"?"Lit et grave les Blu-ray, les CD et les DVD. Alimenté par le câble, sans prise secteur.":"Lit et grave les CD et les DVD : idéal pour les ordinateurs portables sans lecteur. Alimenté par le câble, sans prise secteur.",price:PRIX.graveur[s.type]})}];
-/* Illustrations des articles de la boutique : dessins vectoriels qui montrent la forme exacte des prises
-   (USB, USB-C, Lightning, micro-USB, HDMI, jack, Ethernet, antenne) pour que le client reconnaisse l'article. */
+/*ART-DEBUT*/
+/* Illustrations « photo produit » des articles de la boutique et des réparations.
+   Petit moteur 3D en SVG : projection orthographique en vue 3/4, volumes extrudés (copies empilées),
+   matières (métal, plastique noir ou blanc, aluminium, verre), ombres douces au sol.
+   Les prises (USB, USB-C, Lightning, micro-USB, HDMI, jack, Ethernet, antenne) sont à leurs vraies proportions (en mm). */
 const ART=(()=>{
-  const M="#c3cad4",MD="#8d96a3",GOLD="#d8b25a",H="var(--art-h,#2b3442)",HL="var(--art-hl,#3a4556)",W="var(--art-w,#f4f6f9)";
-  const T=(x,y,t,a="middle",sz=10)=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="${sz}" font-family="IBM Plex Mono,ui-monospace,monospace" letter-spacing=".6" fill="var(--art-t,currentColor)">${t}</text>`;
-  /* Prise vue de côté (mâle), dessinée vers la droite à partir de (x,y) = centre de la base du boîtier ; d=-1 la retourne vers la gauche */
-  function male(k,x,y,d=1,nb=false,z=1.35){const g=(s)=>`<g transform="translate(${x} ${y}) scale(${d*z} ${z})">${s}</g>`;
-    const boot=(w=34,h=16,c=H)=>nb?"":`<rect x="-${w}" y="-${h/2}" width="${w}" height="${h}" rx="4" fill="${c}"${c===W?' stroke="var(--art-o,#c9d1dc)"':""}/><rect x="-${w-4}" y="-${h/2-3}" width="${w-12}" height="2" rx="1" fill="${c===W?"#e3e8ef":HL}"/>`;
+  let SEQ=0;
+  const RD=Math.PI/180,f1=n=>Math.round(n*100)/100;
+  const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k],neg=a=>mul(a,-1);
+  const crs=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const nrm=a=>{const l=Math.hypot(...a)||1;return mul(a,1/l)};
+  const UP=[0,1,0],DN=[0,-1,0];
+  const hz=deg=>[Math.sin(deg*RD),0,-Math.cos(deg*RD)]; /* direction horizontale : 0° = vers le fond, 90° = vers la droite */
+
+  /* ---------- caméra ---------- */
+  function Cam(yaw,pitch,s,ox,oy){const bb=[1e9,1e9,-1e9,-1e9];const grow=(x,y)=>{if(x<bb[0])bb[0]=x;if(y<bb[1])bb[1]=y;if(x>bb[2])bb[2]=x;if(y>bb[3])bb[3]=y};const cy=Math.cos(yaw*RD),sy=Math.sin(yaw*RD),cp=Math.cos(pitch*RD),sp=Math.sin(pitch*RD);
+    const L=v=>{const x1=v[0]*cy-v[2]*sy,z1=v[0]*sy+v[2]*cy;return[s*x1,s*(-v[1]*cp+z1*sp)]};
+    const P=v=>{const l=L(v);return[ox+l[0],oy+l[1]]};
+    const K=v=>{const p=P(v);grow(p[0],p[1]);return p}; /* point projeté et compté dans le cadrage */
+    const D=v=>(v[0]*sy+v[2]*cy)*cp+v[1]*sp; /* profondeur : positif = vers le spectateur */
+    const M=(O,U,V)=>{const a=L(U),b=L(V),o=P(O);return`matrix(${f1(a[0])} ${f1(a[1])} ${f1(b[0])} ${f1(b[1])} ${f1(o[0])} ${f1(o[1])})`};
+    return{L,P,D,M,K,s,bb,grow}}
+
+  /* ---------- scène : accumule les définitions (profils, dégradés) avec un préfixe unique ---------- */
+  function Scene(cam){const id="ga"+(++SEQ).toString(36);let defs="",np=0;const S={cam,id,o:""};
+    S.u=k=>`url(#${id}${k})`;S.r=k=>id+k;
+    S.def=s=>{defs+=s};
+    S.prof=d=>{const k="p"+(np++);defs+=`<path id="${id+k}" d="${d}"/>`;return id+k};
+    S.defs=()=>defs;
+    S.add=s=>{S.o+=s;return S};
+    return S}
+
+  /* Volume extrudé : profil 2D (u à droite, v vers le bas) dans le plan (U,V) placé en O, épaisseur N.
+     side/cap : remplissages ; capFx : détails dessinés sur la face visible (coordonnées du profil). */
+  function ext(S,o){const c=S.cam,{d,O,U,V,N}=o;const pid=S.prof(d);
+    if(!o.nofit){const w=(d.w||10)/2,h=(d.h||10)/2;for(const t of[0,1])for(const a of[-1,1])for(const b of[-1,1])c.K(add(add(O,mul(N,t)),add(mul(U,a*w),mul(V,b*h))))}
+    const len=Math.hypot(...c.L(N)),n=Math.max(2,Math.min(140,Math.ceil(len/.55)));
+    const near=c.D(N)>0; /* l'extrémité O+N est la plus proche */
+    let s="";
+    if(d.pts&&o.hull!==false){const q=[];for(const t of[0,1]){const B=add(O,mul(N,t));for(const[u,v]of d.pts)q.push(c.P(add(B,add(mul(U,u),mul(V,v)))))}
+      const h=hull(q);s+=`<path d="M${h.map(p=>f1(p[0])+" "+f1(p[1])).join("L")}Z"/>`}
+    for(let i=0;i<=n;i++){const t=near?i/n:1-i/n;s+=`<use href="#${pid}" transform="${c.M(add(O,mul(N,t)),U,V)}"/>`}
+    const tc=near?1:0,Oc=add(O,mul(N,tc));
+    const capT=c.M(Oc,U,V);
+    const shade=o.shade?`<use href="#${pid}" transform="${c.M(add(O,mul(N,near?.5:.5)),U,V)}" fill="none"/>`:"";
+    return`<g fill="${o.side}"${o.sideOp?` opacity="${o.sideOp}"`:""}>${s}</g>`+(o.cap===null?"":`<g transform="${capT}"><use href="#${pid}" fill="${o.cap||o.side}"${o.capStroke?` stroke="${o.capStroke}" stroke-width="${o.capSW||.6}" vector-effect="non-scaling-stroke"`:""}/>${(near?o.capFx:o.backFx)||""}</g>`)}
+  function hull(P){P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];
+    for(const p of P){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}
+    for(const p of P.reverse()){while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}
+    return lo.slice(0,-1).concat(up.slice(0,-1))}
+  /* Dessin libre dans un plan (U,V) placé en O */
+  const plane=(S,O,U,V,inner)=>`<g transform="${S.cam.M(O,U,V)}">${inner}</g>`;
+  /* Ombre douce au sol (y = 0), rectangle arrondi dans le plan du sol */
+  const shadow=(S,O,U,V,w,h,op=.42,blur=1.2)=>plane(S,[O[0],0,O[2]],U,V,`<rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="${Math.min(w,h)/2}" fill="#000" opacity="${op}" filter="url(#${S.r("bl")}${blur>1.6?"2":blur<.8?"0":""})"/>`);
+
+  /* ---------- profils ---------- */
+  const SZ=(d,w,h,pts)=>Object.assign(new String(d),{w,h,pts});
+  const rr=(w,h,r)=>{r=Math.min(r,w/2,h/2);const x=-w/2,y=-h/2;return SZ(`M${f1(x+r)} ${f1(y)}H${f1(x+w-r)}A${f1(r)} ${f1(r)} 0 0 1 ${f1(x+w)} ${f1(y+r)}V${f1(y+h-r)}A${f1(r)} ${f1(r)} 0 0 1 ${f1(x+w-r)} ${f1(y+h)}H${f1(x+r)}A${f1(r)} ${f1(r)} 0 0 1 ${f1(x)} ${f1(y+h-r)}V${f1(y+r)}A${f1(r)} ${f1(r)} 0 0 1 ${f1(x+r)} ${f1(y)}Z`,w,h,(()=>{const q=[];for(const[cx,cy,a0]of[[w/2-r,-h/2+r,-90],[w/2-r,h/2-r,0],[-w/2+r,h/2-r,90],[-w/2+r,-h/2+r,180]])for(let i=0;i<=4;i++){const a=(a0+i*22.5)*RD;q.push([cx+r*Math.cos(a),cy+r*Math.sin(a)])}return q})())};
+  const circ=r=>SZ(`M${-r} 0A${r} ${r} 0 1 0 ${r} 0A${r} ${r} 0 1 0 ${-r} 0Z`,2*r,2*r,[...Array(20)].map((_,i)=>[r*Math.cos(i*Math.PI/10),r*Math.sin(i*Math.PI/10)]));
+  const trap=(wt,wb,h,ch)=>SZ(`M${-wt/2} ${-h/2}H${wt/2}V${h/2-ch}L${wb/2} ${h/2}H${-wb/2}L${-wt/2} ${h/2-ch}Z`,wt,h,[[-wt/2,-h/2],[wt/2,-h/2],[wt/2,h/2-ch],[wb/2,h/2],[-wb/2,h/2],[-wt/2,h/2-ch]]);
+
+  /* ---------- matières (dégradés) ---------- */
+  function mats(S){const r=S.r;
+    const lg=(k,st,x2=0,y2=1,x1=0,y1=0)=>`<linearGradient id="${r(k)}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${st.map(([o,c,a])=>`<stop offset="${o}" stop-color="${c}"${a!=null?` stop-opacity="${a}"`:""}/>`).join("")}</linearGradient>`;
+    S.def(
+      lg("st",[[0,"#fdfdfe"],[.22,"#d9dee5"],[.5,"#8e97a3"],[.62,"#6c7480"],[.85,"#c9cfd7"],[1,"#9199a4"]])+  /* acier */
+      lg("sf",[[0,"#e9ecf0"],[.5,"#b8bfc8"],[1,"#d8dde3"]],1,1)+                                           /* face métal */
+      lg("bk",[[0,"#5c636f"],[.25,"#30353d"],[.6,"#1a1d22"],[1,"#0c0d10"]])+                               /* plastique noir */
+      lg("bkc",[[0,"#3a3f48"],[1,"#202328"]],1,1)+
+      lg("wh",[[0,"#ffffff"],[.55,"#eceff3"],[1,"#c3c9d2"]])+                                               /* plastique blanc */
+      lg("whc",[[0,"#ffffff"],[1,"#e6e9ee"]],1,1)+
+      lg("al",[[0,"#9aa2ad"],[.45,"#6b737e"],[1,"#454b54"]])+                                               /* aluminium gris */
+      lg("alc",[[0,"#c3c8cf"],[.5,"#a8aeb7"],[1,"#8c939d"]],1,1)+
+      lg("sv",[[0,"#f4f6f8"],[.5,"#cdd2d9"],[1,"#a7aeb8"]])+                                                /* aluminium argent */
+      lg("svc",[[0,"#f7f8fa"],[1,"#d9dde3"]],1,1)+
+      lg("gd",[[0,"#fff0b3"],[.45,"#e2b84c"],[1,"#9c7419"]])+                                               /* or */
+      lg("cv",[[0,"#05070a"],[1,"#1b1f26"]])+                                                               /* creux d'une prise */
+      lg("gl",[[0,"#1d2840"],[.55,"#0a0e17"],[1,"#121a2a"]],1,1)+                                            /* écran éteint */
+      lg("sh",[[0,"#fff",.35],[.4,"#fff",.06],[.41,"#fff",0],[1,"#fff",0]],1,1)+                              /* reflet */
+      lg("wp",[[0,"#2b5cff"],[.5,"#7b3cf0"],[1,"#ff6aa8"]],1,1)+                                             /* fond d'écran */
+      lg("wp2",[[0,"#0ea5e9"],[.55,"#2563eb"],[1,"#1e1b4b"]],1,1)+
+      lg("bl2",[[0,"#3b82f6"],[1,"#1d4ed8"]])+
+      `<radialGradient id="${r("dk")}" cx=".5" cy=".5" r=".5"><stop offset=".12" stop-color="#f3f5f8"/><stop offset=".3" stop-color="#cfd7e3"/><stop offset=".5" stop-color="#e9dcf7"/><stop offset=".62" stop-color="#c8f0ef"/><stop offset=".78" stop-color="#f6e6c8"/><stop offset=".9" stop-color="#d4dbe7"/><stop offset="1" stop-color="#aab4c3"/></radialGradient>`+
+      `<radialGradient id="${r("spot")}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="currentColor" stop-opacity=".08"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient>`+
+      `<filter id="${r("bl")}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.2"/></filter>`+
+      `<filter id="${r("bl0")}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation=".5"/></filter>`+
+      `<filter id="${r("bl2")}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>`)}
+  const MAT=S=>({steel:S.u("st"),steelF:S.u("sf"),black:S.u("bk"),blackF:S.u("bkc"),white:S.u("wh"),whiteF:S.u("whc"),alu:S.u("al"),aluF:S.u("alc"),silver:S.u("sv"),silverF:S.u("svc"),gold:S.u("gd"),cav:S.u("cv")});
+
+  /* ---------- prises vues de face (coordonnées en mm, centrées) ---------- */
+  /* Face d'une prise mâle (bout du câble) */
+  function faceM(S,k,tongue){const m=MAT(S);
     switch(k){
-      case"usba":return g(boot()+`<rect x="0" y="-7" width="26" height="14" rx="1" fill="${M}" stroke="${MD}"/><rect x="5" y="-3" width="17" height="3" fill="${MD}"/>`);
-      case"usbc":return g(boot(30,13)+`<rect x="0" y="-4" width="16" height="8" rx="4" fill="${M}" stroke="${MD}"/><rect x="3" y="-1" width="10" height="2" rx="1" fill="${MD}"/>`);
-      case"lightning":return g(boot(30,13,W)+`<rect x="0" y="-3.5" width="17" height="7" rx="3" fill="${M}" stroke="${MD}"/>${[3,6,9,12].map(i=>`<rect x="${i}" y="-2" width="1.6" height="4" fill="${GOLD}"/>`).join("")}`);
-      case"micro":return g(boot(28,12)+`<path d="M0-4h13l2 2v4l-2 2H0z" fill="${M}" stroke="${MD}"/>`);
-      case"hdmi":return g(boot(38,18)+`<path d="M0-8h22v12l-3 4H3l-3-4z" fill="${M}" stroke="${MD}"/><rect x="4" y="-5" width="14" height="4" fill="${MD}"/>`);
-      case"jack":return g(boot(26,11)+`<rect x="0" y="-2.4" width="24" height="4.8" rx="2.4" fill="${M}" stroke="${MD}"/>${[8,13,18].map(i=>`<rect x="${i}" y="-2.4" width="1.2" height="4.8" fill="${H}"/>`).join("")}`);
-      case"rj45":return g(boot(26,14)+`<rect x="0" y="-8" width="20" height="16" rx="1.5" fill="rgba(200,215,235,.55)" stroke="${MD}"/>${[0,1,2,3,4,5,6,7].map(i=>`<rect x="13" y="${-6.5+i*1.7}" width="5" height="1" fill="${GOLD}"/>`).join("")}<path d="M6-8l8-6" stroke="${MD}" stroke-width="2"/>`);
-      case"coax":return g(boot(30,16)+`<rect x="0" y="-8" width="14" height="16" rx="1" fill="${M}" stroke="${MD}"/>${[3,6,9].map(i=>`<path d="M${i}-8v16" stroke="${MD}"/>`).join("")}<rect x="14" y="-1" width="9" height="2" fill="${M}" stroke="${MD}"/>`);
+      case"usba":return`<path d="${rr(12,4.5,.4)}" fill="${m.steelF}" stroke="#7b8490" stroke-width=".25"/><rect x="-5.6" y="-1.9" width="11.2" height="3.9" fill="${m.cav}"/><rect x="-5" y=".1" width="10" height="1.9" fill="${tongue||"#f2f3f5"}"/>${[-3.6,-1.2,1.2,3.6].map(x=>`<rect x="${x-.6}" y="-.05" width="1.2" height=".35" fill="${m.gold}"/>`).join("")}`;
+      case"usbc":return`<path d="${rr(8.4,2.6,1.3)}" fill="${m.steelF}" stroke="#7b8490" stroke-width=".2"/><path d="${rr(7.4,1.7,.85)}" fill="${m.cav}"/><rect x="-3" y="-.5" width="6" height=".22" fill="${m.gold}"/><rect x="-3" y=".28" width="6" height=".22" fill="${m.gold}"/>`;
+      case"lightning":return`<path d="${rr(7.7,1.5,.75)}" fill="${m.steelF}" stroke="#7b8490" stroke-width=".2"/>`;
+      case"micro":return`<path d="${trap(6.9,4.4,1.85,.95)}" fill="${m.steelF}" stroke="#7b8490" stroke-width=".2"/><path d="${trap(6.1,3.9,1.3,.7)}" fill="${m.cav}"/><rect x="-2.3" y="-.55" width="4.6" height=".5" fill="#1f2328"/>`;
+      case"hdmi":return`<path d="${trap(13.9,10.4,4.45,1.3)}" fill="${m.steelF}" stroke="#7b8490" stroke-width=".25"/><path d="${trap(13,9.8,3.7,1.1)}" fill="${m.cav}"/><rect x="-5.3" y="-.75" width="10.6" height="1.5" rx=".2" fill="#2a2e35"/>${[...Array(10)].map((_,i)=>`<rect x="${-4.7+i*1.04}" y="-.72" width=".5" height=".28" fill="${m.gold}"/>`).join("")}`;
+      case"coax":return`<circle r="4.75" fill="${m.steelF}" stroke="#7b8490" stroke-width=".25"/><circle r="3.9" fill="${m.cav}"/><circle r="2.6" fill="#e8ecf1"/><circle r="1.1" fill="#b4bcc6"/><circle r=".55" fill="${m.steelF}" stroke="#7b8490" stroke-width=".15"/>`;
+      case"coaxf":return`<circle r="5.6" fill="${m.steelF}" stroke="#7b8490" stroke-width=".25"/><circle r="4.4" fill="#eef1f4"/><circle r="1.25" fill="${m.cav}"/><circle r=".7" fill="#8a929d"/>`;
+      case"jack":return`<circle r="1.75" fill="${m.steelF}" stroke="#7b8490" stroke-width=".15"/>`;
+      case"rj45":return`<path d="${rr(11.7,8.2,.6)}" fill="rgba(220,232,245,.75)" stroke="#9aa7b6" stroke-width=".25"/>${[...Array(8)].map((_,i)=>`<rect x="${-4.3+i*1.02}" y="-3.8" width=".55" height="1.6" fill="${m.gold}"/>`).join("")}`;
     }return""}
-  /* Prise vue de face (le « trou » qu'on voit sur l'appareil ou au bout du câble) */
-  function face(k,cx,cy,z=1.6){return`<g transform="translate(${cx} ${cy}) scale(${z}) translate(${-cx} ${-cy})">${face0(k,cx,cy)}</g>`}
-  function face0(k,cx,cy){
+  /* Prise femelle (le trou dans un appareil), à dessiner sur une face */
+  function port(S,k,col){const m=MAT(S),tg=col||"#1d4ed8";
     switch(k){
-      case"usba":return`<rect x="${cx-15}" y="${cy-6}" width="30" height="12" rx="1.5" fill="${M}" stroke="${MD}"/><rect x="${cx-11}" y="${cy-6}" width="22" height="5" fill="${H}"/>`;
-      case"usbc":return`<rect x="${cx-12}" y="${cy-5}" width="24" height="10" rx="5" fill="${M}" stroke="${MD}"/><rect x="${cx-7}" y="${cy-1.3}" width="14" height="2.6" rx="1.3" fill="${H}"/>`;
-      case"lightning":return`<rect x="${cx-11}" y="${cy-4}" width="22" height="8" rx="4" fill="${M}" stroke="${MD}"/>${[-6,-2,2,6].map(i=>`<rect x="${cx+i-.8}" y="${cy-2.4}" width="1.6" height="4.8" fill="${GOLD}"/>`).join("")}`;
-      case"micro":return`<path d="M${cx-10} ${cy-4}h20l-3 8h-14z" fill="${M}" stroke="${MD}"/><rect x="${cx-6}" y="${cy-1.5}" width="12" height="2" fill="${H}"/>`;
-      case"hdmi":return`<path d="M${cx-16} ${cy-6}h32v6l-4 6h-24l-4-6z" fill="${M}" stroke="${MD}"/><rect x="${cx-11}" y="${cy-2}" width="22" height="3" fill="${H}"/>`;
-      case"jack":return`<circle cx="${cx}" cy="${cy}" r="7" fill="${M}" stroke="${MD}"/><circle cx="${cx}" cy="${cy}" r="3.2" fill="${H}"/>`;
-      case"rj45":return`<path d="M${cx-11} ${cy-8}h22v13h-6v4h-10v-4h-6z" fill="${M}" stroke="${MD}"/>${[0,1,2,3,4,5,6,7].map(i=>`<rect x="${cx-8.4+i*2.3}" y="${cy-7}" width="1" height="4" fill="${GOLD}"/>`).join("")}`;
-      case"coax":return`<circle cx="${cx}" cy="${cy}" r="9" fill="${M}" stroke="${MD}"/><circle cx="${cx}" cy="${cy}" r="5" fill="${W}" stroke="${MD}"/><circle cx="${cx}" cy="${cy}" r="1.4" fill="${MD}"/>`;
-      case"sd":return`<path d="M${cx-11} ${cy-7}h22v14h-22z" fill="${H}"/><path d="M${cx-9} ${cy-1}h18" stroke="${M}" stroke-width="2"/>`;
+      case"usba":return`<path d="${rr(13.2,5.8,.5)}" fill="${m.steelF}" stroke="#6b7480" stroke-width=".3"/><rect x="-6.1" y="-2.4" width="12.2" height="4.8" fill="${m.cav}"/><rect x="-5.5" y="-2.4" width="11" height="2.1" fill="${tg}"/>${[-3.6,-1.2,1.2,3.6].map(x=>`<rect x="${x-.6}" y="-.55" width="1.2" height=".3" fill="${m.gold}"/>`).join("")}`;
+      case"usbc":return`<path d="${rr(9.2,3.4,1.7)}" fill="${m.steelF}" stroke="#6b7480" stroke-width=".3"/><path d="${rr(8.3,2.6,1.3)}" fill="${m.cav}"/><path d="${rr(6.6,.75,.3)}" fill="#3b4048"/><rect x="-3" y="-.37" width="6" height=".18" fill="${m.gold}"/>`;
+      case"hdmi":return`<path d="${trap(15.2,11.4,5.8,1.6)}" fill="${m.steelF}" stroke="#6b7480" stroke-width=".3"/><path d="${trap(14,10.6,4.7,1.4)}" fill="${m.cav}"/><rect x="-5.6" y="-1.6" width="11.2" height="1.5" fill="#2c3138"/>`;
+      case"jack":return`<circle r="3.2" fill="#2b3038" stroke="${col?"#6b7480":"#3d434c"}" stroke-width=".4"/><circle r="1.8" fill="${m.cav}"/>`;
+      case"sd":return`<rect x="-12.5" y="-1.1" width="25" height="2.2" rx=".6" fill="${m.cav}" stroke="#6b7480" stroke-width=".25"/>`;
+      case"msd":return`<rect x="-6" y="-.8" width="12" height="1.6" rx=".5" fill="${m.cav}" stroke="#6b7480" stroke-width=".25"/>`;
+      case"rj45":return`<path d="M-7 -5.5H7V3.2H3V5.5H-3V3.2H-7Z" fill="${m.cav}" stroke="#6b7480" stroke-width=".35"/>${[...Array(8)].map((_,i)=>`<rect x="${-4.3+i*1.02}" y="-5.3" width=".5" height="2.2" fill="${m.gold}"/>`).join("")}<rect x="4.8" y="-5" width="1.6" height="1" fill="#22c55e"/>`;
+      case"led":return`<circle r="1" fill="#4ade80"/><circle r="2.4" fill="#4ade80" opacity=".18"/>`;
     }return""}
-  const NOM={usba:"USB",usbc:"USB-C",lightning:"LIGHTNING",micro:"MICRO-USB",hdmi:"HDMI",jack:"JACK 3,5",rj45:"ETHERNET",coax:"ANTENNE",sd:"SD"};
-  /* Câble complet : prise A à gauche, prise B à droite, gaine entre les deux, et les deux faces en légende */
-  function cable(a,b,lab="",x1=88,x2=232){const y=64,i1=x1+40,i2=x2-40;
-    return`<path d="M${i1} ${y}C${i1+26} ${y} ${i1+6} 116 160 116S${i2-26} ${y} ${i2} ${y}" fill="none" stroke="${H}" stroke-width="7" stroke-linecap="round"/>`+male(a,x1,y,-1)+male(b,x2,y,1)
-      +face(a,62,150)+face(b,258,150)+T(62,182,NOM[a])+T(258,182,NOM[b])+(lab?`<rect x="136" y="128" width="48" height="18" rx="9" fill="var(--art-bg,#fff)" stroke="var(--art-o,#c9d1dc)"/>`+T(160,141,lab,"middle",11):"")}
-  /* Prise secteur européenne avec sa sortie (vue en perspective simple) */
-  function prise(port,x=160,y=88,big=false){const p=port==="usbc"?"usbc":"usba";
-    return`<g><rect x="${x-34}" y="${y-38}" width="68" height="76" rx="12" fill="${W}" stroke="var(--art-o,#c9d1dc)" stroke-width="1.5"/>
-      <rect x="${x-34}" y="${y-38}" width="68" height="14" rx="7" fill="rgba(0,0,0,.04)"/>
-      <rect x="${x-22}" y="${y+38}" width="5" height="16" rx="2.5" fill="${M}" stroke="${MD}"/><rect x="${x+17}" y="${y+38}" width="5" height="16" rx="2.5" fill="${M}" stroke="${MD}"/>
-      ${face(p,x,y)}${big?T(x,y+24,p==="usbc"?"20 W":"5 W","middle",9):""}</g>`}
-  function chargeur(s){const p=s.type==="typec"?"usbc":"usba",q=s.port;
-    if(s.art==="cable")return cable(p,q);
-    if(s.art==="prise")return prise(p,160,82,true)+T(160,182,"SORTIE "+NOM[p]);
+
+  /* ---------- câble (gaine en tube) ---------- */
+  function tube(S,d,w,col="black"){const C={black:["#08090b","#2b3038","rgba(255,255,255,.26)"],white:["#aeb6c1","#f4f6f8","rgba(255,255,255,.95)"],grey:["#3c434d","#7b8592","rgba(255,255,255,.35)"]}[col];
+    const sh=`<path d="${d}" fill="none" stroke="#000" stroke-opacity=".32" stroke-width="${w*1.25}" stroke-linecap="round" transform="translate(${w*.25} ${w*.9})" filter="url(#${S.r("bl")})"/>`;
+    return sh+`<path d="${d}" fill="none" stroke="${C[0]}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${C[1]}" stroke-width="${w*.72}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${C[2]}" stroke-width="${w*.2}" stroke-linecap="round" stroke-linejoin="round" transform="translate(${-w*.12} ${-w*.2})"/>`}
+  /* Courbe 3D (points de contrôle d'une suite de Béziers cubiques) projetée */
+  function path3(S,pts){const P=S.cam.K;let d=`M${P(pts[0]).map(f1).join(" ")}`;for(let i=1;i+2<pts.length;i+=3)d+=`C${[pts[i],pts[i+1],pts[i+2]].map(p=>P(p).map(f1).join(" ")).join(" ")}`;return d}
+
+  /* ---------- prise mâle complète posée au sol : face en O, câble qui part dans la direction dir ---------- */
+  const PLUG={ /* métal [profil, longueur], boîtier [profil, longueur], manchon [rayon, longueur], hauteur du centre */
+    usba:{m:[rr(12,4.5,.4),12],b:[rr(16,8,2.2),18],r:[2.6,8],h:4},
+    usbc:{m:[rr(8.4,2.6,1.3),6.6],b:[rr(11,6,2.4),15],r:[2.2,7],h:3},
+    lightning:{m:[rr(7.7,1.5,.75),6.7],b:[rr(8.4,5.4,2.3),13],r:[1.9,7],h:2.7},
+    micro:{m:[trap(6.9,4.4,1.85,.95),5.6],b:[rr(10,6,2.2),14],r:[2.1,7],h:3},
+    hdmi:{m:[trap(13.9,10.4,4.45,1.3),9.5],b:[rr(20,10.5,2.6),26],r:[3.6,9],h:5.25},
+    coax:{m:[circ(4.75),9],b:[circ(6.4),20],r:[3.2,6],h:6.4,round:1},
+    coaxf:{m:[circ(5.6),6],b:[circ(6.4),20],r:[3.2,6],h:6.4,round:1},
+    jack:{m:[circ(1.75),14],b:[circ(3.4),15],r:[1.9,6],h:3.4,round:1},
+    rj45:{m:[rr(11.7,8.2,.6),21],b:[rr(12.6,9.4,1.6),14],r:[2.8,7],h:4.7}};
+  function plug(S,k,O,dir,o={}){const c=S.cam,m=MAT(S),p=PLUG[k],col=o.col||"black";
+    const U=nrm(crs(dir,UP)),V=DN,base=[O[0],p.h,O[2]];
+    const boot=col==="white"?[m.white,m.whiteF]:col==="grey"?[m.alu,m.aluF]:[m.black,m.blackF];
+    const faceNear=c.D(neg(dir))>0;
+    const parts=[];
+    /* métal */
+    let mSide=m.steel,mFx=faceM(S,k,o.tongue);
+    if(k==="rj45")mSide="rgba(205,220,236,.55)";
+    const t0=0,t1=p.m[1],t2=t1+p.b[1],t3=t2+p.r[1];
+    parts.push(()=>ext(S,{d:p.m[0],O:add(base,mul(dir,t1)),U,V,N:mul(neg(dir),p.m[1]),side:mSide,cap:"none",capFx:mFx,backFx:""}));
+    /* contacts dorés sur le dessus de la languette Lightning */
+    if(k==="lightning")parts.push(()=>plane(S,add(base,[0,.76,0]),U,dir,[...Array(8)].map((_,i)=>`<rect x="${-3.2+i*.82}" y="1.2" width=".46" height="2.6" rx=".1" fill="${m.gold}"/>`).join("")));
+    if(k==="usba")parts.push(()=>plane(S,add(base,[0,2.26,0]),U,dir,`<rect x="-4" y="2.2" width="2.4" height="2.4" fill="#2a2f36"/><rect x="1.6" y="2.2" width="2.4" height="2.4" fill="#2a2f36"/>`));
+    if(k==="jack")parts.push(()=>{let s="";[[3.2,.7],[6.2,.7],[9.2,.7]].forEach(([t,w])=>{s+=ext(S,{d:circ(1.78),O:add(base,mul(dir,t+w)),U,V,N:mul(neg(dir),w),side:"#14161a",cap:"#14161a"})});return s});
+    if(k==="rj45")parts.push(()=>plane(S,add(base,[0,4.12,0]),U,dir,`<path d="M-3 4L-2.2 15H2.2L3 4Z" fill="rgba(200,215,232,.7)" stroke="#9aa7b6" stroke-width=".2"/>`));
+    /* boîtier */
+    parts.push(()=>ext(S,{d:p.b[0],O:add(base,mul(dir,t2)),U,V,N:mul(neg(dir),p.b[1]),side:boot[0],cap:boot[1]}));
+    /* manchon */
+    parts.push(()=>ext(S,{d:circ(p.r[0]),O:add(base,mul(dir,t3)),U,V,N:mul(neg(dir),p.r[1]),side:boot[0],cap:boot[1]}));
+    /* ordre de dessin : du plus loin au plus proche */
+    let out=shadow(S,add(O,mul(dir,t2/2)),dir,U,t3*1.02,(p.b[0].includes("A")?12:12),.38,1.4);
+    const seq=faceNear?parts.slice().reverse():parts;
+    /* si la face est vers nous, le métal et ses détails doivent passer devant le boîtier */
+    if(faceNear){const met=parts.slice(0,parts.length-2),rest=parts.slice(parts.length-2);out+=rest.reverse().map(f=>f()).join("")+met.map(f=>f()).join("")}
+    else out+=parts.map(f=>f()).join("");
+    return{svg:out,end:add([O[0],p.r[0],O[2]],mul(dir,t3-1)),r:p.r[0]}}
+
+  /* ---------- habillage final ---------- */
+  const W0=640,H0=392;
+  const T=(x,y,t,a="middle",sz=17,wt=500,col="var(--art-t,currentColor)")=>`<text x="${x}" y="${y}" text-anchor="${a}" font-size="${sz}" font-weight="${wt}" font-family="IBM Plex Mono,ui-monospace,monospace" letter-spacing=".5" fill="${col}">${t}</text>`;
+  const chip=(x,y,t,sz=17)=>{const w=t.length*sz*.62+22;return`<rect x="${f1(x-w/2)}" y="${y-sz*.95}" width="${f1(w)}" height="${sz*1.55}" rx="${sz*.78}" fill="var(--art-bg,#fff)" stroke="var(--art-o,#c9d1dc)"/>`+T(x,y+sz*.05,t,"middle",sz,600,"var(--art-t2,currentColor)")};
+  /* Cadrage automatique : le volume dessiné est mis à l'échelle et centré dans la zone [20,14]–[620,342] ;
+     top/bot : textes posés au-dessus (pastille) et sous l'objet (légende). */
+  function wrap(S,inner,lab,o={}){const bb=S.cam.bb,pad=o.pad||6;
+    const A=o.area||[22,o.top?74:14,618,378];
+    let g="";
+    if(bb[2]>bb[0]){const bw=bb[2]-bb[0]+2*pad,bh=bb[3]-bb[1]+2*pad,k=Math.min((A[2]-A[0])/bw,(A[3]-A[1])/bh,o.kmax||1.7);
+      const tx=(A[0]+A[2])/2-k*(bb[0]+bb[2])/2,ty=(A[1]+A[3])/2-k*(bb[1]+bb[3])/2;g=`<g transform="translate(${f1(tx)} ${f1(ty)}) scale(${f1(k)})">${inner}</g>`}
+    else g=inner;
+    /* la légende (o.bot) n'est pas dessinée : trop petite sur téléphone, elle est affichée en texte sous l'image (data-cap) */
+    return`<svg class="art" viewBox="0 0 ${W0} ${H0}" role="img" aria-label="${lab||""}"${o.bot?` data-cap="${o.bot.replace(/"/g,"&quot;")}"`:""}><defs>${S.defs()}</defs><ellipse cx="320" cy="250" rx="300" ry="140" fill="${S.u("spot")}"/>${g}${o.top?chip(320,40,o.top,28):""}</svg>`}
+  function scene(yaw,pitch,s,ox=320,oy=196){const S=Scene(Cam(yaw,pitch,s,ox,oy));mats(S);return S}
+
+  /* =====================================================================
+     ARTICLES
+     ===================================================================== */
+  const NOM={usba:"USB",usbc:"USB-C",lightning:"Lightning",micro:"micro-USB",hdmi:"HDMI",jack:"Jack 3,5",rj45:"Ethernet",coax:"Antenne",coaxf:"Antenne",sd:"SD"};
+
+  /* Câble complet : deux prises posées face à nous, câble enroulé derrière */
+  function cableScene(a,b,o={}){const s=o.s||5.6,S=scene(24,34,s,320,o.oy||206),col=o.col||"black";
+    const A=[-30,0,24],B=[30,0,24],dA=nrm([.32,0,-1]),dB=nrm([-.18,0,-1]);
+    const pa=plug(S,a,A,dA,{col}),pb=plug(S,b,B,dB,{col});
+    const ea=pa.end,eb=pb.end,y=ea[1],w=Math.max(pa.r,pb.r)*1.7*s/ (o.thin||1.15);
+    const pts=[ea,add(ea,mul(dA,14)),[-22,y,-30],[-2,y,-36],[18,y,-42],[44,y,-34],[42,y,-18],[40,y,-4],[8,y,-6],[-10,y,-16],[-30,y,-26],[-46,y,-44],[-20,y,-56],[6,y,-66],[46,y,-60],[44,y,-40],[42,y,-24],add(eb,mul(dB,16)),eb];
+    let inner=tube(S,path3(S,pts),w,col)+pa.svg+pb.svg;
+    return wrap(S,inner,o.label,{top:o.lab,bot:o.cap||`${NOM[a]}  ⟷  ${NOM[b]}`})}
+
+  /* Chargeur secteur (prise européenne) : cube, sortie USB ou USB-C devant, broches derrière */
+  function charger(S,O,ang,k,col,sz=1){const m=MAT(S),c=S.cam,d=hz(ang),U=nrm(crs(d,UP)),V=DN,w=30*sz,h=30*sz,dp=27*sz,r=6*sz;
+    const base=[O[0],h/2,O[2]],[side,face]=col==="white"?[m.white,m.whiteF]:[m.black,m.blackF];
+    let s=shadow(S,add(base,mul(d,dp/2)),d,U,dp*1.05,w*1.05,.45,1.6);
+    const pins=()=>[-1,1].map(i=>ext(S,{d:circ(2),O:add(add(base,mul(U,i*9.5*sz)),mul(d,dp+17)),U,V,N:mul(neg(d),17),side:m.steel,cap:m.steelF})).join("");
+    const body=()=>ext(S,{d:rr(w,h,r),O:add(base,mul(d,dp)),U,V,N:mul(neg(d),dp),side,cap:face,capFx:`<g transform="translate(0 ${-1*sz}) scale(${sz*.95})">${port(S,k,col==="white"?"#f4f5f7":"#1d4ed8")}</g>`+(k==="usbc"?T(0,9*sz,"20W","middle",3.1*sz,600,col==="white"?"#9aa2ad":"#6b7480"):"")});
+    const near=c.D(neg(d))>0;
+    s+=near?pins()+body():body()+pins();
+    return s}
+
+  function chargeur(st){const p=st.type==="typec"?"usbc":"usba",q=st.port,col=st.marque==="apple"?"white":"black";
+    if(st.art==="cable")return cableScene(p,q,{col,cap:`${NOM[p]}  ⟷  ${NOM[q]}  ·  1 m`,thin:1.4,label:"Câble "+NOM[p]+" vers "+NOM[q]});
+    if(st.art==="prise"){const S=scene(30,24,4,320,200);return wrap(S,charger(S,[0,0,0],-58,p,col),"Prise secteur "+NOM[p],{bot:`Prise secteur ${NOM[p]}`+(p==="usbc"?" · 20 W":" · 5 W"),kmax:1.25})}
     /* prise + câble */
-    const y=70;return prise(p,62,76,true)+T(62,182,"PRISE "+NOM[p])+T(122,80,"+","middle",18)
-      +`<path d="M190 ${y}C206 ${y} 196 118 216 118S226 ${y} 244 ${y}" fill="none" stroke="${H}" stroke-width="7" stroke-linecap="round"/>`+male(p,152,y,-1,false,1.1)+male(q,282,y,1,false,1.1)
-      +face(p,170,152)+face(q,262,152)+T(216,182,"CÂBLE "+NOM[p]+" › "+NOM[q],"middle",9)}
-  function adaptateur(s){const k=s.type==="hub"?"hub"+s.ports:s.type;
-    if(k==="hub4"||k==="hub7"){const n=k==="hub7";
-      const box=`<rect x="120" y="44" width="150" height="74" rx="14" fill="${H}"/><rect x="120" y="44" width="150" height="10" rx="5" fill="${HL}"/>`;
-      const ports=n?face("usba",146,72,1)+face("usba",180,72,1)+face("hdmi",228,72,1)+`<rect x="134" y="96" width="30" height="4" rx="1" fill="#0e131b"/><rect x="172" y="96" width="20" height="4" rx="1" fill="#0e131b"/>`+face("usbc",228,98,1)
-        :[146,174,202,230,0].slice(0,4).map(x=>`<rect x="${x-11}" y="74" width="22" height="10" rx="1.5" fill="${M}" stroke="${MD}"/><rect x="${x-8}" y="74" width="16" height="4" fill="${H}"/>`).join("");
-      return box+ports+`<path d="M120 81C96 81 92 81 80 81" stroke="${H}" stroke-width="6" stroke-linecap="round"/>`+male("usbc",80,81,-1)+face("usbc",36,150)+T(36,176,"USB-C")
-        +T(195,150,n?"USB · HDMI · SD · USB-C":"4 × USB")+T(195,166,n?"7 EN 1":"4 PORTS","middle",9)}
+    const S=scene(26,32,4.8,300,214);let inner=charger(S,[-24,0,-4],-34,p,col,1.15);
+    const A=[10,0,30],B=[44,0,26],dA=nrm([.5,0,-1]),dB=nrm([-.1,0,-1]);
+    const pa=plug(S,p,A,dA,{col}),pb=plug(S,q,B,dB,{col}),y=pa.end[1],w=pa.r*1.6*4.8/1.35;
+    const pts=[pa.end,add(pa.end,mul(dA,12)),[34,y,-12],[44,y,-26],[56,y,-44],[80,y,-36],[76,y,-20],[72,y,-6],[50,y,-14],[40,y,-30],[30,y,-46],[50,y,-60],[70,y,-56],[86,y,-50],[70,y,-12],add(pb.end,mul(dB,12)),pb.end];
+    inner+=tube(S,path3(S,pts),w,col)+pa.svg+pb.svg;
+    return wrap(S,inner,"Prise et câble",{bot:`Prise ${NOM[p]} + câble ${NOM[p]} ⟷ ${NOM[q]}`,bsz:16})}
+
+  /* Boîtier d'adaptateur (prise femelle sur la face avant) */
+  function dongle(S,O,ang,k,col,len=26,wd=16,ht=9){const m=MAT(S),c=S.cam,d=hz(ang),U=nrm(crs(d,UP)),V=DN,base=[O[0],ht/2,O[2]];
+    const [side,face]=col==="white"?[m.white,m.whiteF]:col==="grey"?[m.alu,m.aluF]:[m.black,m.blackF];
+    const sc=Math.min(1,(wd-3)/({hdmi:15.2,rj45:14,usba:13.2}[k]||9.4),(ht-1.6)/({hdmi:5.8,rj45:11,usba:5.8,jack:6.4}[k]||3.4));
+    return shadow(S,add(base,mul(d,len/2)),d,U,len*1.05,wd*1.05,.4,1.4)+ext(S,{d:rr(wd,ht,Math.min(3.5,ht/2.2)),O:add(base,mul(d,len)),U,V,N:mul(neg(d),len),side,cap:face,capFx:`<g transform="scale(${f1(sc)})">${port(S,k,col==="white"?"#f4f5f7":"#1d4ed8")}</g>`})+
+      `<!--${c.D(neg(d))}-->`}
+  function adaptateur(st){const k=st.type==="hub"?"hub"+st.ports:st.type;
+    if(k==="hub4"||k==="hub7")return hub(k==="hub7");
     const P={cjack:["usbc","jack"],cusb:["usbc","usba"],chdmi:["usbc","hdmi"],ceth:["usbc","rj45"],ljack:["lightning","jack"],lusb:["lightning","usba"],usbc:["usba","usbc"]}[k];
-    /* adaptateur court : prise mâle d'un côté, prise femelle (boîtier + face) de l'autre */
-    return male(P[0],120,80,-1)+`<path d="M120 80H170" stroke="${H}" stroke-width="6" stroke-linecap="round"/><rect x="170" y="56" width="84" height="48" rx="10" fill="${H}"/>`
-      +`<g transform="translate(254 80) rotate(90)"><rect x="-16" y="-3" width="32" height="6" rx="3" fill="${HL}"/></g>`+face(P[1],212,80)
-      +face(P[0],70,150)+T(70,176,"BRANCHE SUR "+NOM[P[0]],"middle",9)+face(P[1],230,150)+T(230,176,"VOUS BRANCHEZ "+NOM[P[1]],"middle",9)}
-  function tv(s){return s.art==="hdmi"?cable("hdmi","hdmi",s.len.replace(".",",")+" m"):cable("coax","coax",s.len.replace(".",",")+" m")}
-  function batterie(s){const C={"5000":"5 000","10000":"10 000","20000":"20 000"}[s.cap],w={"5000":96,"10000":120,"20000":150}[s.cap];
-    const x=160-w/2,po=s.w==="w10"?["usba"]:["usbc","usba"];
-    return`<rect x="${x}" y="38" width="${w}" height="92" rx="16" fill="${H}"/><rect x="${x}" y="38" width="${w}" height="14" rx="7" fill="${HL}"/>`
-      +[0,1,2,3].map(i=>`<circle cx="${160-15+i*10}" cy="114" r="2.6" fill="${i<3?"#4ade80":"#334155"}"/>`).join("")
-      +T(160,84,C,"middle",14).replace('fill="var(--art-t,currentColor)"','fill="#e9eef6"')+T(160,98,"mAh","middle",9).replace('fill="var(--art-t,currentColor)"','fill="#9fb0c8"')
-      +po.map((p,i)=>face(p,po.length>1?134+i*52:160,152)).join("")+T(160,180,po.map(p=>NOM[p]).join(" + ")+" · "+{w10:"10 W",w20:"20 W",w65:"65 W"}[s.w])}
-  function cle(s){const tips=s.con==="double"?["usba","usbc"]:[s.con==="usbc"?"usbc":"usba"];
-    let o=`<rect x="122" y="62" width="86" height="36" rx="10" fill="${H}"/><rect x="132" y="70" width="40" height="4" rx="2" fill="${HL}"/>`+T(165,90,s.cap+" Go","middle",11).replace('fill="var(--art-t,currentColor)"','fill="#e9eef6"');
-    o+=male(tips[0],208,80,1,true,1.3);if(tips[1])o+=male(tips[1],122,80,-1,true,1.3);
-    return o+tips.map((p,i)=>face(p,tips.length>1?(i?110:210):160,150)).join("")+T(160,178,tips.map(p=>NOM[p]).join(" + "))}
-  function microsd(s){return`<path d="M128 40h52l12 12v8l-4 4v4l4 4v52h-64z" fill="${H}"/><rect x="134" y="46" width="44" height="10" rx="2" fill="${HL}"/>`
-    +[0,1,2,3,4,5,6,7].map(i=>`<rect x="${133+i*6}" y="44" width="4" height="9" rx="1" fill="${GOLD}"/>`).join("")
-    +T(160,104,s.cap+" Go","middle",13).replace('fill="var(--art-t,currentColor)"','fill="#e9eef6"')+T(160,118,"microSD","middle",9).replace('fill="var(--art-t,currentColor)"','fill="#9fb0c8"')+T(160,168,"TAILLE RÉELLE : 15 × 11 MM")}
-  function graveur(s){const t=s.type==="usbc"?["usba","usbc"]:["usba"];
-    return`<rect x="70" y="58" width="180" height="40" rx="8" fill="${H}"/><rect x="70" y="58" width="180" height="8" rx="4" fill="${HL}"/><rect x="92" y="80" width="120" height="3" rx="1.5" fill="#0e131b"/>`
-      +`<circle cx="232" cy="80" r="3" fill="#4ade80"/>`+T(160,76,s.type==="bluray"?"BLU-RAY":"CD · DVD","middle",9).replace('fill="var(--art-t,currentColor)"','fill="#9fb0c8"')
-      +`<circle cx="120" cy="140" r="26" fill="url(#dsk)"/><circle cx="120" cy="140" r="6" fill="var(--art-bg,#fff)"/>`
-      +t.map((p,i)=>face(p,t.length>1?192+i*54:220,140)).join("")+T(220,170,"CÂBLE "+t.map(p=>NOM[p]).join(" + "),"middle",9)}
-  const DEFS=`<defs><radialGradient id="dsk"><stop offset=".25" stop-color="#e8eef7"/><stop offset=".55" stop-color="#b9c7dc"/><stop offset=".75" stop-color="#e6d9f2"/><stop offset="1" stop-color="#cfe6e9"/></radialGradient></defs>`;
-  const svgw=(inner,lab)=>`<svg class="art" viewBox="0 0 320 196" role="img" aria-label="${lab}">${DEFS}${inner}</svg>`;
-  /* Articles simples de la boutique */
-  const SH={
-    plug:()=>`<rect x="100" y="56" width="80" height="50" rx="10" fill="${H}"/><rect x="100" y="56" width="80" height="9" rx="4.5" fill="${HL}"/><circle cx="168" cy="96" r="3" fill="#4ade80"/>`
-      +`<path d="M180 81C214 81 206 132 236 132S252 104 262 104" fill="none" stroke="${H}" stroke-width="6" stroke-linecap="round"/>`+male("usbc",262,104,1,false,1.1)
-      +`<path d="M100 81H72" stroke="${H}" stroke-width="5"/>`+`<rect x="40" y="66" width="34" height="30" rx="8" fill="${W}" stroke="var(--art-o,#c9d1dc)"/><rect x="28" y="72" width="12" height="4" rx="2" fill="${M}"/><rect x="28" y="86" width="12" height="4" rx="2" fill="${M}"/>`
-      +T(160,170,"USB-C, ROND OU MAGNÉTIQUE SELON L’ORDINATEUR","middle",9),
-    case:()=>`<rect x="118" y="26" width="84" height="150" rx="18" fill="var(--art-c,#2563eb)" opacity=".9"/><rect x="126" y="34" width="68" height="134" rx="12" fill="${H}"/><rect x="132" y="40" width="56" height="122" rx="8" fill="#0e1622"/>`
-      +`<rect x="140" y="34" width="22" height="28" rx="8" fill="var(--art-c,#2563eb)"/><circle cx="151" cy="44" r="4.5" fill="#0e1622"/><circle cx="151" cy="55" r="3" fill="#0e1622"/>`+T(250,108,"COQUE","middle",10),
-    screen:()=>`<rect x="128" y="36" width="70" height="136" rx="12" fill="${H}"/><rect x="134" y="42" width="58" height="124" rx="8" fill="#0e1622"/>`
-      +`<g transform="translate(-14 -10)"><rect x="134" y="42" width="58" height="124" rx="8" fill="rgba(170,210,255,.35)" stroke="rgba(120,170,230,.9)" stroke-width="1.5"/><path d="M146 56l14-10M146 70l26-20" stroke="#fff" stroke-width="2" opacity=".7" stroke-linecap="round"/></g>`
-      +T(236,100,"VERRE","start",10)+T(236,114,"TREMPÉ","start",10),
-    mouse:()=>`<rect x="40" y="70" width="150" height="64" rx="10" fill="${H}"/>`+[0,1,2,3].map(r=>[...Array(r===3?6:11)].map((_,i)=>`<rect x="${(r===3?62:50)+i*(r===3?18:12.5)}" y="${80+r*12}" width="${r===3?(i===2?44:14):9}" height="8" rx="2" fill="${HL}"/>`).join("")).join("")
-      +`<path d="M232 66c18 0 28 14 28 34v24c0 20-12 32-28 32s-28-12-28-32v-24c0-20 10-34 28-34z" fill="${H}"/><path d="M232 66v30M204 96h56" stroke="${HL}" stroke-width="2"/>`};
+    const white=P[0]==="lightning"||k==="cjack",col=white?"white":"grey";
+    const s=5.2,S=scene(24,32,s,330,214);
+    const big=P[1]==="rj45"||P[1]==="hdmi",dims=P[1]==="rj45"?[34,22,16]:P[1]==="hdmi"?[30,22,10]:P[1]==="usba"?[26,18,9]:[22,12,8];
+    let inner="";
+    /* boîtier femelle à droite, prise mâle à gauche, câble court entre les deux */
+    const DO=[34,0,26],dd=hz(-32);
+    const A=[-38,0,26],dA=nrm([.35,0,-1]);
+    const pa=plug(S,P[0],A,dA,{col:white?"white":"grey"});
+    const back=add(DO,mul(dd,dims[0])),y=pa.end[1],w=pa.r*1.6*s/1.35;
+    const pts=[pa.end,add(pa.end,mul(dA,12)),[-28,y,-30],[-4,y,-34],[14,y,-38],add([back[0],y,back[2]],mul(dd,14)),add([back[0],y,back[2]],mul(dd,1))];
+    inner+=tube(S,path3(S,pts),w,white?"white":"grey")+dongle(S,DO,-32,P[1],col,dims[0],dims[1],dims[2])+pa.svg;
+    return wrap(S,inner,"Adaptateur "+NOM[P[0]]+" vers "+NOM[P[1]],{bot:`Branche sur ${NOM[P[0]]}  ›  vous branchez ${NOM[P[1]]}`,bsz:16})}
+  function hub(seven){const s=3.7,S=scene(24,30,s,344,200),m=MAT(S);
+    const L=seven?118:104,Wd=36,Hh=13,O=[8,0,10],d=hz(-90),U=nrm(crs(d,UP)),V=DN; /* le hub est couché, sa longueur va vers la gauche */
+    const base=[O[0],Hh/2,O[2]];
+    /* face avant = côté long tourné vers nous : on dessine la boîte puis les ports sur le plan avant */
+    let inner=shadow(S,[O[0]-L/2,0,O[2]],[1,0,0],[0,0,1],L*1.04,Wd*1.06,.45,1.8);
+    inner+=ext(S,{d:rr(Wd,Hh,4),O:add(base,mul(d,L)),U,V,N:mul(neg(d),L),side:m.alu,cap:m.aluF});
+    /* face du dessus et face avant (plans) */
+    const front=[O[0]-L/2,Hh/2,O[2]+Wd/2+.01];
+    const ports=seven?[["hdmi",-40],["usba",-20],["usba",-2],["sd",22],["msd",44]]:[["usba",-36],["usba",-12],["usba",12],["usba",36]];
+    inner+=plane(S,front,[1,0,0],[0,-1,0],ports.map(([k,x])=>`<g transform="translate(${x} .4) scale(${k==="hdmi"?.78:k==="usba"?.86:.8})">${port(S,k)}</g>`).join("")+(seven?"":""));
+    inner+=plane(S,[O[0]-L/2,Hh,O[2]],[1,0,0],[0,0,1],`<rect x="${-L/2+3}" y="${-Wd/2+3}" width="${L-6}" height="${Wd-6}" rx="3" fill="#fff" opacity=".07"/><circle cx="${L/2-10}" cy="${Wd/2-7}" r="1.2" fill="#60a5fa"/>`);
+    /* câble USB-C sortant à droite */
+    const pc=plug(S,"usbc",[60,0,40],nrm([-.2,0,-1]),{col:"grey"});
+    const y=pc.end[1],st=[O[0]+.5,y,O[2]];
+    inner=tube(S,path3(S,[st,[st[0]+18,y,st[2]],[pc.end[0]+6,y,pc.end[2]-26],pc.end]),pc.r*1.6*s/1.3,"grey")+inner;
+    /* sur le côté droit, le port USB-C de charge du 7 en 1 */
+    if(seven)inner+=plane(S,[O[0]+.01,Hh/2,O[2]-6],[0,0,1],[0,-1,0],`<g transform="scale(.8)">${port(S,"usbc")}</g>`);
+    inner+=pc.svg;
+    return wrap(S,inner,seven?"Hub USB-C 7 en 1":"Hub USB-C 4 ports",{bot:seven?"HDMI · 2 × USB · SD · micro SD · charge USB-C":"USB-C › 4 × USB",bsz:seven?15:17})}
+
+  function tv(st){const L=st.len.replace(".",",")+" m";
+    return st.art==="hdmi"?cableScene("hdmi","hdmi",{lab:L,s:4.6,cap:"HDMI  ⟷  HDMI  ·  4K",label:"Câble HDMI "+L,thin:1.05})
+      :cableScene("coax","coaxf",{lab:L,s:4.8,col:"white",cap:"Antenne mâle  ⟷  antenne femelle",label:"Câble d’antenne "+L,thin:1.3})}
+
+  /* Batterie externe posée à plat, ports sur la tranche de droite */
+  function batterie(st){const C={"5000":"5 000","10000":"10 000","20000":"20 000"}[st.cap],D={"5000":[62,96,14],"10000":[68,138,16],"20000":[78,150,26]}[st.cap];
+    const S=scene(32,34,2,320,200),m=MAT(S);
+    const [w,l,h]=D,d=hz(-76),U=nrm(crs(d,UP)),V=DN,O=[0,h/2,0];
+    const po=st.w==="w10"?["usba"]:["usbc","usba"];
+    let inner=shadow(S,[0,0,0],neg(d),neg(U),l*.98,w*.96,.28,1.8);
+    inner+=ext(S,{d:rr(w,h,h/2.3),O:add(O,mul(d,l/2)),U,V,N:mul(neg(d),l),side:m.black,cap:m.blackF,capFx:po.map((p,i)=>`<g transform="translate(${po.length>1?(i?13:-13):0} 0) scale(${h<16?.82:1})">${port(S,p)}</g>`).join("")+`<circle cx="${w/2-7}" cy="0" r="1" fill="#4ade80"/>`});
+    /* dessus : capacité et voyants, lisibles dans le sens de la longueur */
+    inner+=plane(S,add(O,[0,h/2+.01,0]),neg(d),neg(U),`<rect x="${-l/2+5}" y="${-w/2+5}" width="${l-10}" height="${w-10}" rx="${Math.min(10,w/6)}" fill="#fff" opacity=".05"/>`+
+      `<text x="${-l*.06}" y="${w*.06}" text-anchor="middle" font-size="${w*.26}" font-weight="700" font-family="Archivo,Arial,sans-serif" fill="#e9eef6">${C}</text><text x="${-l*.06}" y="${w*.27}" text-anchor="middle" font-size="${w*.12}" font-family="IBM Plex Mono,monospace" fill="#8fa0b8">mAh</text>`+
+      [0,1,2,3].map(i=>`<circle cx="${l*.36-i*0}" cy="${-9+i*6}" r="1.5" fill="${i>0?"#4ade80":"#3b434f"}"/>`).join(""));
+    return wrap(S,inner,"Batterie externe "+C+" mAh",{bot:po.map(p=>NOM[p]).join(" + ")+"  ·  "+{w10:"10 W",w20:"20 W",w65:"65 W"}[st.w]})}
+
+  /* Clé USB (posée en biais, connecteur vers nous) */
+  function cle(st){const tips=st.con==="double"?["usba","usbc"]:[st.con==="usbc"?"usbc":"usba"];
+    const S=scene(28,36,4,320,196),m=MAT(S),d=hz(-58),U=nrm(crs(d,UP)),V=DN; /* d : du connecteur vers l'arrière */
+    const bl=40,bw=18,bh=8,O=[0,bh/2,0];
+    const front=add(O,mul(d,-bl/2)),backE=add(O,mul(d,bl/2));
+    const conn=(k,at,dir)=>{const p=PLUG[k];return ext(S,{d:p.m[0],O:at,U:nrm(crs(dir,UP)),V,N:mul(neg(dir),p.m[1]),side:m.steel,cap:"none",capFx:faceM(S,k,"#1d4ed8")})};
+    let inner=shadow(S,[0,0,0],d,U,bl+(tips[1]?26:12),bw,.4,1.6);
+    const a=()=>conn(tips[0],[front[0],tips[0]==="usba"?bh/2:bh/2,front[2]],d),b=()=>tips[1]?conn(tips[1],backE,neg(d)):"";
+    const body=()=>ext(S,{d:rr(bw,bh,3.2),O:backE,U,V,N:mul(neg(d),bl),side:m.black,cap:m.blackF});
+    inner+=b()+body()+a();
+    inner+=plane(S,add(O,[0,bh/2+.02,0]),neg(d),neg(U),`<rect x="${-bl/2+3}" y="${-bw/2+2.5}" width="${bl-6}" height="${bw-5}" rx="2.5" fill="#fff" opacity=".07"/><text x="${tips[1]?0:3}" y="2" text-anchor="middle" font-size="5.4" font-weight="700" font-family="Archivo,Arial,sans-serif" fill="#e9eef6">${st.cap} Go</text>`+(tips[1]?"": `<circle cx="${-bl/2+5}" cy="0" r="2.3" fill="#0b0c0f" stroke="#454b54" stroke-width=".5"/>`));
+    return wrap(S,inner,"Clé USB "+st.cap+" Go",{bot:tips.map(p=>NOM[p]).join(" + ")+"  ·  "+st.cap+" Go"})}
+
+  /* Carte micro SD (à plat, vue de dessus légèrement inclinée) */
+  function microsd(st){const S=scene(-16,52,13,320,186),m=MAT(S),U=[1,0,0],V=[0,0,1];
+    const shape="M-5.5 -7.5H2.6L3.4 -6.7V-4.3L2.9 -3.8V-2.6L5.5 -1.8V7.5H-5.5Z";
+    let inner=plane(S,[0,0,1.5],U,V,`<path d="${shape}" fill="#000" opacity=".5" filter="url(#${S.r("bl")})"/>`);
+    inner+=ext(S,{d:SZ(shape,11,15,[[-5.5,-7.5],[3.4,-7.5],[5.5,-1.8],[5.5,7.5],[-5.5,7.5]]),O:[0,0,0],U,V,N:[0,.8,0],side:"#0a0b0d",cap:"#111"});
+    inner+=plane(S,[0,.82,0],U,V,`<path d="${shape}" fill="url(#${S.r("bkc")})"/><path d="M-5.5 -1H5.5V7.5H-5.5Z" fill="url(#${S.r("bl2")})" opacity=".95"/>`+
+      `<text x="-4.2" y="3.4" font-size="2.6" font-weight="800" font-family="Archivo,Arial,sans-serif" fill="#fff">${st.cap}<tspan font-size="1.4" dx=".3">Go</tspan></text>`+
+      `<text x="-4.2" y="5.9" font-size=".95" font-family="Archivo,Arial,sans-serif" font-weight="600" fill="#dbeafe">microSD  U3  A2</text>`+
+      `<rect x="-4.6" y="-6.4" width="6.2" height="4.4" rx=".4" fill="#fff" opacity=".07"/>`+
+      `<path d="M-5.5 -7.5H2.6L3.4 -6.7V-4.3" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width=".12"/>`);
+    return wrap(S,inner,"Carte micro SD "+st.cap+" Go",{bot:"Taille réelle : 15 × 11 mm",area:[160,20,480,372]})}
+
+  /* Lecteur graveur externe + disque */
+  function graveur(st){const S=scene(26,30,2.15,330,210),m=MAT(S),d=hz(-14),U=nrm(crs(d,UP)),V=DN;
+    const w=136,dp=140,h=15,O=[18,h/2,-8];
+    let inner=shadow(S,[O[0],0,O[2]],U,d,w*1.04,dp*1.04,.5,1.8);
+    inner+=ext(S,{d:rr(w,h,4),O:add(O,mul(d,dp/2)),U,V,N:mul(neg(d),dp),side:m.black,cap:m.blackF,
+      capFx:`<rect x="${-w/2+8}" y="-1.1" width="${w-34}" height="1.2" rx=".6" fill="#05060a"/><rect x="${w/2-18}" y="-2" width="9" height="3.4" rx="1.6" fill="#2a2f36" stroke="#4b525d" stroke-width=".3"/><circle cx="${w/2-27}" cy="-.5" r=".9" fill="#4ade80"/>`});
+    inner+=plane(S,add(O,[0,h/2+.02,0]),U,neg(d),`<circle r="46" fill="none" stroke="#fff" stroke-opacity=".05" stroke-width="1.2"/><text x="0" y="4" text-anchor="middle" font-size="9" font-weight="700" font-family="Archivo,Arial,sans-serif" fill="#94a3b8" opacity=".75">${st.type==="bluray"?"Blu-ray":"DVD ± RW"}</text>`);
+    /* disque posé devant à gauche */
+    for(const a of[-1,1])for(const b of[-1,1])S.cam.K([-92+a*60,0,62+b*60]);
+    inner+=plane(S,[-92,.6,62],[1,0,0],[0,0,1],`<circle r="60" fill="#000" opacity=".35" filter="url(#${S.r("bl2")})" transform="translate(2 4)"/><circle r="60" fill="url(#${S.r("dk")})"/><circle r="60" fill="url(#${S.r("sh")})"/><circle r="19" fill="#e8ecf1" stroke="#b9c2ce" stroke-width=".6"/><circle r="7.5" fill="var(--art-bg2,#0f1a1a)" stroke="#9aa4b1" stroke-width=".6"/>`);
+    /* câble USB */
+    const t=st.type==="usbc"?["usba","usbc"]:["usba"];
+    const pa=plug(S,"usba",[96,0,92],nrm([-.25,0,-1]));
+    const y=pa.end[1],st0=add(O,add(mul(d,-dp/2),[w/2-24,0,0]));
+    inner=inner+tube(S,path3(S,[[st0[0],y,st0[2]],[st0[0]+4,y,st0[2]+18],[pa.end[0]-4,y,pa.end[2]-22],pa.end]),pa.r*1.6*2.15/1.25)+pa.svg;
+    if(t[1]){const pc=plug(S,"usbc",[124,0,70],nrm([-.6,0,-1]));inner+=pc.svg}
+    return wrap(S,inner,"Lecteur graveur externe",{bot:(st.type==="bluray"?"Blu-ray, DVD, CD":"CD et DVD")+"  ·  câble "+t.map(p=>NOM[p]).join(" + "),bsz:16})}
+
+  /* ---------- articles simples ---------- */
+  function laptopCharger(){const S=scene(24,32,2.5,318,208),m=MAT(S),d=hz(-90),U=nrm(crs(d,UP)),V=DN;
+    const L=104,Wd=46,Hh=28,O=[-6,Hh/2,0];
+    let inner=shadow(S,[O[0],0,O[2]],[1,0,0],[0,0,1],L*1.02,Wd*1.02,.4,1.8);
+    /* câble secteur (derrière) puis bloc, puis câble vers l'ordinateur et sa prise USB-C */
+    inner+=tube(S,path3(S,[[O[0]-L/2,4,O[2]-6],[O[0]-L/2-22,4,O[2]-8],[-86,4,-34],[-70,4,-58]]),4.6*2.5/1.2);
+    inner+=ext(S,{d:rr(Wd,Hh,8),O:add(O,mul(d,L/2)),U,V,N:mul(neg(d),L),side:m.black,cap:m.blackF});
+    inner+=plane(S,add(O,[0,Hh/2+.02,0]),[1,0,0],[0,0,1],`<rect x="${-L/2+6}" y="${-Wd/2+6}" width="${L-12}" height="${Wd-12}" rx="6" fill="#fff" opacity=".05"/><circle cx="${L/2-12}" cy="${Wd/2-9}" r="1.6" fill="#4ade80"/><circle cx="${L/2-12}" cy="${Wd/2-9}" r="4" fill="#4ade80" opacity=".18"/>`);
+    const pc=plug(S,"usbc",[58,0,62],nrm([-.35,0,-1]));
+    inner+=tube(S,path3(S,[[O[0]+L/2,3,O[2]+4],[O[0]+L/2+26,3,O[2]+8],[96,3,22],[90,3,40],[84,3,58],[pc.end[0]+12,3,pc.end[2]-28],pc.end]),3.4*2.5/1.2)+pc.svg;
+    return wrap(S,inner,"Chargeur d’ordinateur portable",{bot:"Embout USB-C, rond ou magnétique selon l’ordinateur",bsz:15})}
+
+  /* Téléphone générique (vue de face, non incliné) dessiné dans un plan */
+  function phoneFace(S,w,h,screen,o={}){const r=w*.16,b=w*.045;
+    return`<rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="${r}" fill="#0b0c10" stroke="${o.frame||"#4b5563"}" stroke-width="${w*.012}"/>`+
+      `<rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" rx="${r-b}" fill="${screen}"/>`+
+      (o.island===false?"":`<rect x="${-w*.14}" y="${-h/2+b+h*.015}" width="${w*.28}" height="${h*.032}" rx="${h*.016}" fill="#050608"/>`)+(o.inner||"")+
+      `<rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" rx="${r-b}" fill="${S.u("sh")}"/>`}
+  /* Petite interface d'écran d'accueil (icônes neutres) */
+  function homeUI(w,h,n=4,rows=5){const g=w*.13,gap=(w-2*w*.1-n*g)/(n-1);let s="";
+    const cols=["#f97316","#22c55e","#3b82f6","#eab308","#ec4899","#06b6d4","#a855f7","#ef4444","#14b8a6","#f43f5e","#84cc16","#6366f1"];
+    for(let r=0;r<rows;r++)for(let i=0;i<n;i++)s+=`<rect x="${-w/2+w*.1+i*(g+gap)}" y="${-h/2+h*.14+r*(g+h*.045)}" width="${g}" height="${g}" rx="${g*.26}" fill="${cols[(r*n+i)%cols.length]}" opacity=".92"/>`;
+    s+=`<text x="0" y="${-h/2+h*.095}" text-anchor="middle" font-size="${w*.075}" font-weight="600" font-family="Archivo,Arial,sans-serif" fill="#fff" opacity=".9">10:42</text>`;
+    s+=`<rect x="${-w*.36}" y="${h/2-h*.13}" width="${w*.72}" height="${g*1.25}" rx="${g*.4}" fill="#fff" opacity=".18"/>`;
+    return s}
+  function coque(){const S=scene(-18,58,1.9,320,190),m=MAT(S);
+    const w=74,h=152,t=9;
+    let inner=plane(S,[6,0,6],[1,0,0],[0,0,1],`<rect x="${-w/2-4}" y="${-h/2-4}" width="${w+8}" height="${h+8}" rx="18" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/>`);
+    /* coque (couleur de la marque du site) */
+    inner+=ext(S,{d:rr(w+5,h+5,15),O:[0,0,0],U:[1,0,0],V:[0,0,1],N:[0,t,0],side:"var(--art-c,#2563eb)",cap:"var(--art-c,#2563eb)",capFx:
+      `<rect x="${-w/2-2.5}" y="${-h/2-2.5}" width="${w+5}" height="${h+5}" rx="15" fill="#000" opacity=".12"/><rect x="${-w/2-2.5}" y="${-h/2-2.5}" width="${w+5}" height="${h+5}" rx="15" fill="${S.u("sh")}"/>`+
+      `<rect x="${-w/2+4}" y="${-h/2+4}" width="32" height="34" rx="9" fill="#0b0c10" opacity=".85"/>`+
+      [[-w/2+13,-h/2+13],[-w/2+13,-h/2+29],[-w/2+27,-h/2+21]].map(([x,y])=>`<circle cx="${x+0}" cy="${y}" r="6" fill="#1d2129" stroke="#3a404a" stroke-width="1"/><circle cx="${x}" cy="${y}" r="3.2" fill="#0a0d14"/><circle cx="${x-1.2}" cy="${y-1.2}" r="1" fill="#4b6cb7" opacity=".7"/>`).join("")+
+      `<circle cx="${-w/2+29}" cy="${-h/2+9}" r="1.8" fill="#fef3c7"/>`});
+    return wrap(S,inner,"Coque de téléphone",{bot:"Coque et étui · selon votre modèle",bsz:16})}
+  function verre(){const S=scene(-22,52,1.85,320,196),m=MAT(S);
+    const w=74,h=154,t=8;
+    let inner=plane(S,[6,0,6],[1,0,0],[0,0,1],`<rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="16" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/>`);
+    inner+=ext(S,{d:rr(w,h,13),O:[0,0,0],U:[1,0,0],V:[0,0,1],N:[0,t,0],side:m.silver,cap:"#0b0c10",capFx:`<g>${phoneFace(S,w,h,S.u("wp"),{frame:"#9ca3af",inner:homeUI(w-7,h-7)})}</g>`});
+    /* verre trempé qui flotte au-dessus, décalé */
+    inner+=ext(S,{d:rr(w-2,h-2,12),O:[-16,t+20.8,-10],U:[1,0,0],V:[0,0,1],N:[0,1.2,0],side:"rgba(200,230,255,.55)",cap:"rgba(190,220,255,.16)",capStroke:"rgba(220,240,255,.85)",capSW:1.2,
+      capFx:`<path d="M${-w/2+8} ${-h/2+40}L${-w/2+44} ${-h/2+4}M${-w/2+8} ${-h/2+64}L${-w/2+68} ${-h/2+4}" stroke="#fff" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/><rect x="${-w*.14}" y="${-h/2+6}" width="${w*.28}" height="5" rx="2.5" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width=".6"/>`});
+    return wrap(S,inner,"Protection d’écran",{bot:"Verre trempé ou film · selon le modèle",bsz:16})}
+  function clavierSouris(){const S=scene(-14,50,2.05,300,188),m=MAT(S);
+    const L=170,D=58,H=8,O=[-22,H/2,0];
+    let inner=shadow(S,[O[0],0,O[2]],[1,0,0],[0,0,1],L*1.03,D*1.06,.5,1.8);
+    inner+=ext(S,{d:rr(L,D,5),O:[O[0],0,O[2]],U:[1,0,0],V:[0,0,1],N:[0,H,0],side:m.alu,cap:m.aluF});
+    /* touches */
+    let k="";const kw=10.6,g=1.4,x0=-L/2+6,y0=-D/2+6;
+    for(let r=0;r<5;r++){let x=x0+(r===1?2:r===2?5:r===3?8:0);const n=r===4?8:14;for(let i=0;i<n;i++){let w=kw;if(r===4&&i===3)w=kw*5+g*4;if(r===4&&i>3&&x>L/2-12)break;if(x+w>L/2-5)break;
+      k+=`<rect x="${f1(x)}" y="${f1(y0+r*(kw+g))}" width="${f1(w)}" height="${kw}" rx="1.6" fill="#1b1f25"/><rect x="${f1(x+.8)}" y="${f1(y0+r*(kw+g)+.6)}" width="${f1(w-1.6)}" height="${kw-2.4}" rx="1.3" fill="#2b3038"/>`;x+=w+g}}
+    inner+=plane(S,[O[0],H+.02,O[2]],[1,0,0],[0,0,1],k);
+    /* souris : volume arrondi (silhouette + dégradés) */
+    const c=S.cam.P([94,0,8]);S.cam.grow(c[0]-32,c[1]-36);S.cam.grow(c[0]+40,c[1]+32);
+    inner+=`<g transform="translate(${f1(c[0])} ${f1(c[1])})"><ellipse cx="4" cy="10" rx="34" ry="20" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/><path d="M-26 6C-30 -16 -16 -34 2 -34S32 -18 30 4 16 26 2 26 -22 24 -26 6Z" fill="${m.black}"/><path d="M-22 0C-24 -16 -12 -30 2 -30" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2.5" stroke-linecap="round"/><path d="M2 -33V-8" stroke="#05060a" stroke-width="1.2"/><rect x="-.8" y="-26" width="5.6" height="10" rx="2.8" fill="#4b525d"/></g>`;
+    return wrap(S,inner,"Souris et claviers",{bot:"Filaires ou sans fil",bsz:16})}
+
+  /* Appareils (vente) : téléphone, tablette, ordinateur portable */
+  function laptop3(S,O,ang,L=150,D=100,o={}){const m=MAT(S),d=hz(ang),R=nrm(crs(d,UP)); /* d = vers le fond, R = vers la droite */
+    const base=add(O,[0,3.2,0]);let s=shadow(S,O,R,d,L*1.02,D*1.04,.5,1.8);
+    s+=ext(S,{d:rr(L,D,5),O,U:R,V:neg(d),N:[0,3.2,0],side:m.silver,cap:m.silverF});
+    /* clavier et pavé */
+    let k="";const kw=8.6,g=1.2;for(let r=0;r<5;r++)for(let i=0;i<13;i++)k+=`<rect x="${f1(-L/2+12+i*(kw+g)+(r%2)*2)}" y="${f1(-D/2+10+r*(kw+g))}" width="${kw}" height="${kw}" rx="1.4" fill="#1c2027"/>`;
+    s+=plane(S,add(O,[0,3.22,0]),R,neg(d),`<rect x="${-L/2+9}" y="${-D/2+7}" width="${L-18}" height="${5*(kw+g)+6}" rx="3" fill="#9aa1ab" opacity=".55"/>${k}<rect x="-24" y="${D/2-32}" width="48" height="26" rx="3" fill="#c9cfd6" stroke="#aab1ba" stroke-width=".5"/>`);
+    /* écran ouvert (incliné de 105°) */
+    const a=105*RD,hinge=add(O,add(mul(d,D/2),[0,3.2,0])),up=nrm(add(mul(UP,Math.sin(a)),mul(neg(d),Math.cos(a)))),Hs=D*.98;
+    const scrO=add(hinge,mul(up,Hs/2));
+    s+=ext(S,{d:rr(L,Hs,5),O:add(scrO,mul(crs(R,up),-2.6)),U:R,V:neg(up),N:mul(crs(R,up),2.6),side:m.silver,cap:"#0b0c10",
+      capFx:`<rect x="${-L/2+4}" y="${-Hs/2+4}" width="${L-8}" height="${Hs-9}" rx="2" fill="${o.screen||S.u("wp2")}"/>${o.ui||""}<rect x="${-L/2+4}" y="${-Hs/2+4}" width="${L-8}" height="${Hs-9}" rx="2" fill="${S.u("sh")}"/>`,
+      backFx:`<circle r="7" fill="#fff" opacity=".18"/>`});
+    return s}
+  function appareil(k){
+    if(k==="mobile"){const S=scene(-20,22,1.75,320,198);let inner="";
+      [[-50,-10,"#e5e7eb",S.u("wp2"),-14],[40,4,"#9ca3af",S.u("wp"),10]].forEach(([x,z,fr,sc,rot])=>{
+        const d=hz(rot),U=nrm(crs(d,UP));
+        inner+=shadow(S,[x,0,z],U,d,74,12,.5,1.6);
+        inner+=ext(S,{d:rr(72,150,13),O:add([x,75,z],mul(d,4)),U,V:DN,N:mul(d,-8),side:S.u("sv"),cap:"#0b0c10",capFx:phoneFace(S,72,150,sc,{frame:fr,inner:homeUI(66,144)})})});
+      return wrap(S,inner,"Téléphones",{bot:"Neuf ou reconditionné · garantie 2 ans",bsz:16})}
+    if(k==="tablet"){const S=scene(-18,30,1.45,320,206),m=MAT(S);const d=hz(-6),U=nrm(crs(d,UP));
+      const w=230,h=165,lean=nrm(add(UP,mul(d,.28)));
+      let inner=shadow(S,[0,0,10],U,d,w*1.02,40,.5,2);
+      inner+=ext(S,{d:rr(w,h,14),O:add([0,h/2*Math.cos(.27)+2,0],[0,0,0]),U,V:neg(lean),N:mul(crs(U,lean),7),side:S.u("sv"),cap:"#0b0c10",
+        capFx:`<rect x="${-w/2+8}" y="${-h/2+8}" width="${w-16}" height="${h-16}" rx="8" fill="${S.u("wp")}"/>`+homeUI(w-40,h-24,6,3).replace(/fill="#fff" opacity=".18"/,'fill="#fff" opacity="0"')+`<rect x="${-w/2+8}" y="${-h/2+8}" width="${w-16}" height="${h-16}" rx="8" fill="${S.u("sh")}"/>`});
+      return wrap(S,inner,"Tablettes",{bot:"Neuve ou reconditionnée · garantie 2 ans",bsz:16})}
+    if(k==="laptop"){const S=scene(-24,28,1.62,320,232);
+      return wrap(S,laptop3(S,[0,0,6],0,170,112,{ui:`<rect x="-62" y="-38" width="58" height="34" rx="3" fill="#fff" opacity=".9"/><rect x="2" y="-38" width="60" height="16" rx="3" fill="#fff" opacity=".55"/><rect x="2" y="-18" width="60" height="14" rx="3" fill="#fff" opacity=".35"/>`}),"Ordinateurs",{bot:"Portable ou fixe · neuf ou reconditionné",bsz:16})}
+    if(k==="cash"){const S=scene(-20,30,1.8,300,200);let inner="";const d=hz(-14),U=nrm(crs(d,UP));
+      inner+=shadow(S,[-20,0,0],U,d,74,12,.5,1.6)+ext(S,{d:rr(72,150,13),O:add([-20,75,0],mul(d,4)),U,V:DN,N:mul(d,-8),side:S.u("sv"),cap:"#0b0c10",capFx:phoneFace(S,72,150,S.u("wp2"),{frame:"#d1d5db",inner:homeUI(66,144)})});
+      const c=S.cam.P([62,30,10]);S.cam.grow(c[0]-66,c[1]-46);S.cam.grow(c[0]+66,c[1]+50);
+      inner+=`<g transform="translate(${f1(c[0])} ${f1(c[1])}) rotate(-12)"><rect x="-58" y="-34" width="116" height="68" rx="12" fill="#000" opacity=".4" filter="url(#${S.r("bl2")})" transform="translate(4 8)"/><path d="M-58 -22a12 12 0 0 1 12 -12H46a12 12 0 0 1 12 12V22a12 12 0 0 1 -12 12H-46a12 12 0 0 1 -12 -12V12a12 12 0 0 0 0 -24Z" fill="#22c55e"/><circle cx="-40" cy="0" r="5" fill="var(--art-bg,#fff)"/><text x="8" y="12" text-anchor="middle" font-size="34" font-weight="800" font-family="Archivo,Arial,sans-serif" fill="#052e16">€</text></g>`;
+      return wrap(S,inner,"Rachat de votre appareil",{bot:"Estimation gratuite de votre appareil",bsz:16})}
+    return""}
+
+  /* =====================================================================
+     RÉPARATIONS : avant / après (vue de face)
+     ===================================================================== */
+  /* Fissures d'un écran cassé, générées à partir d'un point d'impact (aléatoire fixe) */
+  function cracks(cx,cy,w,h,seed=7){let r=seed;const rnd=()=>(r=(r*16807)%2147483647)/2147483647;
+    let s="",sh="";const n=11;
+    for(let i=0;i<n;i++){let a=i/n*2*Math.PI+rnd()*.5,x=cx,y=cy,d=`M${f1(x)} ${f1(y)}`,len=0;const max=(.45+rnd()*.7)*Math.max(w,h);
+      while(len<max){const st=6+rnd()*14;a+=(rnd()-.5)*.7;x+=Math.cos(a)*st;y+=Math.sin(a)*st;len+=st;d+=`L${f1(x)} ${f1(y)}`;
+        if(rnd()<.18){let b=a+(rnd()<.5?1:-1)*(.6+rnd()*.6),bx=x,by=y,bd=`M${f1(bx)} ${f1(by)}`;for(let j=0;j<3;j++){bx+=Math.cos(b)*(5+rnd()*9);by+=Math.sin(b)*(5+rnd()*9);bd+=`L${f1(bx)} ${f1(by)}`}s+=`<path d="${bd}"/>`}}
+      s+=`<path d="${d}"/>`}
+    for(let k=0;k<3;k++){const rr0=8+k*9;let d="";for(let i=0;i<=12;i++){const a=i/12*2*Math.PI,q=rr0*(.8+rnd()*.5);d+=(i?"L":"M")+f1(cx+Math.cos(a)*q)+" "+f1(cy+Math.sin(a)*q)}s+=`<path d="${d}"/>`}
+    for(let i=0;i<7;i++){const a=rnd()*6.28,q=4+rnd()*20;sh+=`<path d="M${f1(cx)} ${f1(cy)}l${f1(Math.cos(a)*q)} ${f1(Math.sin(a)*q)}l${f1(Math.cos(a+.5)*q*.6)} ${f1(Math.sin(a+.5)*q*.6)}z" fill="#fff" opacity="${(.05+rnd()*.12).toFixed(2)}"/>`}
+    return`<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#000" stroke-opacity=".55" stroke-width="2.2">${s}</g><g stroke="#e6eefc" stroke-opacity=".85" stroke-width=".9">${s}</g></g>${sh}<circle cx="${cx}" cy="${cy}" r="5" fill="#fff" opacity=".55"/>`}
+  function deviceFront(k,state,id){/* state : "bad" ou "ok" ; dessin centré à l'origine */
+    const S={u:x=>`url(#${id}${x})`};
+    if(k==="phone"){const w=96,h=196,r=18,b=4.5;
+      const scr=state==="ok"?`url(#${id}wp)`:"#0a0d14";
+      return`<rect x="${-w/2-1.6}" y="${-h/2-1.6}" width="${w+3.2}" height="${h+3.2}" rx="${r+1.6}" fill="url(#${id}fr)"/><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="${r}" fill="#07080b"/>`+
+        `<g clip-path="url(#${id}cp)"><rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" rx="${r-b}" fill="${scr}"/>`+(state==="ok"?homeUI(w-2*b,h-2*b):`<rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" fill="url(#${id}gl)"/>`+cracks(14,-26,w,h,11)+`<rect x="${-w/2+b}" y="${h/2-60}" width="${w-2*b}" height="9" fill="#7c3aed" opacity=".35"/><rect x="${-w/2+b}" y="${h/2-46}" width="${w-2*b}" height="3" fill="#22d3ee" opacity=".35"/>`)+`</g>`+
+        `<rect x="-13" y="${-h/2+b+3}" width="26" height="7" rx="3.5" fill="#050608"/><rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" rx="${r-b}" fill="url(#${id}sh)"/>`}
+    if(k==="tablet"){const w=196,h=140,r=12,b=8;
+      return`<rect x="${-w/2-1.5}" y="${-h/2-1.5}" width="${w+3}" height="${h+3}" rx="${r+1.5}" fill="url(#${id}fr)"/><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="${r}" fill="#07080b"/>`+
+        `<g clip-path="url(#${id}cp)"><rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" rx="4" fill="${state==="ok"?`url(#${id}wp)`:"#0a0d14"}"/>`+(state==="ok"?homeUI(w-50,h-20,6,3).replace(/fill="#fff" opacity=".18"/,'opacity="0"'):`<rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" fill="url(#${id}gl)"/>`+cracks(-40,18,w,h,29))+`</g>`+
+        `<circle cx="0" cy="${-h/2+4}" r="1.4" fill="#1f2937"/><rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" rx="4" fill="url(#${id}sh)"/>`}
+    if(k==="laptop"){const w=210,h=134,b=7;
+      const bad=`<rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b-8}" fill="#1e3a8a"/><text x="${-w/2+22}" y="${-h/2+44}" font-size="30" font-family="Arial,sans-serif" fill="#fff">:(</text><rect x="${-w/2+22}" y="${-h/2+58}" width="120" height="5" rx="2" fill="#fff" opacity=".85"/><rect x="${-w/2+22}" y="${-h/2+70}" width="90" height="5" rx="2" fill="#fff" opacity=".6"/><rect x="${-w/2+22}" y="${-h/2+90}" width="18" height="18" fill="#fff" opacity=".85"/><rect x="${-w/2+46}" y="${-h/2+92}" width="60" height="4" rx="2" fill="#fff" opacity=".5"/><rect x="${-w/2+46}" y="${-h/2+100}" width="44" height="4" rx="2" fill="#fff" opacity=".5"/>`;
+      const ok=`<rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b-8}" fill="url(#${id}wp2)"/><rect x="${-w/2+18}" y="${-h/2+20}" width="84" height="56" rx="5" fill="#fff" opacity=".92"/><rect x="${-w/2+26}" y="${-h/2+30}" width="50" height="5" rx="2" fill="#93c5fd"/><rect x="${-w/2+26}" y="${-h/2+42}" width="64" height="4" rx="2" fill="#cbd5e1"/><rect x="${-w/2+26}" y="${-h/2+52}" width="40" height="4" rx="2" fill="#cbd5e1"/><circle cx="${w/2-40}" cy="-14" r="22" fill="#22c55e"/><path d="M${w/2-50} -14l7 8 14-16" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="${-w/2+b}" y="${h/2-b-14}" width="${w-2*b}" height="8" fill="#0f172a" opacity=".55"/>`;
+      return`<rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="7" fill="url(#${id}fr)"/><rect x="${-w/2+2}" y="${-h/2+2}" width="${w-4}" height="${h-4}" rx="6" fill="#07080b"/>${state==="ok"?ok:bad}<rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b-8}" fill="url(#${id}sh)"/>`+
+        `<path d="M${-w/2-22} ${h/2}H${w/2+22}L${w/2+12} ${h/2+12}H${-w/2-12}Z" fill="url(#${id}fr)"/><rect x="-26" y="${h/2}" width="52" height="4" rx="2" fill="#7b8490"/>`}
+    return""}
+  function pairDefs(id,k){const clip={phone:[96,196,18,4.5],tablet:[196,140,12,8],laptop:[210,134,6,7]}[k],[w,h,r,b]=clip;
+    return`<defs><linearGradient id="${id}fr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e5e7eb"/><stop offset=".5" stop-color="#9ca3af"/><stop offset="1" stop-color="#d1d5db"/></linearGradient>`+
+      `<linearGradient id="${id}wp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b5cff"/><stop offset=".5" stop-color="#7b3cf0"/><stop offset="1" stop-color="#ff6aa8"/></linearGradient>`+
+      `<linearGradient id="${id}wp2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset=".55" stop-color="#2563eb"/><stop offset="1" stop-color="#1e1b4b"/></linearGradient>`+
+      `<linearGradient id="${id}gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#26324b" stop-opacity=".6"/><stop offset=".6" stop-color="#05070c" stop-opacity="0"/></linearGradient>`+
+      `<linearGradient id="${id}sh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".38" stop-color="#fff" stop-opacity=".04"/><stop offset=".39" stop-color="#fff" stop-opacity="0"/></linearGradient>`+
+      `<clipPath id="${id}cp"><rect x="${-w/2+b}" y="${-h/2+b}" width="${w-2*b}" height="${h-2*b}" rx="${Math.max(2,r-b)}"/></clipPath>`+
+      `<filter id="${id}bl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter></defs>`}
+  function pair(k,o={}){const id="gp"+(++SEQ).toString(36),sc={phone:.78,tablet:.62,laptop:.58}[k],gy=k==="laptop"?-6:0;
+    const dev=(x,st)=>`<g transform="translate(${x} ${102+gy}) scale(${sc})"><ellipse cx="0" cy="${k==="laptop"?96:k==="phone"?104:78}" rx="${k==="phone"?56:130}" ry="9" fill="#000" opacity=".35" filter="url(#${id}bl)"/>${deviceFront(k,st,id)}</g>`;
+    const lab=(x,t,ok)=>`<g transform="translate(${x} 214)"><rect x="-48" y="-17" width="96" height="28" rx="14" fill="${ok?"rgba(34,197,94,.16)":"rgba(248,113,113,.14)"}"/><text x="0" y="2" text-anchor="middle" font-size="13.5" font-weight="600" font-family="IBM Plex Mono,monospace" letter-spacing="1.2" fill="${ok?"#22c55e":"#f87171"}">${t}</text></g>`;
+    return`<svg class="ba-art" viewBox="0 0 400 232" role="img" aria-label="${o.label||""}">${pairDefs(id,k)}${dev(98,"bad")}${dev(302,"ok")}<g fill="none" stroke="var(--acc,#3b82f6)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M184 104h32M206 94l10 10-10 10"/></g>${lab(98,"AVANT")}${lab(302,"APRÈS",1)}</svg>`}
+
+  /* =====================================================================
+     IMAGES DES CATÉGORIES DE RÉPARATION (1280 × 720, exportées en WebP par gen_illus.py)
+     ===================================================================== */
+  function big(S,inner,o={}){const bb=S.cam.bb,A=o.area||[150,70,1130,650],pad=8;
+    const bw=bb[2]-bb[0]+2*pad,bh=bb[3]-bb[1]+2*pad,k=Math.min((A[2]-A[0])/bw,(A[3]-A[1])/bh,o.kmax||4);
+    const tx=(A[0]+A[2])/2-k*(bb[0]+bb[2])/2,ty=(A[1]+A[3])/2-k*(bb[1]+bb[3])/2;
+    return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"><defs>${S.defs()}
+<linearGradient id="bgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a1530"/><stop offset=".6" stop-color="#11306b"/><stop offset="1" stop-color="#0b5068"/></linearGradient>
+<radialGradient id="glA"><stop offset="0" stop-color="#3b82f6" stop-opacity=".42"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></radialGradient>
+<radialGradient id="flA" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".38"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+<pattern id="grA" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#fff" stroke-opacity=".05" stroke-width="1"/></pattern></defs>
+<rect width="1280" height="720" fill="url(#bgA)"/><rect width="1280" height="720" fill="url(#grA)"/><circle cx="640" cy="330" r="430" fill="url(#glA)"/><ellipse cx="640" cy="600" rx="560" ry="120" fill="url(#flA)"/>
+<g transform="translate(${f1(tx)} ${f1(ty)}) scale(${f1(k)})">${inner}</g>${o.over||""}</svg>`}
+  /* Pastille ronde (validation, alerte) dessinée à l'écran */
+  const badge=(x,y,r,ok=true)=>`<g transform="translate(${x} ${y})"><circle r="${r+6}" fill="#000" opacity=".25" transform="translate(3 6)"/><circle r="${r}" fill="${ok?"#22c55e":"#f59e0b"}"/><circle r="${r}" fill="url(#ga_shine)"/>${ok?`<path d="M${-r*.42} 0l${r*.3} ${r*.32} ${r*.56}-${r*.6}" fill="none" stroke="#fff" stroke-width="${r*.2}" stroke-linecap="round" stroke-linejoin="round"/>`:`<path d="M0 ${-r*.45}v${r*.5}M0 ${r*.42}v.1" stroke="#1f1300" stroke-width="${r*.2}" stroke-linecap="round"/>`}</g>`;
+  /* Tournevis de précision posé au sol */
+  function screwdriver(S,O,ang){const m=MAT(S),d=hz(ang),U=nrm(crs(d,UP)),V=DN;
+    return shadow(S,add(O,mul(d,30)),d,U,90,10,.35,1.4)+ext(S,{d:circ(.9),O:add([O[0],4,O[2]],mul(d,-26)),U,V,N:mul(d,26),side:m.steel,cap:m.steelF})+
+      ext(S,{d:circ(4),O:add([O[0],4,O[2]],mul(d,0)),U,V,N:mul(d,60),side:"url(#"+S.r("hd")+")",cap:"#c2410c",nofit:false})}
+  function catScenes(){
+    const mk=(yaw,pitch)=>{const S=scene(yaw,pitch,1,0,0);S.def(`<linearGradient id="${S.r("hd")}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset=".5" stop-color="#ea580c"/><stop offset="1" stop-color="#7c2d12"/></linearGradient><radialGradient id="ga_shine" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>`);return S};
+    const id=x=>x;
+    return{
+      "cat-telephones":()=>{const S=mk(-16,30),m=MAT(S);let o="";
+        /* téléphone cassé couché, téléphone réparé debout, tournevis */
+        const sc=(st,k)=>`<g>${deviceFront("phone",st,S.id+k)}</g>`;
+        S.def(pairDefs(S.id+"a","phone").replace(/^<defs>|<\/defs>$/g,""));S.def(pairDefs(S.id+"b","phone").replace(/^<defs>|<\/defs>$/g,""));
+        const d1=hz(-24),U1=nrm(crs(d1,UP));
+        o+=shadow(S,[-58,0,10],U1,d1,78,14,.5,1.6)+ext(S,{d:rr(96,196,18),O:add([-58,98,10],mul(d1,4)),U:U1,V:DN,N:mul(d1,-8),side:m.silver,cap:"none",capFx:sc("bad","a")});
+        const d2=hz(16),U2=nrm(crs(d2,UP));
+        o+=shadow(S,[66,0,0],U2,d2,78,14,.5,1.6)+ext(S,{d:rr(96,196,18),O:add([66,98,0],mul(d2,4)),U:U2,V:DN,N:mul(d2,-8),side:m.silver,cap:"none",capFx:sc("ok","b")});
+        o+=screwdriver(S,[-6,0,70],70);
+        return big(S,o,{over:badge(1010,170,46)})},
+      "cat-tablettes":()=>{const S=mk(-14,26),m=MAT(S);let o="";
+        S.def(pairDefs(S.id+"a","tablet").replace(/^<defs>|<\/defs>$/g,""));
+        const d=hz(-4),U=nrm(crs(d,UP)),lean=nrm(add(UP,mul(d,.3))),w=196,h=140;
+        const ui=`<rect x="-90" y="-62" width="180" height="124" fill="url(#${S.id}awp)"/><g transform="translate(0 -4)"><rect x="-40" y="-20" width="74" height="40" rx="8" fill="none" stroke="#fff" stroke-width="5"/><rect x="36" y="-8" width="7" height="16" rx="2" fill="#fff"/><rect x="-33" y="-13" width="52" height="26" rx="4" fill="#4ade80"/><path d="M-2 -16l-10 18h10l-4 14 14-20h-10l4-12z" fill="#fff" stroke="#14532d" stroke-width="1.5" stroke-linejoin="round"/></g><text x="0" y="44" text-anchor="middle" font-size="12" font-weight="700" font-family="Archivo,Arial,sans-serif" fill="#fff">100 %</text>`;
+        o+=shadow(S,[0,0,8],U,d,w,30,.5,2)+ext(S,{d:rr(w,h,12),O:[0,h/2*Math.cos(.29)+1,0],U,V:neg(lean),N:mul(crs(U,lean),7),side:m.silver,cap:"#07080b",
+          capFx:`<rect x="-90" y="-62" width="180" height="124" rx="4" fill="#0a0d14"/>${ui}<rect x="-90" y="-62" width="180" height="124" rx="4" fill="url(#${S.id}ash)"/>`});
+        const pc=plug(S,"usbc",[-122,0,42],nrm([.85,0,-.5]),{col:"white"});
+        o+=tube(S,path3(S,[[-150,2.2,-40],[-150,2.2,-10],[pc.end[0]-30,2.2,pc.end[2]+30],pc.end]),2.2*1.6,"white")+pc.svg;
+        return big(S,o,{over:badge(1040,160,44)})},
+      "cat-ordinateurs":()=>{const S=mk(-26,26),m=MAT(S);let o="";
+        o+=laptop3(S,[0,0,0],-6,190,128,{ui:`<rect x="-80" y="-50" width="96" height="62" rx="5" fill="#fff" opacity=".92"/><rect x="-70" y="-40" width="60" height="6" rx="3" fill="#93c5fd"/><rect x="-70" y="-26" width="74" height="5" rx="2.5" fill="#cbd5e1"/><rect x="-70" y="-15" width="46" height="5" rx="2.5" fill="#cbd5e1"/><rect x="-70" y="-2" width="70" height="7" rx="3.5" fill="#e2e8f0"/><rect x="-70" y="-2" width="70" height="7" rx="3.5" fill="#22c55e"/><circle cx="52" cy="-14" r="26" fill="#22c55e"/><path d="M40 -14l8 9 16-18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`});
+        /* barrette SSD posée devant */
+        const d=hz(-64),U=nrm(crs(d,UP));
+        o+=shadow(S,[120,0,86],d,U,80,22,.45,1.4)+ext(S,{d:rr(80,22,1.5),O:[120,0,86],U:neg(d),V:U,N:[0,2.2,0],side:"#0f5132",cap:"#14532d",
+          capFx:`<rect x="-40" y="-11" width="80" height="22" rx="1.5" fill="#166534"/><rect x="-28" y="-8" width="20" height="16" rx="1" fill="#0b0c10"/><rect x="-4" y="-8" width="20" height="16" rx="1" fill="#0b0c10"/><rect x="20" y="-6" width="12" height="12" rx="1" fill="#1f2937"/>${[...Array(12)].map((_,i)=>`<rect x="${-39.5}" y="${-9+i*1.6}" width="3" height=".9" fill="#e2b84c"/>`).join("")}<rect x="-24" y="-5" width="12" height="3" fill="#fff" opacity=".6"/>`});
+        o+=screwdriver(S,[-128,0,92],-62);
+        return big(S,o)},
+      "cat-consoles":()=>{const S=mk(-22,28),m=MAT(S);let o="";
+        /* console de salon générique (boîtier noir), manette, câble HDMI */
+        const d=hz(-8),U=nrm(crs(d,UP));const L=180,Wd=150,H=38,O=[-30,H/2,-30];
+        o+=shadow(S,[O[0],0,O[2]],U,d,L,Wd,.5,2)+ext(S,{d:rr(L,H,10),O:add(O,mul(d,Wd/2)),U,V:DN,N:mul(neg(d),Wd),side:m.black,cap:m.blackF,
+          capFx:`<rect x="-80" y="-1" width="120" height="2" rx="1" fill="#05060a"/><circle cx="66" cy="0" r="4.5" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/><circle cx="66" cy="0" r="9" fill="#3b82f6" opacity=".18"/><g transform="translate(-60 9) scale(.5)">${port(S,"usba")}</g><g transform="translate(-44 9) scale(.5)">${port(S,"usbc")}</g>`});
+        o+=plane(S,add(O,[0,H/2+.02,0]),U,neg(d),`<rect x="${-L/2+8}" y="${-Wd/2+8}" width="${L-16}" height="${Wd-16}" rx="8" fill="#fff" opacity=".04"/>${[...Array(9)].map((_,i)=>`<rect x="${-60+i*14}" y="${-Wd/2+12}" width="8" height="26" rx="3" fill="#05060a" opacity=".7"/>`).join("")}`);
+        const ph=plug(S,"hdmi",[92,0,62],nrm([-.4,0,-1]));
+        o=tube(S,path3(S,[[O[0]+L/2-30,5,O[2]-Wd/2],[O[0]+L/2+10,5,O[2]-Wd/2-30],[140,5,-30],[ph.end[0]+20,5,ph.end[2]-40],ph.end]),3.6*1.7)+o+ph.svg;
+        /* manette (dessinée en vue de dessus, posée devant) */
+        const c=S.cam.P([-150,6,96]);S.cam.grow(c[0]-90,c[1]-60);S.cam.grow(c[0]+90,c[1]+60);
+        o+=`<g transform="translate(${f1(c[0])} ${f1(c[1])}) rotate(-6) scale(1,.82)"><ellipse cx="4" cy="22" rx="92" ry="40" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/><path d="M-60 -34C-34 -44 34 -44 60 -34C84 -26 96 10 92 36C88 58 66 62 52 44L36 24H-36L-52 44C-66 62 -88 58 -92 36C-96 10 -84 -26 -60 -34Z" fill="${m.black}"/><path d="M-58 -30C-34 -38 34 -38 58 -30" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2.5" stroke-linecap="round"/>`+
+          `<g fill="#14161a" stroke="#3a404a" stroke-width="1"><circle cx="-26" cy="10" r="13"/><circle cx="26" cy="10" r="13"/></g><circle cx="-26" cy="10" r="8" fill="#2b3038"/><circle cx="26" cy="10" r="8" fill="#2b3038"/>`+
+          `<path d="M-62 -16h8v-8h8v8h8v8h-8v8h-8v-8h-8z" fill="#2b3038"/>${[[58,-24,"#22c55e"],[70,-12,"#ef4444"],[46,-12,"#3b82f6"],[58,0,"#eab308"]].map(([x,y,cl])=>`<circle cx="${x}" cy="${y}" r="5.5" fill="#2b3038"/><circle cx="${x}" cy="${y}" r="2.4" fill="${cl}"/>`).join("")}<rect x="-10" y="-20" width="20" height="5" rx="2.5" fill="#3b82f6" opacity=".9"/></g>`;
+        return big(S,o,{over:badge(1060,150,42)})},
+      "cat-assistance":()=>{const S=mk(-24,28),m=MAT(S);let o="";
+        /* box internet avec voyants et antennes, ordinateur portable, ondes Wi-Fi */
+        const d=hz(-10),U=nrm(crs(d,UP));const L=150,Wd=110,H=32,O=[-110,H/2,-20];
+        const ant=x=>ext(S,{d:rr(9,4,2),O:add([O[0]+x,H+70,O[2]+Wd/2-14],[0,0,0]),U:[1,0,0],V:[0,0,1],N:[0,-70,0],side:m.white,cap:m.whiteF});
+        o+=shadow(S,[O[0],0,O[2]],U,d,L,Wd,.5,2)+ant(-50)+ant(50)+ext(S,{d:rr(L,H,9),O:add(O,mul(d,Wd/2)),U,V:DN,N:mul(neg(d),Wd),side:m.white,cap:m.whiteF,
+          capFx:[...Array(5)].map((_,i)=>`<circle cx="${-46+i*14}" cy="2" r="2.4" fill="${i<4?"#22c55e":"#3b82f6"}"/><circle cx="${-46+i*14}" cy="2" r="5" fill="${i<4?"#22c55e":"#3b82f6"}" opacity=".2"/>`).join("")+`<text x="40" y="5" font-size="9" font-weight="700" font-family="Archivo,Arial,sans-serif" fill="#94a3b8">BOX</text>`});
+        o+=laptop3(S,[96,0,30],-24,170,114,{ui:`<rect x="-72" y="-44" width="90" height="56" rx="5" fill="#fff" opacity=".92"/><g transform="translate(-27 -2)" fill="none" stroke="#2563eb" stroke-linecap="round" stroke-width="5"><path d="M-22 -14a32 32 0 0 1 44 0"/><path d="M-13 -5a19 19 0 0 1 26 0"/></g><circle cx="-27" cy="3" r="3.5" fill="#2563eb"/><circle cx="50" cy="-14" r="22" fill="#22c55e"/><path d="M40 -14l7 8 14-16" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>`});
+        const c=S.cam.P([-110,120,-10]);
+        o+=`<g transform="translate(${f1(c[0])} ${f1(c[1])})" fill="none" stroke="#22d3ee" stroke-linecap="round">${[30,52,74].map((r,i)=>`<path d="M${-r} 0a${r} ${r} 0 0 1 ${2*r} 0" stroke-width="7" opacity="${1-i*.25}" transform="translate(0 ${-i*0})"/>`).join("")}</g>`;
+        S.cam.grow(c[0]-80,c[1]-80);
+        return big(S,o)}}}
+  /* ---------- point d'entrée ---------- */
   const F={chargeur,adaptateur,tv,batterie,cle,microsd,graveur};
-  return{cfg:(id,s,lab)=>F[id]?svgw(F[id](s),lab):"",shop:(k,lab)=>SH[k]?svgw(SH[k](),lab):"",face:(k)=>`<svg class="art-f" viewBox="0 0 40 24" aria-hidden="true">${face(k,20,12)}</svg>`}})();
+  const SH={plug:laptopCharger,case:coque,screen:verre,mouse:clavierSouris,mobile:()=>appareil("mobile"),tablet:()=>appareil("tablet"),laptop:()=>appareil("laptop"),cash:()=>appareil("cash")};
+  const LBL=(svg,lab)=>lab?svg.replace(/aria-label="[^"]*"/,`aria-label="${lab.replace(/"/g,"&quot;")}"`):svg;
+  return{
+    cfg:(id,s,lab)=>F[id]?LBL(F[id](s),lab):"",
+    shop:(k,lab)=>SH[k]?LBL(SH[k](),lab):"",
+    pair,
+    cats:()=>{const C=catScenes();return Object.fromEntries(Object.entries(C).map(([k,f])=>[k,f()]))},
+    face:k=>{const S=Scene(Cam(0,0,1,0,0));mats(S);const z={usba:1.9,usbc:2.4,lightning:2.4,micro:2.6,hdmi:1.6,jack:2.4,rj45:1.6,coax:1.6,sd:.9}[k]||2;
+      const SOL={sf:"#d4d9e0",gd:"#d8b25a",cv:"#0b0d11",st:"#aab2bd"};
+      const f=(k==="jack"?port(S,"jack",1):k==="sd"?`<path d="M-6 -8H3L6 -5V8H-6Z" fill="#1f2937"/><path d="M-6 -1H6V8H-6Z" fill="#2563eb"/>`:faceM(S,k,"#1d4ed8")).replace(/url\(#ga\w+?(sf|gd|cv|st)\)/g,(m,x)=>SOL[x]);
+      return`<svg class="art-f" viewBox="0 0 40 24" aria-hidden="true"><g transform="translate(20 12) scale(${z})">${f}</g></svg>`},
+    /* pour les tests et gen_illus.py */
+    _:{scene,wrap,plane,ext,shadow,tube,path3,plug,charger,dongle,laptop3,phoneFace,homeUI,deviceFront,pairDefs,cracks,rr,circ,MAT,T,hz,nrm,crs,add,mul,UP,DN}}})();
+/*ART-FIN*/
 
 const CHEV='<svg class="i cf-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
 /* Petite image de la prise sur les boutons de choix (Lightning, USB-C, micro-USB…) */
@@ -3184,7 +3628,7 @@ function cfgHTML(f){const s=f.sel;if(f.fix)f.fix(s);
   const row=([k,lab,opts],i)=>`<div class="cf-row"><span class="cf-l">${i+1}. ${lab}</span><div class="cf-o" role="group" aria-label="${lab}">${opts.map(([v,t,sm])=>`<button type="button" data-k="${k}" data-v="${v}" aria-pressed="${s[k]===v}">${ico(k,v)}<b>${t}</b>${sm?`<small>${sm}</small>`:""}</button>`).join("")}</div></div>`;
   return `<div class="cfg${f.open?" open":""}" data-f="${f.id}">${f.open?"":`<div class="cf-thumb" aria-hidden="true">${ART.cfg(f.id,s,"")}</div>`}<div class="cf-h"><span class="pic">${svg(f.ic)}</span><div class="cf-ht"><span class="eyebrow">${f.eb} · dès ${f.min()} €</span><h2>${f.t}</h2><p>${f.open?"Faites votre choix : le prix s’affiche aussitôt.":f.s}</p></div><button type="button" class="btn${f.open?" ghost":""} cf-tog" aria-expanded="${!!f.open}" aria-controls="cfb-${f.id}">${f.open?"Fermer":f.b}${CHEV}</button></div>
 <div class="cf-grid" id="cfb-${f.id}"${f.open?"":" hidden"}><div class="cf-steps">${G.map(row).join("")}</div>
-<aside class="cf-sum" aria-live="polite"><figure class="cf-art">${ART.cfg(f.id,s,I.name)}<figcaption>Illustration : la forme des prises. Couleur et marque selon le stock.</figcaption></figure><span class="eyebrow">Votre sélection</span><h3>${I.name}</h3><p>${I.txt}</p><span class="cf-p">${I.price} €</span><small>Prix net, TVA non applicable. Selon le stock du moment.</small><button type="button" class="btn" data-addcart="${esc(I.name)}" data-price="${I.price}" data-ic="${f.ic}">${svg("bag")}Ajouter au panier</button></aside></div></div>`}
+<aside class="cf-sum" aria-live="polite"><figure class="cf-art">${(a=>a+`<figcaption>${(a.match(/data-cap="([^"]*)"/)||[])[1]?`<b>${a.match(/data-cap="([^"]*)"/)[1]}</b>`:""}Illustration non contractuelle : forme des prises exacte, couleur et marque selon le stock.</figcaption>`)(ART.cfg(f.id,s,I.name))}</figure><span class="eyebrow">Votre sélection</span><h3>${I.name}</h3><p>${I.txt}</p><span class="cf-p">${I.price} €</span><small>Prix net, TVA non applicable. Selon le stock du moment.</small><button type="button" class="btn" data-addcart="${esc(I.name)}" data-price="${I.price}" data-ic="${f.ic}">${svg("bag")}Ajouter au panier</button></aside></div></div>`}
 function drawCfg(){const el=$("cfgs");if(!el)return;el.innerHTML=CFG.filter(f=>bcat==="Tout"||f.c===bcat).map(cfgHTML).join("")}
 if($("cfgs"))$("cfgs").addEventListener("click",e=>{const box=e.target.closest(".cfg");if(!box)return;const f=CFG.find(x=>x.id===box.dataset.f);
   const at=()=>$("cfgs").querySelector(`[data-f="${f.id}"]`);
@@ -3196,17 +3640,10 @@ if($("shop"))$("shop").addEventListener("click",e=>{const a=e.target.closest("[d
 if($("bseg"))drawShop();
 document.addEventListener("click",e=>{if(PG)return;const n=e.target.closest("[data-shopneed]");if(n)prefill(n.dataset.shopneed,"","")});
 
-/* Illustrations avant / après */
-const KIND={
-phone:["Téléphones",52,96,'<rect width="52" height="96" rx="8"/><rect x="5" y="9" width="42" height="72" rx="2"/><circle cx="26" cy="89" r="3"/>','<path d="M22 9l6 18-10 14 14 12-8 28M28 27l16-6M18 41l-13-4M32 53l15 8"/>','<path d="M17 45l7 8 14-17" stroke-width="3"/>'],
-tablet:["Tablettes",84,64,'<rect width="84" height="64" rx="6"/><rect x="6" y="6" width="72" height="52" rx="2"/>','<path d="M30 6l8 14-12 10 14 10-6 18M38 20l22-6M26 30l-16-4M40 40l20 6"/>','<path d="M28 33l10 11 20-24" stroke-width="3"/>'],
-laptop:["Ordinateurs",88,72,'<rect width="88" height="56" rx="4"/><rect x="5" y="5" width="78" height="46" rx="1"/><path d="M-8 62h104l-8 10H0z"/>','<path d="M44 14v20M44 41v1" stroke-width="3.2"/>','<path d="M30 28l10 11 20-24" stroke-width="3"/>']};
-function pairSvg(k){const[n,w,h,b,bad,ok]=KIND[k],ty=Math.round((108-h)/2);
-  const g=(cx,x)=>`<g transform="translate(${cx-w/2} ${ty})">${b}${x}</g>`;
-  const t=(x,s)=>`<text x="${x}" y="126" text-anchor="middle" fill="currentColor" stroke="none" font-size="10" font-family="IBM Plex Mono, monospace" letter-spacing="1.2">${s}</text>`;
-  return `<svg viewBox="0 0 260 132" role="img" aria-label="${n} : avant et après réparation">${g(65,bad)}${g(195,ok)}<path d="M118 56h24m-7-7l7 7-7 7"/>${t(65,"AVANT")}${t(195,"APRÈS")}</svg>`}
-if($("bas"))$("bas").innerHTML=["phone","tablet","laptop"].map(k=>`<figure class="ba">${pairSvg(k)}<figcaption><b>${KIND[k][0]}</b><small>Illustration non contractuelle</small></figcaption></figure>`).join("");
-if($("slidePair"))$("slidePair").innerHTML=pairSvg("phone");
+/* Illustrations avant / après (rendus de ART.pair) */
+const BAK={phone:"Téléphones",tablet:"Tablettes",laptop:"Ordinateurs"};
+if($("bas"))$("bas").innerHTML=["phone","tablet","laptop"].map(k=>`<figure class="ba">${ART.pair(k,{label:BAK[k]+" : avant et après réparation"})}<figcaption><b>${BAK[k]}</b><small>Illustration non contractuelle</small></figcaption></figure>`).join("");
+if($("slidePair"))$("slidePair").innerHTML=ART.pair("phone",{label:"Téléphone : avant et après réparation"});
 
 /* Avis Google (textes d’origine) */
 const REVIEWS=[ /* nom, texte, mois de la visite indiqué par Google ; du plus récent au plus ancien */

@@ -1,7 +1,7 @@
 """Illustrations originales du site (non contractuelles) : dessinées en SVG, exportées en WebP 640 et 1280 px
 pour l'affichage, et en JPEG 1200 x 630 pour le partage des articles sur les réseaux sociaux.
 Sortie : build/img/ill/  (copiée par build.py dans assets/img/)."""
-import io, math, pathlib
+import io, math, os, pathlib
 from PIL import Image
 from playwright.sync_api import sync_playwright
 
@@ -287,31 +287,6 @@ def badge(cx, cy, text, r=72, col=GR, ink="#062a1c", sub=""):
 # ---------------------------------------------------------------- scènes
 S = {}
 crack = f'<path d="M560 214l40 46 -22 30 44 36 -10 40M600 260l52 -14M622 326l-40 22" stroke="{INK}" stroke-width="4" stroke-opacity=".9"/>'
-S["cat-telephones"] = frame(
-    phone(400, 360, 210, 410, -6, screen="#14306a", extra=f'<path d="M352 248l40 46 -22 30 44 36 -10 40M392 294l52 -14M414 360l-40 22" stroke="{INK}" stroke-width="4"/>')
-    + f'<path d="M560 360h150" stroke="{CY}" stroke-width="8"/><path d="M690 330l30 30 -30 30" stroke="{CY}" stroke-width="8"/>'
-    + phone(880, 360, 210, 410, 6, screen="url(#ac)") + check(990, 190, 46) + wrench(560, 210, .7, -30, CY), 640, 360)
-S["cat-tablettes"] = frame(
-    tablet(600, 370, 520, 360, f'<rect x="364" y="214" width="472" height="312" rx="10" fill="url(#ac)" fill-opacity=".35" stroke="none"/>')
-    + f'<path d="M880 520l60 -230" stroke="{CY}" stroke-width="10"/><path d="M880 520l-6 26 18 -16" fill="{CY}" stroke="{CY}"/>'
-    + battery(540, 370, 200, 96, .9) + bolt(540, 370, .7, "#062a1c") + check(860, 210, 40), 600, 370)
-S["cat-ordinateurs"] = frame(
-    laptop(600, 330, 520, f'<path d="M420 300 a180 180 0 0 1 360 0" stroke="{CY}" stroke-width="10" stroke-opacity=".35"/><path d="M420 300a180 180 0 0 1 300 -110" stroke="{CY}" stroke-width="10"/><path d="M600 300l70 -96" stroke="{AM}" stroke-width="8"/><circle cx="600" cy="300" r="12" fill="{AM}" stroke="none"/>')
-    + gear(960, 210, 58, CY) + shield(250, 230, .55), 600, 340)
-S["cat-assistance"] = frame(
-    f'<path d="M380 330L620 150L860 330" stroke-width="8"/><rect x="420" y="320" width="400" height="260" rx="8" fill="{BODY}"/>'
-    + laptop(560, 470, 170) + f'<rect x="680" y="500" width="110" height="34" rx="8" fill="{BODY}" stroke="{CY}"/><circle cx="700" cy="517" r="4" fill="{CY}" stroke="none"/><circle cx="716" cy="517" r="4" fill="{CY}" stroke="none"/>'
-    + wifi(735, 480, 90) + f'<path d="M1010 250c0 70 -70 130 -70 130s-70 -60 -70 -130a70 70 0 0 1 140 0z" fill="url(#ac)" stroke="{INK}"/><circle cx="940" cy="250" r="24" fill="{BODY}"/>'
-    + f'<path d="M940 380c-80 60 -150 60 -190 40" stroke="{CY}" stroke-dasharray="4 18" stroke-width="7"/>', 620, 380)
-S["cat-consoles"] = frame(
-    # écran, manette générique et prise HDMI : réparation de consoles (aucun modèle réel)
-    monitor(560, 290, 500, 300, f'<path d="M336 390h448" stroke="{CY}" stroke-width="6"/><rect x="400" y="320" width="110" height="22" rx="6" fill="url(#ac)" stroke="none"/>'
-             f'<rect x="590" y="260" width="130" height="22" rx="6" fill="url(#ac)" stroke="none"/><circle cx="455" cy="292" r="20" fill="{AM}" stroke="none"/>'
-             f'<path d="M490 270q60 -70 120 -30" stroke="{AM}" stroke-width="5" stroke-dasharray="4 14"/>' + sparkles([(655, 220), (380, 200)], GR))
-    + gamepad(930, 545, 1.08)
-    + f'<path d="M170 520h110l-14 40h-82z" fill="{BODY}" stroke="{CY}"/><path d="M196 532h58" stroke="{CY}" stroke-width="5"/><path d="M225 560v34c0 34 60 44 110 22" stroke="{CY}" stroke-width="8"/>'
-    + label(225, 500, "HDMI", 30, CY)
-    + wrench(1010, 230, .7, 40, CY) + check(1110, 140, 42) + bolt(560, 560, .6, AM), 600, 360)
 S["pro-virus"] = frame(
     monitor(560, 320, 520, 320, shield(560, 320, 1.0) + f'<path d="M520 320l30 30 56 -64" stroke="#071226" stroke-width="12"/>')
     + f'<g transform="translate(960 220)"><ellipse rx="44" ry="56" fill="{BODY}" stroke="{RD}"/><path d="M-44 -10h-30M44 -10h30M-40 26l-28 18M40 26l28 18M-30 -44l-20 -24M30 -44l20 -24M0 -56v112" stroke="{RD}"/></g>'
@@ -366,6 +341,37 @@ S["reconditionne-ou-neuf"] = frame(
     + f'<circle cx="980" cy="560" r="72" fill="{GR}" stroke="none"/>' + label(980, 556, "2 ANS", 30, "#062a1c") + label(980, 590, "garantie", 22, "#062a1c", weight=600), 640, 360)
 
 
+# Images des catégories de réparation (cat-*) : rendus réalistes en 3D dessinés par le moteur ART du site
+# (même code que les visuels de la boutique, entre /*ART-DEBUT*/ et /*ART-FIN*/ dans source/gouyerian-tech.html).
+CATS = ("cat-telephones", "cat-tablettes", "cat-ordinateurs", "cat-consoles", "cat-assistance")
+
+
+def art_js():
+    src = (B.parent / "source" / "gouyerian-tech.html").read_text(encoding="utf-8")
+    a, b = src.index("/*ART-DEBUT*/"), src.index("/*ART-FIN*/")
+    return src[a:b] + ";window.ART=ART;"
+
+
+def render_cats(pg, only=()):
+    """Rendus des catégories : WebP 640 et 1280 px (pas d'image de partage)."""
+    fonts = "".join(f"@font-face{{font-family:{n};src:url(data:font/woff2;base64,{__import__('base64').b64encode((B / 'fonts' / f).read_bytes()).decode()})}}"
+                    for n, f in (("Archivo", "archivo-latin-wdth-normal.woff2"), ("'IBM Plex Mono'", "ibm-plex-mono-latin-500-normal.woff2")))
+    pg.set_content(f"<html><head><style>{fonts}</style></head><body style='margin:0'><script>{art_js()}</script></body></html>")
+    cats = pg.evaluate("() => ART.cats()")
+    faits = []
+    for name in CATS:
+        if only and name not in only:
+            continue
+        pg.evaluate("(s) => { document.body.innerHTML = s }", cats[name])
+        pg.wait_for_timeout(150)
+        (SRC / f"{name}.svg").write_text(cats[name], encoding="utf-8")
+        im = Image.open(io.BytesIO(pg.screenshot(clip={"x": 0, "y": 0, "width": W, "height": H}))).convert("RGB")
+        for w in (640, 1280):
+            (im if w == W else im.resize((w, w * H // W), Image.LANCZOS)).save(OUT / f"{name}-{w}.webp", "WEBP", quality=82, method=6)
+        faits.append(name)
+    return faits
+
+
 MARGE = 28          # marge minimale (px) au bord de l'image ; l'aperçu de partage coupe aussi ~22 px en haut et en bas
 CONTROLE_JS = """(m) => {
   const W = 1280, H = 720, g = document.querySelector('svg').lastElementChild, pb = [];
@@ -402,7 +408,7 @@ def render(only=(), check_only=False):
     et renvoie {nom: [problèmes]}. check_only=True : contrôle sans rien écrire."""
     pbs = {}
     with sync_playwright() as p:
-        b = p.chromium.launch()
+        b = p.chromium.launch(executable_path=os.environ.get("GT_CHROME") or None)
         pg = b.new_page(viewport={"width": W, "height": H})
         for name, svg in S.items():
             if only and name not in only:
@@ -416,9 +422,11 @@ def render(only=(), check_only=False):
             im = Image.open(io.BytesIO(pg.screenshot(clip={"x": 0, "y": 0, "width": W, "height": H}))).convert("RGB")
             for w in (640, 1280):
                 (im if w == W else im.resize((w, w * H // W), Image.LANCZOS)).save(OUT / f"{name}-{w}.webp", "WEBP", quality=78, method=6)
-            if not name.startswith(("cat-", "pro-")):
+            if not name.startswith("pro-"):
                 og = im.resize((1200, 675), Image.LANCZOS).crop((0, 22, 1200, 652))
                 og.save(OUT / f"og-{name}.jpg", "JPEG", quality=84, optimize=True, progressive=True)
+        if not check_only:
+            render_cats(pg, only)
         b.close()
     return pbs
 
@@ -485,7 +493,7 @@ def catalogue(dest):
     svg = frame(cells).replace(f'viewBox="0 0 {W} {H}" width="{W}" height="{H}"', f'viewBox="0 0 {cols*cw} {rows*ch}" width="{cols*cw}" height="{rows*ch}"')
     svg = svg.replace(f'<rect width="{W}" height="{H}"', f'<rect width="{cols*cw}" height="{rows*ch}"')
     with sync_playwright() as p:
-        b = p.chromium.launch()
+        b = p.chromium.launch(executable_path=os.environ.get("GT_CHROME") or None)
         pg = b.new_page(viewport={"width": cols * cw, "height": rows * ch})
         pg.set_content(f"<html><body style='margin:0'>{svg}</body></html>")
         pg.wait_for_timeout(80)
@@ -512,17 +520,17 @@ if __name__ == "__main__":
     if opts - {"--controle", "--planche", "--catalogue", "--liste", "--aide"} or "--aide" in opts:
         sys.exit(AIDE)
     if "--liste" in opts:
-        print("\n".join(S))
+        print("\n".join(list(S) + list(CATS)))
         sys.exit(0)
     if "--catalogue" in opts:
         print("catalogue :", catalogue(SRC / "catalogue.png"))
         sys.exit(0)
-    manque = [n for n in noms if n not in S]
+    manque = [n for n in noms if n not in S and n not in CATS]
     if manque:
         sys.exit("Illustration inconnue : " + ", ".join(manque) + "\n" + AIDE)
     pbs = render(tuple(noms), check_only="--controle" in opts)
     if "--controle" not in opts:
-        for n in (noms or S):
+        for n in (noms or list(S) + list(CATS)):
             for f in sorted(OUT.glob(f"*{n}*")):
                 if f.stem in (f"{n}-640", f"{n}-1280", f"og-{n}"):
                     print(f.name, f.stat().st_size // 1024, "Ko")

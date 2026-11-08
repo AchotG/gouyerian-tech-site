@@ -456,6 +456,7 @@ CLEAN = """()=>{
   const m=document.getElementById('mnav');if(m)m.removeAttribute('style');
   ['cookie','locp','locb','insth'].forEach(i=>{const e=document.getElementById(i);if(e)e.hidden=true});document.querySelectorAll('[data-locline],[data-install]').forEach(e=>e.hidden=true);
   const fn=document.getElementById('faqn');if(fn)fn.textContent='';
+  document.querySelectorAll('svg.art,svg.ba-art,svg.art-f').forEach(e=>{e.innerHTML=''});  /* rendus 3D : redessinés par le script au chargement */
   document.documentElement.removeAttribute('data-gt');
   return '<!doctype html>\\n'+document.documentElement.outerHTML+'\\n'}"""
 
