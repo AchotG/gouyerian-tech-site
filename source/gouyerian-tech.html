@@ -367,6 +367,9 @@ textarea{min-height:140px;resize:vertical}
 @media (max-width:560px){.w-act .btn{flex:1 1 100%}.w-act .btn:last-child{margin-left:0}}
 .sum{margin-top:22px;padding:16px 18px;border:1px dashed var(--line);border-radius:12px;background:var(--bg);font:400 .86rem/1.6 var(--f-mono);white-space:pre-line;color:var(--muted)}
 .msg{font-size:.92rem;min-height:1.4em;margin-top:12px;color:var(--warn);font-weight:500}
+/* erreurs bien visibles, qui restent jusqu'à la prochaine saisie */
+.msg[role="alert"]:not(:empty){display:flex;gap:8px;align-items:flex-start;padding:10px 14px;border-radius:12px;border:1px solid color-mix(in srgb,#dc2626 45%,transparent);background:color-mix(in srgb,#dc2626 10%,transparent);color:color-mix(in srgb,#dc2626 80%,var(--fg));min-height:0}
+.msg[role="alert"]:not(:empty)::before{content:"⚠";flex:none;font-weight:700}
 .note{font-size:.86rem;margin-top:14px}
 .aside{display:grid;gap:14px;position:sticky;top:110px}
 @media (max-width:900px){.aside{position:static}}
@@ -2834,6 +2837,8 @@ if($("stars"))$("stars").innerHTML=svg("star").repeat(5);
 
 /* Copier, message éphémère */
 let tt;
+/* Messages d'erreur des formulaires (en rouge) : ils restent affichés jusqu'à ce que la personne corrige un champ du même formulaire ou relance l'action */
+document.addEventListener("input",e=>{const f=e.target.closest&&e.target.closest("form");if(!f)return;f.querySelectorAll('p.msg[role="alert"]').forEach(m=>{if(m.textContent&&!m.dataset.garde)m.textContent=""})},true);
 function toast(t){const el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),2400)}
 function copy(text){
   const fb=()=>{const a=document.createElement("textarea");a.value=text;a.setAttribute("readonly","");a.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}a.remove();toast(ok?"Copié":"Sélectionnez le texte pour le copier")};
