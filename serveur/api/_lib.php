@@ -328,7 +328,7 @@ function sumup(string $methode, string $chemin, ?array $corps = null): array {
   $c = cfg();
   $url = rtrim($c['sumup_api'] ?? 'https://api.sumup.com', '/') . $chemin;
   $ctx = stream_context_create(['http' => ['method' => $methode, 'ignore_errors' => true, 'timeout' => 20,
-    'header' => "Authorization: Bearer {$c['sumup_key']}\r\nContent-Type: application/json\r\nAccept: application/json\r\n",
+    'header' => 'Authorization: Bearer ' . trim((string)$c['sumup_key']) . "\r\nContent-Type: application/json\r\nAccept: application/json\r\n",
     'content' => $corps !== null ? json_encode($corps, JSON_UNESCAPED_UNICODE) : '']]);
   $rep = @file_get_contents($url, false, $ctx);
   $code = 0;

@@ -48,7 +48,12 @@ if ($to !== '' && !empty($d['variantes'])) {
 }
 /* SumUp : clé présente ? code marchand trouvé ? (jamais la clé elle-même) */
 $res['sumup'] = ['cle' => !empty($c['sumup_key']), 'marchand' => ($m = sumup_marchand()) !== '' ? substr($m, 0, 2) . '…' . substr($m, -2) : '', 'actif' => sumup_actif()];
-if (!empty($c['sumup_key'])) { [$code] = sumup('GET', '/v0.1/me'); $res['sumup']['api_me'] = $code; }
+if (!empty($c['sumup_key'])) {
+  $k = (string)$c['sumup_key'];
+  $pre = 'autre'; foreach (['sup_sk_test_', 'sup_sk_live_', 'sup_sk_', 'sup_pk_', 'sk_test_', 'sk_live_', 'pk_', 'sk_'] as $x) if (str_starts_with($k, $x)) { $pre = $x; break; }
+  $res['sumup']['cle_forme'] = "commence par $pre, longueur " . strlen($k) . (trim($k) !== $k ? ', espaces autour' : '');
+  foreach (['/v0.1/me', '/v0.1/me/merchant-profile', '/v0.1/checkouts', '/v1/merchants'] as $ch) { [$code, $j] = sumup('GET', $ch); $res['sumup']['api'][$ch] = $code . ' ' . mb_substr((string)($j['message'] ?? $j['error_code'] ?? $j['title'] ?? ''), 0, 80); }
+}
 $f = prive_dir() . '/sumup.log';
 if (is_file($f)) $res['sumup']['erreurs'] = array_map('trim', array_slice(file($f) ?: [], -5));
 $log = prive_dir() . '/mail.log';
