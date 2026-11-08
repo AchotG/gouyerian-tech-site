@@ -72,8 +72,8 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box
 .fit .fnb{flex:none;min-width:24px;height:24px;padding:0 7px;border-radius:12px;display:grid;place-items:center;background:var(--acc);color:var(--on-acc);font-weight:800;font-size:.78rem}
 .cbar{display:flex;align-items:center;gap:12px;min-width:0}
 .cbar b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cbk{flex:none;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-weight:700;cursor:pointer}
-.cacts{display:flex;gap:8px;flex:none}.cic{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;cursor:pointer;font-size:1.05rem}
+.cbk{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 20px 0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-weight:700;font-size:1.02rem;line-height:1;cursor:pointer}.cbk:active{transform:scale(.97)}
+.cacts{display:flex;gap:8px;flex:none}.cic{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;cursor:pointer;font-size:1.05rem}
 #vchat .chat{margin-top:12px}#vchat .mth{max-height:min(62vh,600px)}
 /* Téléphone : la conversation prend tout l'écran, comme côté client */
 @media (max-width:700px){
@@ -204,7 +204,7 @@ a{color:var(--acc)}
       <div class="list" id="fitems"></div></div>
   </section>
   <section id="vchat" hidden>
-    <div class="cbar"><button class="cbk" type="button" id="cback">‹ Retour</button><b id="ctitle">Conversation</b><span class="cacts"><a class="cic" id="ctel" href="#" title="Appeler" aria-label="Appeler">📞</a><button class="cic" type="button" id="cfiche" title="Ouvrir la fiche" aria-label="Ouvrir la fiche">📄</button></span></div>
+    <div class="cbar"><button class="cbk" type="button" id="cback"><span aria-hidden="true" style="font-size:1.35rem;line-height:.8">‹</span>Retour</button><b id="ctitle">Conversation</b><span class="cacts"><a class="cic" id="ctel" href="#" title="Appeler" aria-label="Appeler">📞</a><button class="cic" type="button" id="cfiche" title="Ouvrir la fiche" aria-label="Ouvrir la fiche">📄</button></span></div>
     <details class="payd" id="cpayd"><summary>💳 Demander un paiement en ligne</summary><div id="cpay"></div></details>
     <section class="chat" aria-label="Conversation">
       <header class="chat-hd"><span class="chat-av" id="cav">?</span><div><b id="cwho">Client</b><small id="csub"></small></div></header>
@@ -227,7 +227,7 @@ a{color:var(--acc)}
       <p class="muted" style="margin:12px 0 0">Seul l’atelier crée les demandes de paiement (fiche d’une réparation ou conversation) ; un client peut seulement vous demander un lien.</p></div>
   </section>
   <section id="vpay" hidden>
-    <div class="cbar"><button class="cbk" type="button" id="pback">‹ Paiements</button><b>Paiement</b></div>
+    <div class="cbar"><button class="cbk" type="button" id="pback"><span aria-hidden="true" style="font-size:1.35rem;line-height:.8">‹</span>Paiements</button><b>Paiement</b></div>
     <div class="card" style="margin-top:12px" id="paydet"></div>
   </section>
   <section id="vdfiche" hidden>

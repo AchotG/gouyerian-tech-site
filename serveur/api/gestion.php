@@ -256,9 +256,14 @@ switch ($action) {
 
   /* ---------- Messagerie : toutes les conversations ---------- */
   case 'fils':
-    $rows = $pdo->query("SELECT reparation_id, demande_id, client_id, MAX(le) AS dernier, COUNT(*) AS n,
-        SUM(CASE WHEN auteur = 'client' AND lu = 0 THEN 1 ELSE 0 END) AS non_lus, MAX(id) AS mid
-      FROM gt_messages GROUP BY reparation_id, demande_id, client_id ORDER BY dernier DESC LIMIT 150")->fetchAll();
+    /* une seule ligne par conversation (comme les SMS) : réparation, sinon demande, sinon conversation générale du client
+       (les messages de l'atelier et du client d'une même demande n'ont pas toujours le même client_id) */
+    $rows = $pdo->query("SELECT g.rid AS reparation_id, g.did AS demande_id, g.cid AS client_id, MAX(g.le) AS dernier, COUNT(*) AS n,
+        SUM(CASE WHEN g.auteur = 'client' AND g.lu = 0 THEN 1 ELSE 0 END) AS non_lus, MAX(g.id) AS mid
+      FROM (SELECT id, le, auteur, lu, reparation_id AS rid,
+              CASE WHEN reparation_id > 0 THEN 0 ELSE demande_id END AS did,
+              CASE WHEN reparation_id > 0 OR demande_id > 0 THEN 0 ELSE client_id END AS cid FROM gt_messages) g
+      GROUP BY g.rid, g.did, g.cid ORDER BY dernier DESC LIMIT 150")->fetchAll();
     $fils = [];
     foreach ($rows as $x) {
       $f = fil_gestion($x);

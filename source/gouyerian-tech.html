@@ -1638,7 +1638,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
 .acc-mod-in{width:min(620px,100%);max-height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;animation:accmi .25s cubic-bezier(.2,.8,.2,1)}
 @keyframes accmi{from{transform:translateY(14px);opacity:.4}}
 .acc-mod-hd{display:flex;align-items:center;gap:12px;color:#fff;min-width:0}.acc-mod-hd b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.acc-mod-x{flex:none;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font:600 .9rem var(--f-body);cursor:pointer}
+.acc-mod-x{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 20px 0 16px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font:700 1.02rem/1 var(--f-body);cursor:pointer}.acc-mod-x:active{transform:scale(.97)}
 #accmodb{min-height:0;display:grid}#accmodb .msgs{max-height:100%;grid-template-rows:auto minmax(0,1fr) auto}#accmodb .msg-l{max-height:none;min-height:200px}
 @media (max-width:700px){.acc-mod{padding:0;place-items:stretch;background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}.acc-mod-in{width:100%;height:100%;gap:0;grid-template-rows:auto minmax(0,1fr)}
  .acc-mod-hd{padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:var(--surface);color:var(--fg);border-bottom:1px solid var(--line)}
@@ -4761,7 +4761,7 @@ function accConvs(){const p=ACC;if(!p)return[];const L=[];
 function accConvAuth(k){return k==="c"||k.startsWith("d:")?{fil:k}:{numero:k}}
 function accConvSet(k,ms){if(!ACC)return;if(k==="c")ACC.messages_general=ms;else if(k.startsWith("d:")){const d=(ACC.demandes||[]).find(x=>"d:"+x.ref===k);if(d)d.messages=ms}else{const r=ACC.reparations.find(x=>x.numero===k);if(r)r.messages=ms}}
 function accConvOpen(k){const c=accConvs().find(x=>x.k===k);if(!c)return;let m=$("accmod");
-  if(!m){document.body.insertAdjacentHTML("beforeend",`<div class="acc-mod" id="accmod" hidden role="dialog" aria-modal="true" aria-labelledby="accmodt"><div class="acc-mod-in"><div class="acc-mod-hd"><button type="button" class="acc-mod-x" id="accmodx" aria-label="Fermer la conversation">‹ Retour</button><b id="accmodt"></b></div><div id="accmodb"></div></div></div>`);m=$("accmod");
+  if(!m){document.body.insertAdjacentHTML("beforeend",`<div class="acc-mod" id="accmod" hidden role="dialog" aria-modal="true" aria-labelledby="accmodt"><div class="acc-mod-in"><div class="acc-mod-hd"><button type="button" class="acc-mod-x" id="accmodx" aria-label="Fermer la conversation"><span aria-hidden="true" style="font-size:1.35rem;line-height:.8">‹</span>Retour</button><b id="accmodt"></b></div><div id="accmodb"></div></div></div>`);m=$("accmod");
     $("accmodx").onclick=accConvClose;m.addEventListener("click",e=>{if(e.target===m)accConvClose()});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("accmod").hidden)accConvClose()})}
   $("accmodt").textContent=c.t;$("accmodb").innerHTML=msgHTML(c.ms,c.k,c.s);m.hidden=false;document.documentElement.classList.add("acc-lock");
   msgBind($("accmodb"),accConvAuth,accConvSet);setTimeout(()=>{const t=$("accmodb").querySelector("textarea");if(t&&matchMedia("(min-width:700px)").matches)t.focus()},200)}
