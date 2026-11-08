@@ -29,7 +29,7 @@ if ($action === 'voir') {
 
 if ($action === 'payer') {
   if ($p['statut'] === 'paye') out(['ok' => true, 'paiement' => vue_paiement($p)]);
-  if ($p['statut'] !== 'attente') fail('Ce paiement a été annulé par l’atelier.', 410);
+  if ($p['statut'] !== 'attente') fail($p['statut'] === 'rembourse' ? 'Ce paiement a été remboursé.' : 'Ce paiement a été annulé par l’atelier.', 410);
   if (!sumup_actif()) fail('Le paiement en ligne n’est pas encore disponible. Vous pouvez régler à l’atelier.', 503);
   $p = paiement_verifier($p);
   if ($p['statut'] === 'paye') out(['ok' => true, 'paiement' => vue_paiement($p)]);
@@ -48,11 +48,13 @@ if ($action === 'payer') {
   ]);
   $url = (string)($co['hosted_checkout_url'] ?? '');
   if ($code < 200 || $code >= 300 || $url === '' || empty($co['id'])) {
+    paiement_evt((int)$p['id'], 'echec', 'SumUp a refusé d’ouvrir la page (' . $code . ')');
     $GLOBALS['GT_DIAG'] = 'SumUp ' . $code . ' ' . mb_substr((string)($co['message'] ?? $co['error_code'] ?? json_encode($co)), 0, 200);
     @file_put_contents(prive_dir() . '/sumup.log', date('c') . ' ' . $GLOBALS['GT_DIAG'] . "\n", FILE_APPEND);
     fail('Le paiement en ligne est momentanément indisponible. Réessayez dans quelques minutes ou réglez à l’atelier.', 502);
   }
   db()->prepare('UPDATE gt_paiements SET checkout_id = ?, maj_le = ? WHERE id = ?')->execute([(string)$co['id'], now(), $p['id']]);
+  paiement_evt((int)$p['id'], 'ouvert', (string)$co['id']);
   out(['ok' => true, 'url' => $url]);
 }
 fail('Action inconnue.');

@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 8;
+const SCHEMA_VERSION = 9;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -200,6 +200,16 @@ function schema(PDO $pdo): void {
     maj_le DATETIME NOT NULL,
     paye_le DATETIME NULL
   )$opt");
+  /* v9 : historique de chaque paiement (créé, page ouverte, échec, payé, annulé, remboursé) */
+  $pdo->exec("CREATE TABLE IF NOT EXISTS gt_paiement_evts (
+    id $id,
+    paiement_id INT NOT NULL,
+    evenement VARCHAR(20) NOT NULL,
+    detail VARCHAR(255) NOT NULL DEFAULT '',
+    le DATETIME NOT NULL
+  )$opt");
+  ajouter_colonne($pdo, 'gt_paiements', 'transaction_id', "VARCHAR(64) NOT NULL DEFAULT ''");
+  ajouter_colonne($pdo, 'gt_paiements', 'rembourse', 'DECIMAL(10,2) NOT NULL DEFAULT 0');
   /* v7 : les conversations des demandes devenues réparations rejoignent la conversation de la réparation */
   foreach ($pdo->query('SELECT id, reparation_id FROM gt_demandes WHERE reparation_id IS NOT NULL AND reparation_id > 0')->fetchAll() as $x) {
     $pdo->prepare('UPDATE gt_messages SET reparation_id = ?, demande_id = 0 WHERE reparation_id = 0 AND demande_id = ?')->execute([(int)$x['reparation_id'], (int)$x['id']]);
@@ -310,7 +320,17 @@ function fusionner_demande(int $did, int $rid): void {
 }
 
 /* ---------- Paiement en ligne SumUp (page de paiement hébergée par SumUp) ---------- */
-const STATUTS_PAIEMENT = ['attente' => 'En attente', 'paye' => 'Payé', 'annule' => 'Annulé'];
+const STATUTS_PAIEMENT = ['attente' => 'En attente', 'paye' => 'Payé', 'annule' => 'Annulé', 'rembourse' => 'Remboursé'];
+const EVTS_PAIEMENT = ['cree' => 'Demande créée', 'envoye' => 'Lien envoyé par e-mail', 'ouvert' => 'Page de paiement ouverte', 'echec' => 'Paiement refusé ou abandonné',
+  'expire' => 'Page de paiement expirée', 'paye' => 'Paiement reçu', 'annule' => 'Demande annulée', 'rembourse' => 'Remboursement', 'rembourse_echec' => 'Remboursement refusé', 'demande_client' => 'Demande du client'];
+function paiement_evt(int $pid, string $evt, string $detail = ''): void {
+  db()->prepare('INSERT INTO gt_paiement_evts (paiement_id, evenement, detail, le) VALUES (?, ?, ?, ?)')->execute([$pid, $evt, mb_substr($detail, 0, 250), now()]);
+}
+function paiement_evts(int $pid): array {
+  $s = db()->prepare('SELECT evenement, detail, le FROM gt_paiement_evts WHERE paiement_id = ? ORDER BY id');
+  $s->execute([$pid]);
+  return array_map(fn($e) => ['evt' => $e['evenement'], 'libelle' => EVTS_PAIEMENT[$e['evenement']] ?? $e['evenement'], 'detail' => $e['detail'], 'le' => $e['le']], $s->fetchAll());
+}
 function sumup_actif(): bool { return !empty(cfg()['sumup_key']) && sumup_marchand() !== ''; }
 /* Code marchand : celui du secret SUMUP_MERCHANT_CODE, sinon lu une fois chez SumUp (GET /v0.1/me) puis gardé */
 function sumup_marchand(): string {
@@ -346,11 +366,11 @@ function lien_paiement(array $p): string { return rtrim(cfg()['site'] ?? 'https:
 function vue_paiement(array $p): array {
   return ['jeton' => $p['jeton'], 'libelle' => $p['libelle'], 'montant' => (float)$p['montant'], 'statut' => $p['statut'],
     'statut_libelle' => STATUTS_PAIEMENT[$p['statut']] ?? $p['statut'], 'cree_le' => $p['cree_le'], 'paye_le' => $p['paye_le'], 'lien' => lien_paiement($p),
-    'transaction' => $p['transaction_code']];
+    'transaction' => $p['transaction_code'], 'rembourse' => (float)($p['rembourse'] ?? 0)];
 }
 function paiements_de(string $col, int $id): array {
   if (!in_array($col, ['reparation_id', 'demande_id', 'client_id'], true)) return [];
-  $s = db()->prepare("SELECT * FROM gt_paiements WHERE $col = ? AND statut <> 'annule' ORDER BY id DESC");
+  $s = db()->prepare("SELECT * FROM gt_paiements WHERE $col = ? AND statut IN ('attente','paye','rembourse') ORDER BY id DESC");
   $s->execute([$id]);
   return array_map('vue_paiement', $s->fetchAll());
 }
@@ -358,14 +378,26 @@ function paiements_de(string $col, int $id): array {
 function paiement_verifier(array $p): array {
   if ($p['statut'] !== 'attente' || $p['checkout_id'] === '' || !sumup_actif()) return $p;
   [$code, $co] = sumup('GET', '/v0.1/checkouts/' . rawurlencode($p['checkout_id']));
-  if ($code !== 200 || ($co['status'] ?? '') !== 'PAID') return $p;
-  $tx = '';
-  foreach ($co['transactions'] ?? [] as $t) if (($t['status'] ?? '') === 'SUCCESSFUL') $tx = (string)($t['transaction_code'] ?? '');
+  $etat = (string)($co['status'] ?? '');
+  if ($code === 200 && in_array($etat, ['FAILED', 'EXPIRED'], true)) {
+    /* une seule ligne d'historique par page de paiement */
+    $q = db()->prepare("SELECT COUNT(*) FROM gt_paiement_evts WHERE paiement_id = ? AND evenement IN ('echec','expire') AND detail LIKE ?");
+    $q->execute([$p['id'], $p['checkout_id'] . '%']);
+    if (!(int)$q->fetchColumn()) {
+      $raison = '';
+      foreach ($co['transactions'] ?? [] as $t) if (($t['status'] ?? '') === 'FAILED') $raison = 'carte refusée';
+      paiement_evt((int)$p['id'], $etat === 'FAILED' ? 'echec' : 'expire', $p['checkout_id'] . ($raison ? " · $raison" : ''));
+    }
+  }
+  if ($code !== 200 || $etat !== 'PAID') return $p;
+  $tx = ''; $txid = '';
+  foreach ($co['transactions'] ?? [] as $t) if (($t['status'] ?? '') === 'SUCCESSFUL') { $tx = (string)($t['transaction_code'] ?? ''); $txid = (string)($t['id'] ?? ''); }
   $pdo = db();
-  $u = $pdo->prepare("UPDATE gt_paiements SET statut = 'paye', paye_le = ?, maj_le = ?, transaction_code = ? WHERE id = ? AND statut = 'attente'");
-  $u->execute([now(), now(), $tx, $p['id']]);
+  $u = $pdo->prepare("UPDATE gt_paiements SET statut = 'paye', paye_le = ?, maj_le = ?, transaction_code = ?, transaction_id = ? WHERE id = ? AND statut = 'attente'");
+  $u->execute([now(), now(), $tx, $txid, $p['id']]);
   if ($u->rowCount() !== 1) return paiement_par_jeton($p['jeton']) ?? $p;
   $p = paiement_par_jeton($p['jeton']);
+  paiement_evt((int)$p['id'], 'paye', $tx !== '' ? "transaction $tx" : '');
   $m = number_format((float)$p['montant'], 2, ',', ' ') . ' €';
   $fil = (int)$p['reparation_id'] ? ['r', (int)$p['reparation_id']] : ((int)$p['demande_id'] ? ['d', (int)$p['demande_id'], (int)$p['client_id']] : ((int)$p['client_id'] ? ['c', (int)$p['client_id']] : null));
   if ($fil) ajouter_message($fil, 'atelier', "✅ Paiement reçu : $m ({$p['libelle']}). Merci !", []);

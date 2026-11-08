@@ -275,12 +275,14 @@ switch ($action) {
     $pdo->prepare('INSERT INTO gt_paiements (jeton, reparation_id, demande_id, client_id, nom, email, libelle, montant, statut, cree_le, maj_le) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
       ->execute([$jeton, $cols['reparation_id'], $cols['demande_id'], $cols['client_id'], (string)$ctx['nom'], strtolower((string)$ctx['email']), $lib, $montant, 'attente', now(), now()]);
     $p = paiement_par_jeton($jeton);
+    paiement_evt((int)$p['id'], 'cree', 'par l’atelier');
     $m = number_format($montant, 2, ',', ' ') . ' €';
     $mail = false;
     if (!empty($d['mail']) && $p['email'] !== '') $mail = mail_pro($p['email'], "Paiement en ligne : $m", ['pre' => "Réglez $m par carte, en toute sécurité.", 'etiquette' => 'Paiement en ligne', 'titre' => "Votre paiement de $m",
       'paras' => [($p['nom'] !== '' ? 'Bonjour ' . prenom($p['nom']) : 'Bonjour') . ',', "Vous pouvez régler par carte bancaire, en ligne : $lib."],
       'infos' => [['Montant', $m], ['Objet', $lib]], 'bouton' => ["Payer $m par carte", lien_paiement($p)],
       'note' => 'Le paiement se fait sur la page sécurisée de SumUp : Gouyerian Tech ne voit jamais vos données de carte. Vous pouvez aussi régler à l’atelier.']);
+    if ($mail) paiement_evt((int)$p['id'], 'envoye', $p['email']);
     ajouter_message($fil, 'atelier', "💳 Demande de paiement : $m ($lib)\nPayer par carte : " . lien_paiement($p), [], $mail);
     out(['ok' => true, 'paiement' => vue_paiement($p), 'mail' => $mail, 'messages' => messages_fil($fil, 'atelier'), 'paiements' => paiements_fil($fil)]);
 
@@ -290,16 +292,68 @@ switch ($action) {
     $p = paiement_verifier($p);
     if ($p['statut'] === 'paye') fail('Ce paiement est déjà réglé : il ne peut plus être annulé ici (remboursement depuis SumUp).');
     $pdo->prepare("UPDATE gt_paiements SET statut = 'annule', maj_le = ? WHERE id = ?")->execute([now(), $p['id']]);
+    paiement_evt((int)$p['id'], 'annule');
     out(['ok' => true]);
+
+  /* Remboursement (total ou partiel) d'un paiement en ligne, décidé et lancé par l'atelier */
+  case 'paiement_rembourser':
+    $p = paiement_par_jeton(txt($d['jeton'] ?? '', 40));
+    if (!$p) fail('Paiement introuvable.', 404);
+    if ($p['statut'] !== 'paye') fail('Seul un paiement reçu peut être remboursé.');
+    $reste = round((float)$p['montant'] - (float)$p['rembourse'], 2);
+    $mt = round((float)str_replace(',', '.', (string)($d['montant'] ?? $reste)), 2);
+    if ($mt <= 0 || $mt > $reste) fail('Montant à rembourser entre 0,01 € et ' . number_format($reste, 2, ',', ' ') . ' €.');
+    $txid = (string)$p['transaction_id'];
+    if ($txid === '' && $p['checkout_id'] !== '') {  /* paiements reçus avant l'historique : on retrouve la transaction chez SumUp */
+      [$c0, $co] = sumup('GET', '/v0.1/checkouts/' . rawurlencode($p['checkout_id']));
+      foreach ($co['transactions'] ?? [] as $t) if (($t['status'] ?? '') === 'SUCCESSFUL') $txid = (string)($t['id'] ?? '');
+      if ($txid !== '') $pdo->prepare('UPDATE gt_paiements SET transaction_id = ? WHERE id = ?')->execute([$txid, $p['id']]);
+    }
+    if ($txid === '') fail('Transaction SumUp introuvable : remboursez depuis l’application SumUp.');
+    [$code, $rp] = sumup('POST', '/v0.1/me/refund/' . rawurlencode($txid), $mt < $reste || (float)$p['rembourse'] > 0 ? ['amount' => $mt] : []);
+    if ($code < 200 || $code >= 300) {
+      $why = (string)($rp['message'] ?? $rp['error_code'] ?? $rp['detail'] ?? '');
+      paiement_evt((int)$p['id'], 'rembourse_echec', "$code $why");
+      fail('SumUp a refusé le remboursement (' . $code . ($why !== '' ? ' : ' . $why : '') . '). Le plus souvent : solde SumUp insuffisant tant que le paiement n’est pas versé, ou droits de la clé. Réessayez plus tard ou contactez SumUp.');
+    }
+    $tot = round((float)$p['rembourse'] + $mt, 2);
+    $pdo->prepare('UPDATE gt_paiements SET rembourse = ?, statut = ?, maj_le = ? WHERE id = ?')->execute([$tot, $tot >= (float)$p['montant'] ? 'rembourse' : 'paye', now(), $p['id']]);
+    $m = number_format($mt, 2, ',', ' ') . ' €';
+    paiement_evt((int)$p['id'], 'rembourse', $m);
+    if ($p['email'] !== '') mail_pro($p['email'], "Remboursement de $m", ['etiquette' => 'Paiement en ligne', 'titre' => 'Remboursement effectué',
+      'paras' => [($p['nom'] !== '' ? 'Bonjour ' . prenom($p['nom']) : 'Bonjour') . ',', "Nous vous avons remboursé $m sur la carte utilisée pour : {$p['libelle']}."],
+      'note' => 'Selon votre banque, le remboursement apparaît sur votre compte sous 3 à 10 jours ouvrés.']);
+    out(['ok' => true, 'paiement' => vue_paiement(paiement_par_jeton($p['jeton']))]);
+
+  case 'paiement_detail':
+    $p = paiement_par_jeton(txt($d['jeton'] ?? '', 40));
+    if (!$p) fail('Paiement introuvable.', 404);
+    $p = paiement_verifier($p);
+    $fil = (int)$p['reparation_id'] ? 'r:' . $p['reparation_id'] : ((int)$p['demande_id'] ? 'd:' . $p['demande_id'] : ((int)$p['client_id'] ? 'c:' . $p['client_id'] : ''));
+    out(['ok' => true, 'paiement' => vue_paiement($p) + ['nom' => $p['nom'], 'email' => $p['email'], 'fil' => $fil, 'reparation_id' => (int)$p['reparation_id']], 'historique' => paiement_evts((int)$p['id'])]);
 
   case 'paiement_verifier':
     $p = paiement_par_jeton(txt($d['jeton'] ?? '', 40));
     if (!$p) fail('Paiement introuvable.', 404);
     out(['ok' => true, 'paiement' => vue_paiement(paiement_verifier($p))]);
 
+  /* Historique de tous les paiements (avec le nombre d'échecs de chacun) et totaux */
   case 'paiements':
-    $rows = $pdo->query("SELECT * FROM gt_paiements WHERE statut <> 'annule' ORDER BY id DESC LIMIT 100")->fetchAll();
-    out(['ok' => true, 'paiements' => array_map(fn($p) => vue_paiement(paiement_verifier($p)) + ['nom' => $p['nom']], $rows)]);
+    $rows = $pdo->query("SELECT * FROM gt_paiements ORDER BY id DESC LIMIT 300")->fetchAll();
+    $liste = [];
+    foreach ($rows as $p) {
+      if ($p['statut'] === 'attente') $p = paiement_verifier($p);
+      $e = $pdo->prepare("SELECT COUNT(*) FROM gt_paiement_evts WHERE paiement_id = ? AND evenement IN ('echec','expire')");
+      $e->execute([$p['id']]);
+      $liste[] = vue_paiement($p) + ['nom' => $p['nom'], 'echecs' => (int)$e->fetchColumn()];
+    }
+    $mois = date('Y-m');
+    $enc = 0; $encm = 0; $att = 0;
+    foreach ($liste as $x) {
+      if (in_array($x['statut'], ['paye', 'rembourse'], true)) { $net = $x['montant'] - $x['rembourse']; $enc += $net; if (substr((string)$x['paye_le'], 0, 7) === $mois) $encm += $net; }
+      if ($x['statut'] === 'attente') $att += $x['montant'];
+    }
+    out(['ok' => true, 'paiements' => $liste, 'totaux' => ['encaisse' => round($enc, 2), 'encaisse_mois' => round($encm, 2), 'en_attente' => round($att, 2)]]);
 
   case 'fil_envoyer':
     [$fil, $ctx] = fil_ouvrir(txt($d['fil'] ?? '', 20));

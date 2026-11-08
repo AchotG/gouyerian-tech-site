@@ -52,6 +52,10 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box
 .it:hover{border-color:var(--acc)}
 .it b{overflow-wrap:anywhere}.it .n{font:600 .82rem ui-monospace,Consolas,monospace;color:var(--acc)}
 .it small{color:var(--muted);grid-column:1/-1;overflow-wrap:anywhere}
+.paytot{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.paytot .pt{display:grid;gap:4px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.paytot small{color:var(--muted)}.paytot b{font-size:1.4rem}
+.kv{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:6px 12px;margin:14px 0}.kv dt{color:var(--muted)}.kv dd{margin:0;overflow-wrap:anywhere}
+.rembf{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}.rembf h3{margin:0 0 6px}
 .payf{display:grid;grid-template-columns:minmax(0,140px) minmax(0,1fr);gap:10px}@media (max-width:520px){.payf{grid-template-columns:minmax(0,1fr)}}
 .payi{display:flex!important;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}.btn.sm{padding:6px 12px;font-size:.82rem}
 .payd{margin-top:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:10px 14px}.payd>summary{cursor:pointer;font-weight:700}.payd[open]>summary{margin-bottom:12px}
@@ -165,7 +169,7 @@ a{color:var(--acc)}
   </form>
 
   <!-- Onglets -->
-  <nav class="tabs" id="tabs" hidden><button type="button" data-t="dem" aria-pressed="true">Demandes <span class="cnt" id="ndem"></span></button><button type="button" data-t="rep" aria-pressed="false">Réparations <span class="cnt" id="nrep"></span></button><button type="button" data-t="msg" aria-pressed="false">💬 Messages <span class="cnt" id="nmsg"></span></button></nav>
+  <nav class="tabs" id="tabs" hidden><button type="button" data-t="dem" aria-pressed="true">Demandes <span class="cnt" id="ndem"></span></button><button type="button" data-t="rep" aria-pressed="false">Réparations <span class="cnt" id="nrep"></span></button><button type="button" data-t="msg" aria-pressed="false">💬 Messages <span class="cnt" id="nmsg"></span></button><button type="button" data-t="pay" aria-pressed="false">💳 Paiements</button></nav>
 
   <!-- Demandes à traiter -->
   <section id="vdem" hidden>
@@ -207,6 +211,18 @@ a{color:var(--acc)}
         <label class="chk chat-mail"><input type="checkbox" id="cmail"><span id="cmail-l">Prévenir le client par e-mail</span></label>
       </div>
     </section>
+  </section>
+  <!-- Paiements : historique complet -->
+  <section id="vpays" hidden>
+    <div class="paytot" id="paytot"></div>
+    <div class="card"><h2>Historique des paiements en ligne</h2>
+      <div class="chips" id="paychips"><button type="button" data-f="" aria-pressed="true">Tous</button><button type="button" data-f="attente" aria-pressed="false">En attente</button><button type="button" data-f="paye" aria-pressed="false">Payés</button><button type="button" data-f="echec" aria-pressed="false">Avec échecs</button><button type="button" data-f="rembourse" aria-pressed="false">Remboursés</button><button type="button" data-f="annule" aria-pressed="false">Annulés</button></div>
+      <div class="list" id="payitems"></div>
+      <p class="muted" style="margin:12px 0 0">Seul l’atelier crée les demandes de paiement (fiche d’une réparation ou conversation) ; un client peut seulement vous demander un lien.</p></div>
+  </section>
+  <section id="vpay" hidden>
+    <div class="cbar"><button class="cbk" type="button" id="pback">‹ Paiements</button><b>Paiement</b></div>
+    <div class="card" style="margin-top:12px" id="paydet"></div>
   </section>
   <section id="vdfiche" hidden>
     <div class="row" style="justify-content:space-between"><button class="btn g" type="button" id="dback">← Demandes</button><span class="tag" id="dtag"></span></div>
@@ -324,8 +340,8 @@ async function api(action,data={}){
   return j;
 }
 function flash(t,ok=true){$("flash").innerHTML=t?`<div class="msg ${ok?"ok":"err"}">${esc(t)}</div>`:"";if(t)setTimeout(()=>{if($("flash").textContent===t)$("flash").innerHTML=""},6000)}
-function show(v){["login","liste","form","fiche","dem","dfiche","msgs","chat"].forEach(x=>$("v"+x).hidden=x!==v);$("bnew").hidden=$("bout").hidden=v==="login";$("tabs").hidden=!(v==="liste"||v==="dem"||v==="msgs");
-  const t={dem:"dem",liste:"rep",msgs:"msg"}[v];$("tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.t===t)));scrollTo(0,0)}
+function show(v){["login","liste","form","fiche","dem","dfiche","msgs","chat","pays","pay"].forEach(x=>$("v"+x).hidden=x!==v);$("bnew").hidden=$("bout").hidden=v==="login";$("tabs").hidden=!(v==="liste"||v==="dem"||v==="msgs"||v==="pays");
+  const t={dem:"dem",liste:"rep",msgs:"msg",pays:"pay"}[v];$("tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.t===t)));scrollTo(0,0)}
 
 /* Connexion */
 $("vlogin").addEventListener("submit",async e=>{e.preventDefault();try{await api("connexion",{mdp:$("mdp").value});$("mdp").value="";flash("");await accueil()}catch(err){flash(err.message,false)}});
@@ -386,16 +402,43 @@ $("ssave").onclick=async()=>{if(!SEL||!FICHE)return;$("ssave").disabled=true;
   catch(err){flash(err.message,false);$("ssave").disabled=false}};
 /* Bulles d'une conversation (fiche réparation et onglet Messages) */
 /* ---------- Paiement en ligne SumUp ---------- */
-let SUMUP=false;
+let SUMUP=false,PAYS=[],PAYF="";
+const PSTAT={attente:["En attente","devis"],paye:["Payé","prete"],rembourse:["Remboursé","rendu"],annule:["Annulé","annule"]};
+async function paiements(){const j=await api("paiements");PAYS=j.paiements;const t=j.totaux;
+  $("paytot").innerHTML=`<div class="pt"><small>Encaissé ce mois</small><b>${eur(t.encaisse_mois)}</b></div><div class="pt"><small>Encaissé au total</small><b>${eur(t.encaisse)}</b></div><div class="pt"><small>En attente de paiement</small><b>${eur(t.en_attente)}</b></div>`;drawPays()}
+function drawPays(){const L=PAYS.filter(p=>!PAYF||(PAYF==="echec"?p.echecs>0:p.statut===PAYF));
+  $("payitems").innerHTML=L.length?L.map(p=>{const st=PSTAT[p.statut]||[p.statut,""];return `<button type="button" class="it" data-pj="${p.jeton}"><span><b>${eur(p.montant)}</b> · ${esc(p.nom||"Client")}${p.rembourse>0&&p.statut==="paye"?` <small class="muted">(remboursé ${eur(p.rembourse)})</small>`:""}</span><span class="tag ${st[1]}">${st[0]}</span><small>${esc(p.libelle)} · ${dt(p.paye_le||p.cree_le)}${p.echecs?` · <b style="color:#dc2626">${p.echecs} échec${p.echecs>1?"s":""}</b>`:""}</small></button>`}).join(""):`<p class="empty">${SUMUP?"Aucun paiement pour ce filtre.":"Aucun paiement. SumUp n’est pas encore configuré."}</p>`}
+async function ouvrirPay(jeton){const j=await api("paiement_detail",{jeton});const p=j.paiement,st=PSTAT[p.statut]||[p.statut,""],reste=Math.round((p.montant-p.rembourse)*100)/100;
+  $("paydet").innerHTML=`<div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">${eur(p.montant)}</h2><span class="tag ${st[1]}">${st[0]}</span></div>
+   <dl class="kv"><dt>Client</dt><dd>${esc(p.nom||"—")}${p.email?" · "+esc(p.email):""}</dd><dt>Objet</dt><dd>${esc(p.libelle)}</dd><dt>Créé le</dt><dd>${dt(p.cree_le)}</dd>${p.paye_le?`<dt>Payé le</dt><dd>${dt(p.paye_le)}</dd>`:""}${p.transaction?`<dt>Transaction SumUp</dt><dd>${esc(p.transaction)}</dd>`:""}${p.rembourse>0?`<dt>Remboursé</dt><dd>${eur(p.rembourse)}</dd>`:""}</dl>
+   <h3>Historique</h3><ul class="hist">${j.historique.map(e=>`<li><b>${esc(e.libelle)}</b>${e.detail?` <small class="muted">${esc(e.detail)}</small>`:""}<small>${dt(e.le)}</small></li>`).join("")||"<li>—</li>"}</ul>
+   <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:12px">
+    ${p.statut==="attente"?`<button class="btn g" type="button" data-qcopy="${esc(p.lien)}">Copier le lien</button><button class="btn g" type="button" data-qver="1">Vérifier chez SumUp</button><button class="btn g" type="button" data-qann="1">Annuler la demande</button>`:""}
+    ${j.paiement.fil?`<button class="btn g" type="button" data-qfil="${j.paiement.fil}">💬 Conversation</button>`:""}${p.reparation_id?`<button class="btn g" type="button" data-qrep="${p.reparation_id}">Ouvrir la réparation</button>`:""}</div>
+   ${p.statut==="paye"&&reste>0?`<div class="rembf"><h3>Rembourser</h3><p class="muted">Le remboursement part sur la carte du client (frais SumUp non rendus). Il peut être refusé tant que SumUp ne vous a pas versé le paiement.</p><div class="row" style="gap:8px;align-items:flex-end"><label><span>Montant (€)</span><input type="number" id="rbm" min="0.01" max="${reste}" step="0.01" value="${reste}"></label><button class="btn" type="button" id="rbgo">Rembourser</button></div></div>`:""}`;
+  show("pay");
+  $("paydet").onclick=async e=>{const b=e.target.closest("button");if(!b)return;
+    try{if(b.dataset.qcopy){await navigator.clipboard.writeText(b.dataset.qcopy).catch(()=>{});flash("Lien copié.");return}
+      if(b.dataset.qver){const r=await api("paiement_verifier",{jeton});flash(r.paiement.statut==="paye"?"Paiement reçu ✓":"Pas encore payé.");ouvrirPay(jeton);return}
+      if(b.dataset.qann){if(b.dataset.ok!=="1"){b.dataset.ok="1";b.textContent="Confirmer l’annulation";return}await api("paiement_annuler",{jeton});flash("Demande annulée.");ouvrirPay(jeton);return}
+      if(b.dataset.qfil){ouvrirFil(b.dataset.qfil);return}
+      if(b.dataset.qrep){ouvrir(+b.dataset.qrep);return}
+      if(b.id==="rbgo"){const m=$("rbm").value;if(b.dataset.ok!=="1"){b.dataset.ok="1";b.textContent="Confirmer le remboursement de "+eur(+m);return}
+        b.disabled=true;await api("paiement_rembourser",{jeton,montant:m});flash("Remboursement effectué, le client est prévenu par e-mail.");ouvrirPay(jeton)}}
+    catch(err){flash(err.message,false);b.disabled=false;delete b.dataset.ok}}}
+$("payitems").onclick=e=>{const b=e.target.closest("[data-pj]");if(b)ouvrirPay(b.dataset.pj).catch(err=>flash(err.message,false))};
+$("paychips").onclick=e=>{const b=e.target.closest("button");if(!b)return;PAYF=b.dataset.f;$("paychips").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));drawPays()};
+$("pback").onclick=()=>paiements().then(()=>show("pays")).catch(err=>flash(err.message,false));
 const eur=n=>Number(n).toLocaleString("fr-FR",{style:"currency",currency:"EUR"});
 function payPanel(box,cle,ps,email,defMontant,defLib,apres){
-  const liste=ps.length?`<div class="list" style="margin-bottom:12px">${ps.map(p=>`<div class="it payi"><span><b>${eur(p.montant)}</b> · ${esc(p.libelle)}</span><span class="tag ${p.statut==="paye"?"prete":"devis"}">${p.statut==="paye"?"✓ Payé "+dt(p.paye_le):"En attente"}</span><span class="row" style="gap:6px">${p.statut==="paye"?(p.transaction?`<small class="muted">SumUp ${esc(p.transaction)}</small>`:""):`<button class="btn g sm" type="button" data-pcopy="${esc(p.lien)}">Copier le lien</button><button class="btn g sm" type="button" data-pver="${p.jeton}">Vérifier</button><button class="btn g sm" type="button" data-pann="${p.jeton}">Annuler</button>`}</span></div>`).join("")}</div>`:"";
+  const liste=ps.length?`<div class="list" style="margin-bottom:12px">${ps.map(p=>`<div class="it payi"><span><b>${eur(p.montant)}</b> · ${esc(p.libelle)}</span><span class="tag ${p.statut==="paye"?"prete":"devis"}">${p.statut==="paye"?"✓ Payé "+dt(p.paye_le):"En attente"}</span><span class="row" style="gap:6px">${p.statut!=="attente"?`<button class="btn g sm" type="button" data-pdet="${p.jeton}">Détails${p.statut==="paye"?" / Rembourser":""}</button>`:`<button class="btn g sm" type="button" data-pdet="${p.jeton}">Détails</button><button class="btn g sm" type="button" data-pcopy="${esc(p.lien)}">Copier le lien</button><button class="btn g sm" type="button" data-pver="${p.jeton}">Vérifier</button><button class="btn g sm" type="button" data-pann="${p.jeton}">Annuler</button>`}</span></div>`).join("")}</div>`:"";
   box.innerHTML=liste+(SUMUP?"":`<p class="muted" style="margin:0 0 10px">⚠️ SumUp n’est pas encore configuré : le client verra « paiement en ligne pas encore ouvert ». Ajoutez le secret SUMUP_API_KEY sur GitHub.</p>`)
    +`<div class="payf"><label><span>Montant (€)</span><input type="number" inputmode="decimal" min="1" max="5000" step="0.01" class="pm" value="${defMontant||""}" placeholder="89,00"></label><label><span>Objet</span><input class="pl" maxlength="200" value="${esc(defLib||"")}" placeholder="Ex. : Remplacement écran iPhone 13"></label></div>
     <label class="chk"><input type="checkbox" class="pmail" ${email?"checked":"disabled"}><span>${email?"Envoyer le lien par e-mail ("+esc(email)+")":"Pas d’e-mail : le lien est mis dans la conversation"}</span></label>
     <button class="btn" type="button" data-pnew>Demander le paiement</button>`;
   box.onclick=async e=>{const b=e.target.closest("button");if(!b)return;
-    try{if(b.dataset.pcopy){await navigator.clipboard.writeText(b.dataset.pcopy).catch(()=>{});flash("Lien de paiement copié.");return}
+    try{if(b.dataset.pdet){ouvrirPay(b.dataset.pdet);return}
+      if(b.dataset.pcopy){await navigator.clipboard.writeText(b.dataset.pcopy).catch(()=>{});flash("Lien de paiement copié.");return}
       if(b.dataset.pver){const j=await api("paiement_verifier",{jeton:b.dataset.pver});flash(j.paiement.statut==="paye"?"Paiement reçu ✓":"Pas encore payé.");apres();return}
       if(b.dataset.pann){if(b.dataset.ok!=="1"){b.dataset.ok="1";b.textContent="Confirmer l’annulation";return}await api("paiement_annuler",{jeton:b.dataset.pann});flash("Demande de paiement annulée.");apres();return}
       if(b.hasAttribute("data-pnew")){const m=box.querySelector(".pm").value,l=box.querySelector(".pl").value.trim();if(!(+String(m).replace(",",".")>=1)){flash("Indiquez le montant.",false);box.querySelector(".pm").focus();return}
@@ -482,7 +525,7 @@ async function compteurs(){const j=await api("a_traiter");$("ndem").textContent=
 async function demandes(){const j=await api("demandes",{vue:DVUE,q:$("dq").value});
   $("ditems").innerHTML=j.items.length?j.items.map(x=>`<button type="button" class="it" data-did="${x.id}"><span><span class="n">${esc(x.ref)}</span> <b>${esc(x.nom||"Sans nom")}</b></span><span class="tag ${esc(x.statut)}">${esc(STATUT[x.statut]||x.statut)}</span><small>${esc(TYPES[x.type]||"Demande")} · ${esc(x.sujet)}${x.telephone?" · "+esc(x.telephone):""} · ${dt(x.cree_le)}${x.nb_pj?" · 📎 "+x.nb_pj:""}${x.client?" · espace client":""}</small></button>`).join(""):`<p class="empty">${DVUE==="a_traiter"?"Aucune demande à traiter. 👍":"Rien ici pour le moment."}</p>`}
 async function accueil(){await Promise.all([compteurs(),demandes(),liste()]);show("dem")}
-$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.t==="msg"){compteurs().catch(()=>{});fils().then(()=>show("msgs")).catch(err=>flash(err.message,false));return}if(b.dataset.t==="dem"){compteurs().catch(()=>{});demandes().then(()=>show("dem")).catch(err=>flash(err.message,false))}else{liste().then(()=>show("liste")).catch(err=>flash(err.message,false))}};
+$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.t==="pay"){paiements().then(()=>show("pays")).catch(err=>flash(err.message,false));return}if(b.dataset.t==="msg"){compteurs().catch(()=>{});fils().then(()=>show("msgs")).catch(err=>flash(err.message,false));return}if(b.dataset.t==="dem"){compteurs().catch(()=>{});demandes().then(()=>show("dem")).catch(err=>flash(err.message,false))}else{liste().then(()=>show("liste")).catch(err=>flash(err.message,false))}};
 $("dchips").onclick=e=>{const b=e.target.closest("button");if(!b)return;DVUE=b.dataset.v;$("dchips").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));demandes().catch(err=>flash(err.message,false))};
 $("dq").oninput=()=>{clearTimeout(tdq);tdq=setTimeout(()=>demandes().catch(err=>flash(err.message,false)),250)};
 $("ditems").onclick=e=>{const b=e.target.closest(".it");if(b)ouvrirDemande(+b.dataset.did)};

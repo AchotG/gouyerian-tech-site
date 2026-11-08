@@ -1649,6 +1649,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
 .pay-go{font-size:1.05rem;padding:16px 26px}
 .pay-ok{display:grid;gap:10px;justify-items:start}.pay-ok h2{margin:0}
 .pay-ic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#16a34a;color:#fff;font:800 1.5rem/1 var(--f-body)}
+.pay-req{justify-self:start;padding:9px 14px;border-radius:12px;border:1px dashed color-mix(in srgb,var(--acc) 55%,var(--line));background:transparent;color:var(--acc);font:600 .9rem var(--f-body);cursor:pointer}
 .pay-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:var(--grad);color:#fff!important;font-weight:700;text-decoration:none}
 .pay-done{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--ok,#17734a) 14%,transparent);color:var(--ok,#17734a);font-weight:700;font-size:.88rem}
 .acc-pays{display:grid;gap:8px}
@@ -3739,7 +3740,15 @@ function msgBind(root,auth,upd){root.querySelectorAll(".msgs").forEach(box=>{con
     catch(err){er.textContent=err.message}
     bt.disabled=false}})}
 /* Demandes de paiement d'une réparation : bouton « Payer » ou « Payé » */
-function payList(ps){ps=ps||[];if(!ps.length)return"";return `<div class="acc-pays">${ps.map(p=>p.statut==="paye"?`<span class="pay-done">✓ Payé en ligne : ${euros(p.montant)} · ${esc(p.libelle)}</span>`:`<a class="pay-btn" href="${esc(p.lien.replace(/^https?:\/\/[^/]+/,""))}">💳 Payer ${euros(p.montant)} par carte · ${esc(p.libelle)}</a>`).join("")}</div>`}
+function payList(ps,r){ps=ps||[];
+  /* le client ne paie jamais de lui-même : il peut seulement demander un lien de paiement à l'atelier */
+  const req=r&&!ps.some(p=>p.statut==="attente")&&!["rendu","annule"].includes(r.etape)?`<button type="button" class="pay-req" data-payreq="${esc(r.numero)}">💳 Je souhaite payer par carte en ligne</button>`:"";
+  if(!ps.length)return req?`<div class="acc-pays">${req}</div>`:"";return `<div class="acc-pays">${req}${ps.map(p=>p.statut==="paye"?`<span class="pay-done">✓ Payé en ligne : ${euros(p.montant)} · ${esc(p.libelle)}</span>`:`<a class="pay-btn" href="${esc(p.lien.replace(/^https?:\/\/[^/]+/,""))}">💳 Payer ${euros(p.montant)} par carte · ${esc(p.libelle)}</a>`).join("")}</div>`}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-payreq]");if(!b)return;const n=b.dataset.payreq;
+  const auth=window.TRK_LAST&&TRK_LAST.n===n?{numero:n,code:TRK_LAST.c}:{numero:n};b.disabled=true;
+  try{const fd=new FormData();fd.append("data",JSON.stringify(Object.assign({action:"envoyer",texte:"💳 Je souhaite régler cette réparation par carte en ligne. Pouvez-vous m’envoyer un lien de paiement ?"},auth)));await msgApi(fd);
+    b.outerHTML=`<p class="trk-ok">Demande envoyée : l’atelier vous enverra un lien de paiement (par e-mail et dans vos messages).</p>`}
+  catch(err){b.disabled=false;b.textContent=err.message}});
 function trkShow(j){
   const seen=new Set(j.historique.map(h=>h.etape)),steps=TRK_P.slice();
   if(seen.has("piece")||j.etape==="piece")steps.splice(steps.indexOf("reparation"),0,"piece");
@@ -3748,7 +3757,7 @@ function trkShow(j){
    +(j.etape==="annule"?`<p class="trk-x">Cette réparation a été annulée. Pour toute question, appelez le 06 05 79 48 94.</p>`:`<ol class="trk-p" style="--n:${steps.length}" aria-label="Étapes de la réparation">${steps.map((e,i)=>`<li class="${i<ci?"done":i===ci?"done cur":""}"${i===ci?' aria-current="step"':""}>${esc(lib[e]||e)}</li>`).join("")}</ol>`)
    +(j.etape==="prete"?`<p class="trk-ok">Votre appareil vous attend : appelez-nous pour convenir de l’heure de passage ou d’une livraison.</p>`:"")
    +(j.devis==="attente"?`<div class="trk-dv"><b>Votre accord est attendu pour lancer la réparation${j.prix?" : "+esc(j.prix):""}.</b><span>Le détail du devis est dans l’historique ci-dessous.</span><div class="row2"><button type="button" class="btn" data-dv="accepte">J’accepte le devis</button><button type="button" class="btn ghost" data-dv="refuse">Je refuse</button></div><p class="msg" id="trkdm" role="alert"></p></div>`:j.devis==="accepte"&&j.etape==="devis"?`<p class="trk-ok">Devis accepté : merci, la réparation va commencer.</p>`:j.devis==="refuse"&&j.etape==="devis"?`<p class="trk-x">Vous avez refusé le devis. Nous vous rappelons pour la restitution de l’appareil.</p>`:"")
-   +payList(j.paiements)
+   +payList(j.paiements,j)
    +(j.garantie_fin?`<p class="trk-ok">Garantie jusqu’au ${esc(new Date(j.garantie_fin+"T12:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}))}.</p>`:"")
    +(j.etape==="annule"&&!(j.messages||[]).length?"":msgHTML(j.messages,j.numero))
    +`<div><h3 style="margin-bottom:12px">Historique</h3><ul class="trk-h">${hist.map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></div>`
@@ -4180,7 +4189,7 @@ function accRep(r,i){const steps=TRK_P.slice();if(r.historique.some(h=>h.etape==
   return `<article class="acc-r"><div><span class="eyebrow">${esc(r.numero)} · ${clos?"le "+fdate(r.maj_le):"mis à jour le "+fdate(r.maj_le)}</span><h4>${esc(r.appareil)}${u?`<span class="msg-nb">${u} message${u>1?"s":""}</span>`:""}</h4><p>${esc(r.libelle)}${clos?"":" · "+esc(r.phrase)}</p></div>`
    +(clos||r.etape==="annule"?"":`<ol class="trk-p" style="--n:${steps.length}">${steps.map((e,k)=>`<li class="${k<ci?"done":k===ci?"done cur":""}">${esc(lib[e]||e)}</li>`).join("")}</ol>`)
    +(r.devis==="attente"?`<div class="acc-dv"><b>Votre accord est attendu${r.prix?" : "+esc(r.prix):""}.</b><span>Voir le détail dans l’historique.</span><div class="row2"><button type="button" class="btn sm" data-adv="accepte" data-n="${esc(r.numero)}">J’accepte le devis</button><button type="button" class="btn sm ghost" data-adv="refuse" data-n="${esc(r.numero)}">Je refuse</button></div></div>`:r.devis==="accepte"&&r.etape==="devis"?`<p class="acc-g on">✓ Devis accepté</p>`:"")
-   +payList(r.paiements)+g+`<button type="button" class="acc-mb${u?" nl":""}" data-conv="${esc(r.numero)}"><span class="msg-av" aria-hidden="true">GT</span><span><b>Messages avec l’atelier</b><small>${u?u+" nouveau"+(u>1?"x":"")+" message"+(u>1?"s":""):nm?nm+" message"+(nm>1?"s":""):"Posez une question, envoyez une photo"}</small></span><span class="acc-mb-go" aria-hidden="true">›</span></button>`
+   +payList(r.paiements,r)+g+`<button type="button" class="acc-mb${u?" nl":""}" data-conv="${esc(r.numero)}"><span class="msg-av" aria-hidden="true">GT</span><span><b>Messages avec l’atelier</b><small>${u?u+" nouveau"+(u>1?"x":"")+" message"+(u>1?"s":""):nm?nm+" message"+(nm>1?"s":""):"Posez une question, envoyez une photo"}</small></span><span class="acc-mb-go" aria-hidden="true">›</span></button>`
    +`<details${i===0&&!clos?" open":""}><summary>Historique</summary><ul class="trk-h">${r.historique.slice().reverse().map(h=>`<li><small>${esc(trkFmt(h.le))}</small><b>${esc(h.libelle)}</b>${h.note?`<p>${esc(h.note)}</p>`:""}</li>`).join("")}</ul></details></article>`}
 /* Conversations de l'espace client : générale, par réparation, par demande. Une ligne → la conversation s'ouvre en grand */
 function accConvs(){const p=ACC;if(!p)return[];const L=[];
