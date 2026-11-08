@@ -122,7 +122,7 @@ def site_data():
         d = pg.evaluate("""()=>({cpg:CPG.map(p=>({n:p.n,s:p.s,cp:p.cp,km:p.km,dir:dirOf(p),dept:dept(p)})),zone:ZONE.length,
           faq:[...document.querySelectorAll('#v-faq details')].map(x=>({q:x.querySelector('summary').textContent.trim(),a:x.querySelector('p').textContent.trim()})),
           sv:SV.map(s=>({c:s.c,n:s.n,p:s.p})),
-          arts:ARTS.map(a=>({s:a.s,t:a.t,d:a.d,cat:a.cat,date:a.date,min:a.min})),news:NEWS.length,nl:NEWS.map(n=>({id:n.id,t:n.t,s:n.s,d:n.d,th:THL(n.th),src:n.src.map(x=>x[1])}))})""")
+          arts:ARTS.map(a=>({s:a.s,t:a.t,d:a.d,cat:a.cat,date:a.date,min:a.min})),news:NEWS.length,nl:NEWS.map(n=>({id:n.id,t:n.t,s:n.s,d:n.d,pub:pubOf(n),th:THL(n.th),src:n.src.map(x=>x[1])}))})""")
         b.close()
     shutil.rmtree(tmp)
     return d
@@ -292,9 +292,9 @@ for n in DATA["nl"]:
     add(path, "actu", VIEW["actu"], short_title(n["t"]), short_desc(n["s"]),
         [HOME, ("Actualités", "/actualites/"), (n["t"], path)],
         ld=[{"@context": "https://schema.org", "@type": "NewsArticle", "headline": n["t"][:110], "description": short_desc(n["s"]), "inLanguage": "fr-FR",
-             "datePublished": n["d"], "dateModified": n["d"], "articleSection": n["th"], "isBasedOn": n["src"], "mainEntityOfPage": SITE + path,
+             "datePublished": n["pub"][:10] if n["pub"] > n["d"] else n["d"], "dateModified": n["pub"][:10] if n["pub"] > n["d"] else n["d"], "articleSection": n["th"], "isBasedOn": n["src"], "mainEntityOfPage": SITE + path,
              "image": SITE + "/assets/og-image.jpg", "author": {"@type": "Organization", "name": "Gouyerian Tech", "url": SITE + "/"}, "publisher": {"@id": ORG_ID}}],
-        pg={"view": "actu", "slug": n["id"]}, prio="0.5", lastmod=n["d"])
+        pg={"view": "actu", "slug": n["id"]}, prio="0.5", lastmod=max(n["pub"][:10], n["d"]))
 
 # Boutique
 add("/boutique/", "boutique", VIEW["boutique"], "Boutique : appareils et accessoires · Gouyerian Tech",
