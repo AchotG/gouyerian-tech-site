@@ -372,6 +372,13 @@ def render_cats(pg, only=()):
     return faits
 
 
+S["fin-de-la-2g"] = frame(
+    # la 2G s'éteint (barrée), le téléphone passe ses appels en 4G, les appareils de la maison sont à vérifier
+    phone(640, 360, 220, 430, 0, screen="#14306a", extra=label(640, 350, "4G", 96, CY) + wifi(640, 470, 60, GR, 3, 6))
+    + f'<circle cx="330" cy="330" r="96" fill="{AM}" stroke="none"/>' + label(330, 360, "2G", 84, "#2a1a00") + cross(410, 420, 40)
+    + house(960, 420, 240, 190) + warning(1090, 230, .6) + check(840, 160, 40), 640, 360)
+
+
 MARGE = 28          # marge minimale (px) au bord de l'image ; l'aperçu de partage coupe aussi ~22 px en haut et en bas
 CONTROLE_JS = """(m) => {
   const W = 1280, H = 720, g = document.querySelector('svg').lastElementChild, pb = [];
