@@ -195,3 +195,8 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - Réparations : avant/après (`ART.pair`) téléphone (écran fissuré), tablette, ordinateur (écran bleu) ; images des catégories `cat-*` rendues par `ART.cats()` via `gen_illus.py` (WebP 640/1280).
 - build.py vide les rendus (`svg.art`, `svg.ba-art`, `svg.art-f`) dans les pages statiques : ils sont redessinés au chargement (boutique : 745 Ko → 66 Ko).
 - `gen_illus.py` : variable `GT_CHROME` facultative pour lancer un Chrome local.
+
+## Search Console (9 novembre 2026, nuit)
+- Inspection des 40 pages principales (services, boutique, pros, FAQ, rendez-vous, contact, zone, communes, infos pratiques, actualités) : 32 déjà indexées.
+- Indexation demandée pour les 8 autres : /services/telephones/, /services/ordinateurs/, /contact/, /infos-pratiques/fin-de-la-2g/, /infos-pratiques/batterie-smartphone/, /infos-pratiques/sauvegarder-ses-photos/, /communes/chateauneuf-sur-charente/, /communes/coteaux-du-blanzacais/.
+- Sitemap renvoyé (85 pages découvertes au 7 nov.). Le rapport « Pages » était encore en cours de calcul.
