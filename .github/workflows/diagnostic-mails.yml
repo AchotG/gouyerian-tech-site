@@ -7,6 +7,10 @@ on:
         description: "Destinataire du test : contact (contact@gouyerian-tech.fr), dernier_code (adresse de la dernière demande de code de l'espace client) ou rien"
         required: false
         default: "contact"
+      test_paiement:
+        description: "Créer un paiement test de 1 € (oui/non)"
+        required: false
+        default: "non"
       variantes:
         description: "Essayer plusieurs façons d'appeler mail() (oui, nouvelles ou non)"
         required: false
@@ -24,6 +28,7 @@ jobs:
           MOT_DE_PASSE: ${{ secrets.IONOS_SFTP_PASSWORD }}
           CIBLE: ${{ inputs.cible }}
           VARIANTES: ${{ inputs.variantes }}
+          TESTPAY: ${{ inputs.test_paiement }}
         run: |
           umask 077
           J=$(openssl rand -hex 32)
@@ -32,4 +37,4 @@ jobs:
           export LFTP_PASSWORD="$MOT_DE_PASSE"
           lftp --env-password -u "$UTILISATEUR" "sftp://$HOTE" -e "set sftp:auto-confirm yes; set net:timeout 30; put diag-token -o /prive/diag-token; chmod 600 /prive/diag-token; bye"
           rm -f diag-token
-          curl -sS -X POST -H "X-Diag: $J" -H "Content-Type: application/json" -d "{\"cible\":\"$CIBLE\",\"variantes\":$([ "$VARIANTES" != non ] && echo true || echo false),\"seulement_nouvelles\":$([ "$VARIANTES" = nouvelles ] && echo true || echo false)}" https://gouyerian-tech.fr/api/diag.php | python3 -m json.tool
+          curl -sS -X POST -H "X-Diag: $J" -H "Content-Type: application/json" -d "{\"cible\":\"$CIBLE\",\"variantes\":$([ "$VARIANTES" != non ] && echo true || echo false),\"seulement_nouvelles\":$([ "$VARIANTES" = nouvelles ] && echo true || echo false),\"test_paiement\":$([ "$TESTPAY" = oui ] && echo true || echo false)}" https://gouyerian-tech.fr/api/diag.php | python3 -m json.tool

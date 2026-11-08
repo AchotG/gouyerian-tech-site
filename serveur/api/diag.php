@@ -56,6 +56,17 @@ if (!empty($c['sumup_key'])) {
 }
 $f = prive_dir() . '/sumup.log';
 if (is_file($f)) $res['sumup']['erreurs'] = array_map('trim', array_slice(file($f) ?: [], -5));
+/* Paiement test de 1 € : crée la demande et vérifie que SumUp accepte d'ouvrir la page de paiement */
+if (!empty($d['test_paiement']) && sumup_actif()) {
+  $jeton = bin2hex(random_bytes(16));
+  db()->prepare("INSERT INTO gt_paiements (jeton, nom, email, libelle, montant, statut, cree_le, maj_le) VALUES (?, 'Achot Gouyerian', ?, 'Test du paiement en ligne', 1, 'attente', ?, ?)")
+    ->execute([$jeton, (string)($c['mail_reply'] ?? 'contact@gouyerian-tech.fr'), now(), now()]);
+  $site = rtrim($c['site'] ?? 'https://gouyerian-tech.fr', '/');
+  [$code, $co] = sumup('POST', '/v0.1/checkouts', ['checkout_reference' => 'GT-TEST-' . substr($jeton, 0, 8), 'amount' => 1.0, 'currency' => 'EUR', 'merchant_code' => sumup_marchand(),
+    'description' => 'Gouyerian Tech : test', 'return_url' => "$site/api/paiement.php?sumup=$jeton", 'redirect_url' => "$site/paiement/?t=$jeton&retour=1", 'hosted_checkout' => ['enabled' => true]]);
+  $res['test_paiement'] = ['sumup' => $code . ' ' . mb_substr((string)($co['message'] ?? $co['error_code'] ?? ''), 0, 120), 'page_sumup' => !empty($co['hosted_checkout_url']), 'lien' => "$site/paiement/?t=$jeton"];
+  if (!empty($co['id'])) db()->prepare('UPDATE gt_paiements SET checkout_id = ? WHERE jeton = ?')->execute([(string)$co['id'], $jeton]);
+}
 $log = prive_dir() . '/mail.log';
 $res['journal'] = is_file($log) ? array_map('trim', array_slice(file($log) ?: [], -40)) : [];
 out($res);
