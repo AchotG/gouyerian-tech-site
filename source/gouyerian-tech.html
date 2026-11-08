@@ -2751,7 +2751,16 @@ const NEWS=[
 {d:"2026-09-14",dl:"14 septembre 2026",sc:"Monde",th:"Smartphones",tag:"Apple",t:"iOS 27 est disponible, et Apple lance son premier iPhone pliable",
  s:"Lors de sa keynote du 9 septembre, Apple a présenté l’iPhone Duo, son premier iPhone pliable, sorti en France le 23 octobre, ainsi que les iPhone 18 Pro et 18 Pro Max. iOS 27 est disponible depuis le 14 septembre sur les iPhone compatibles, de l’iPhone SE (2e génération) et de l’iPhone 11 aux modèles récents, avec une nouvelle version de Siri.",
  tip:"Avant une mise à jour majeure, faites une sauvegarde iCloud et vérifiez l’état de votre batterie.",
- src:[["Blog du Modérateur (10 septembre 2026)","https://www.blogdumoderateur.com/iphone-duo-iphone-18-pro-apple-watch-keynote-apple/"],["9to5Mac (9 septembre 2026)","https://9to5mac.com/2026/09/09/apple-confirms-ios-27-release-date-september-14/"]]}];
+ src:[["Blog du Modérateur (10 septembre 2026)","https://www.blogdumoderateur.com/iphone-duo-iphone-18-pro-apple-watch-keynote-apple/"],["9to5Mac (9 septembre 2026)","https://9to5mac.com/2026/09/09/apple-confirms-ios-27-release-date-september-14/"]]},
+{d:"2026-08-12",dl:"12 août 2026",sc:"Monde",th:"Smartphones",tag:"Google",t:"Google lance les Pixel 11, avec des prix en hausse",
+ s:"Google a présenté quatre smartphones : Pixel 11 (à partir de 999 €), Pixel 11 Pro (1 199 €), Pixel 11 Pro XL (1 399 €) et Pixel 11 Pro Fold (1 999 €), en vente depuis le 20 août. Ils utilisent la nouvelle puce Tensor G6 et misent sur l’IA Gemini. Le Pixel 11 perd sa version 128 Go, et les Pro XL et Pro Fold coûtent 100 € de plus que leurs prédécesseurs.",
+ tip:"Un écran ou une batterie à changer sur votre téléphone actuel coûte en général bien moins cher qu’un modèle neuf : demandez un devis gratuit.",
+ src:[["KultureGeek (12 août 2026)","https://kulturegeek.fr/news-356909/google-annonce-pixel-11-pro-pro-xl-fold-nouveautes-prix-hausse"]]},
+{d:"2026-07-06",dl:"6 juillet 2026",sc:"France",th:"Internet",tag:"Internet",t:"Fin de l’ADSL : le cuivre coupé dans 2 097 communes le 31 janvier 2027",
+ s:"Orange poursuit la fermeture de son réseau cuivre, celui de l’ADSL et du téléphone fixe classique. Prochaine étape : la coupure définitive le 31 janvier 2027 dans 2 097 communes, selon l’Arcep ; quelques communes de cette étape ont été reportées à 2028, et chaque fermeture reste soumise à des critères vérifiés au préalable. Les abonnés concernés doivent passer à la fibre, ou à défaut à la 4G ou 5G fixe ou au satellite. Le raccordement à la fibre peut prendre plusieurs semaines, voire plusieurs mois.",
+ tip:"Vérifiez dès maintenant si votre commune est concernée sur le calendrier d’Orange. Gouyerian Tech peut installer et régler votre nouvelle box et votre Wi-Fi.",
+ src:[["Selectra (6 juillet 2026)","https://selectra.info/telecom/actualites/marche/fin-adsl-fermeture-cuivre-janvier-2027-communes-concernees"],["Arcep (mis à jour le 26 janvier 2026)","https://www.arcep.fr/la-regulation/grands-dossiers-reseaux-fixes/la-fermeture-du-reseau-cuivre/organisation-orange-fermeture-reseau-cuivre.html"],["Selectra (4 septembre 2026)","https://selectra.info/telecom/actualites/marche/fermeture-reseau-cuivre-calendrier-commune"]]},
+];
 /* une alerte urgente (urg:1) reste épinglée en tête pendant 3 jours */
 const isUrg=n=>!!n.urg&&Date.now()-new Date(n.d+"T12:00:00").getTime()<3*864e5;
 NEWS.sort((a,b)=>(isUrg(b)-isUrg(a))||b.d.localeCompare(a.d));

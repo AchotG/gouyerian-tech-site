@@ -58,6 +58,20 @@ function fiche(int $id): array {
   return $r;
 }
 
+/* Adresse exacte donnée par le client (rendez-vous à domicile, livraison), pour le bouton « S'y rendre » ; vide si seulement la commune */
+function adresse_de(array $x): string {
+  $ok = fn($v) => is_string($v) && trim($v) !== '' && trim($v) !== '-';
+  if ($ok($x['Adresse'] ?? '')) return trim($x['Adresse']) . ($ok($x['Commune'] ?? '') && stripos($x['Adresse'], trim($x['Commune'])) === false ? ', ' . trim($x['Commune']) : '');
+  $r = (string)($x['Retrait'] ?? '');
+  if (preg_match('/^Livraison à domicile : (.+?)(?: \(environ|, livraison|$)/u', $r, $m)) return trim($m[1]);
+  return '';
+}
+function adresse_reparation(int $id): string {
+  $s = db()->prepare('SELECT details FROM gt_demandes WHERE reparation_id = ? ORDER BY id DESC LIMIT 1');
+  $s->execute([$id]);
+  return adresse_de(json_decode((string)$s->fetchColumn(), true) ?: []);
+}
+
 function vue(array $r, bool $complet = false): array {
   $v = [
     'id' => (int)$r['id'], 'numero' => $r['numero'], 'nom' => $r['nom'], 'telephone' => $r['telephone'], 'email' => $r['email'],
@@ -67,7 +81,7 @@ function vue(array $r, bool $complet = false): array {
     'non_lus' => non_lus((int)$r['id']),
   ];
   if ($complet) {
-    $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
+    $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'adresse' => adresse_reparation((int)$r['id']), 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
       'messages' => messages((int)$r['id'], 'atelier'),
       'paiements' => paiements_de('reparation_id', (int)$r['id']),
       'historique' => array_map(fn($h) => $h + ['libelle' => ETAPES[$h['etape']][0] ?? $h['etape']], historique((int)$r['id']))];
@@ -110,6 +124,7 @@ function vue_demande(array $r, bool $complet = false): array {
     'client' => $r['client_id'] !== null, 'reparation_id' => $r['reparation_id'] !== null ? (int)$r['reparation_id'] : null];
   if ($complet) {
     $v['details'] = json_decode((string)$r['details'], true) ?: [];
+    $v['adresse'] = adresse_de($v['details']);
     $v['note_interne'] = (string)$r['note_interne'];
     $v['pj'] = array_map(fn($f, $i) => ['nom' => $f['nom'], 'type' => $f['type'], 'taille' => $f['taille'], 'url' => '/api/gestion.php?pj=' . $r['id'] . '-' . $i], $pj, array_keys($pj));
   }

@@ -28,6 +28,10 @@ p{margin:0}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--acc);background:var(--acc);color:var(--on-acc);font:600 .95rem system-ui,sans-serif;cursor:pointer;text-decoration:none}
 .btn:hover{background:var(--acc-h);border-color:var(--acc-h)}
 .btn.g{background:var(--surface);color:var(--fg);border-color:var(--line)}
+.gps{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--acc) 6%,var(--surface));display:grid;gap:10px}
+.gps-a{display:flex;gap:10px;align-items:flex-start}.gps-a span{font-size:1.3rem;line-height:1.2}.gps-a small{display:block;color:var(--muted);font-size:.78rem}.gps-a b{font-weight:600;overflow-wrap:anywhere}
+.gps-b{display:flex;flex-wrap:wrap;gap:8px}.gps-b a{text-decoration:none}
+@media (max-width:520px){.gps-b .btn:first-child{flex:1 1 100%}}
 .btn.g:hover{border-color:var(--acc);color:var(--acc)}
 .btn.w{background:transparent;color:#f4f7ff;border-color:rgba(244,247,255,.35);min-height:38px;padding:0 12px;font-size:.86rem;white-space:nowrap}
 .btn{white-space:nowrap}
@@ -232,6 +236,7 @@ a{color:var(--acc)}
       <div><span class="muted" style="font:600 .85rem ui-monospace,monospace" id="dref"></span><h1 id="dsujet"></h1><p class="muted" id="ddate"></p></div>
       <div class="row" id="dcontact"></div>
       <dl class="kv" id="ddet"></dl>
+      <div id="dgps"></div>
       <div id="dpj"></div>
     </div>
     <div class="card" style="margin-top:14px">
@@ -291,6 +296,7 @@ a{color:var(--acc)}
     <div class="card" style="margin-top:14px">
       <div><span class="muted" style="font:600 .85rem ui-monospace,monospace" id="fnum"></span><h1 id="fapp"></h1></div>
       <dl class="kv" id="finfo"></dl>
+      <div id="fgps"></div>
       <div class="row"><button class="btn g" type="button" id="bedit">Modifier</button><button class="btn g" type="button" id="bprint">Bon de dépôt</button><button class="btn" type="button" id="bchat">💬 Écrire au client</button><button class="btn g" type="button" id="bcopy">Copier le lien de suivi</button><button class="btn g" type="button" id="bresend" hidden>Renvoyer l’e-mail de suivi</button></div>
     </div>
     <div class="card" style="margin-top:14px">
@@ -350,6 +356,10 @@ $("flash").addEventListener("click",e=>{if(e.target.closest(".fx"))flash("")});
 /* une nouvelle action efface l'erreur précédente (pas le clic qui vient de la provoquer) */
 document.addEventListener("input",()=>{if(FLASH_ERR||FLASH_OK)flash("")},true);
 /* la confirmation (vert) disparaît dès qu'on fait autre chose : bouton, lien, onglet… */
+/* « S'y rendre » : ouvre le GPS (Google Maps, Plans d'Apple ou Waze) directement sur l'adresse du client */
+function gps(box,adr){if(!adr){box.innerHTML="";return}const q=encodeURIComponent(adr);
+  box.innerHTML=`<div class="gps"><div class="gps-a"><span aria-hidden="true">📍</span><div><small>Adresse du client</small><b>${esc(adr)}</b></div></div><div class="gps-b"><a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=driving">🧭 S’y rendre · Google Maps</a><a class="btn g" target="_blank" rel="noopener" href="https://maps.apple.com/?daddr=${q}&dirflg=d">Plans</a><a class="btn g" target="_blank" rel="noopener" href="https://waze.com/ul?q=${q}&navigate=yes">Waze</a><button class="btn g" type="button" data-cp="${esc(adr)}">Copier</button></div></div>`;
+  box.querySelector("[data-cp]").onclick=async e=>{try{await navigator.clipboard.writeText(adr);e.target.textContent="Copiée ✓"}catch{e.target.textContent="Copie impossible"}setTimeout(()=>{e.target.textContent="Copier"},1800)}}
 function show(v){if(v!==ECRAN&&(FLASH_OK||FLASH_ERR))flash("");ECRAN=v;["login","liste","form","fiche","dem","dfiche","msgs","chat","pays","pay"].forEach(x=>$("v"+x).hidden=x!==v);$("bnew").hidden=$("bout").hidden=v==="login";$("tabs").hidden=!(v==="liste"||v==="dem"||v==="msgs"||v==="pays");
   const t={dem:"dem",liste:"rep",msgs:"msg",pays:"pay"}[v];$("tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.t===t)));scrollTo(0,0)}
 
@@ -393,7 +403,7 @@ function prixNum(p){const m=String(p||"").replace(/\s/g,"").match(/(\d+(?:[.,]\d
 function rendre(f){
   FICHE=f;SEL=null;$("fnum").textContent=f.numero;$("fapp").textContent=f.appareil;$("ftag").className="tag "+f.etape;$("ftag").textContent=f.libelle;
   $("finfo").innerHTML=`<dt>Client</dt><dd>${esc(f.nom)}</dd>${f.telephone?`<dt>Téléphone</dt><dd><a href="tel:${esc(f.telephone.replace(/[^\d+]/g,""))}">${esc(f.telephone)}</a></dd>`:""}${f.email?`<dt>E-mail</dt><dd>${esc(f.email)}${f.avis_email?" · suivi par e-mail ✓":" · pas d’e-mails"}</dd>`:""}${f.prix?`<dt>Prix</dt><dd>${esc(f.prix)}</dd>`:""}${f.etape==="devis"?`<dt>Devis</dt><dd>${f.devis_etat==="accepte"?"<b style='color:var(--ok)'>✓ Accepté par le client</b>":f.devis_etat==="refuse"?"<b style='color:var(--bad)'>✗ Refusé par le client</b>":"En attente de la réponse du client"}</dd>`:""}${f.garantie_mois?`<dt>Garantie</dt><dd>${f.garantie_mois} mois${f.garantie_fin?" · jusqu’au "+new Date(f.garantie_fin+"T12:00").toLocaleDateString("fr-FR"):""}</dd>`:""}${f.panne?`<dt>Panne</dt><dd>${esc(f.panne)}</dd>`:""}${f.note_interne?`<dt>Note interne</dt><dd>${esc(f.note_interne)}</dd>`:""}<dt>Code client</dt><dd class="code">${esc(f.code)}</dd><dt>Créée</dt><dd>${dt(f.cree_le)}</dd>`;
-  $("bresend").hidden=!f.avis_email;
+  $("bresend").hidden=!f.avis_email;gps($("fgps"),f.adresse);
   payPanel($("fpay"),"r:"+f.id,f.paiements||[],f.email,prixNum(f.prix),"Réparation "+f.appareil+" ("+f.numero+")",()=>ouvrir(f.id));
   $("steps").innerHTML=PARCOURS.map(k=>{const e=ETAPES.find(x=>x.etape===k);return `<button type="button" data-e="${k}" aria-pressed="false" class="${k===f.etape?"cur":""}">${esc(e?e.libelle:k)}</button>`}).join("");
   $("snote").value="";$("smail").checked=!!f.avis_email;$("smail").disabled=!f.email;$("smail-l").textContent=!f.email?"Pas d’e-mail pour ce client : il verra l’étape dans son suivi":f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Envoyer quand même un e-mail ("+f.email+") : le client n’a pas coché le suivi par e-mail";$("ssave").disabled=true;
@@ -546,7 +556,7 @@ function rendreDemande(d){DEM=d;$("dref").textContent=d.ref+" · "+(TYPES[d.type
   $("dtag").className="tag "+d.statut;$("dtag").textContent=STATUT[d.statut]||d.statut;
   const tel=d.telephone.replace(/[^\d+]/g,"");
   $("dcontact").innerHTML=(tel?`<a class="btn" href="tel:${esc(tel)}">Appeler ${esc(d.telephone)}</a><a class="btn g" href="sms:${esc(tel)}">SMS</a>`:"")+(d.email?`<a class="btn g" href="mailto:${esc(d.email)}?subject=${encodeURIComponent("Votre demande "+d.ref+" · Gouyerian Tech")}">Répondre par e-mail</a>`:"");
-  $("ddet").innerHTML=Object.entries(d.details).filter(([k,v])=>v&&v!=="-").map(([k,v])=>`<dt>${esc(k)}</dt><dd style="white-space:pre-line">${esc(v)}</dd>`).join("");
+  gps($("dgps"),d.adresse);$("ddet").innerHTML=Object.entries(d.details).filter(([k,v])=>v&&v!=="-").map(([k,v])=>`<dt>${esc(k)}</dt><dd style="white-space:pre-line">${esc(v)}</dd>`).join("");
   $("dpj").innerHTML=d.pj.length?`<h2 style="margin:8px 0">Pièces jointes</h2><div class="pjs">${d.pj.map(f=>`<a href="${esc(f.url)}" target="_blank" rel="noopener">${f.type.startsWith("image/")?`<img src="${esc(f.url)}" alt="" loading="lazy">`:f.type.startsWith("video/")?`<video src="${esc(f.url)}#t=0.1" preload="metadata" controls playsinline onclick="event.preventDefault()"></video>`:`<span class="file">PDF</span>`}<span>${esc(f.nom)} · ${Math.max(1,Math.round(f.taille/1024))} Ko</span></a>`).join("")}</div>`:"";
   $("dnote").value=d.note_interne||"";$("dmkrep").hidden=!!d.reparation_id;$("ddelc").hidden=true;$("ddel").hidden=false;
   if(d.reparation_id)$("dcontact").insertAdjacentHTML("beforeend",`<button class="btn g" type="button" id="dgorep">Voir la réparation</button>`);
