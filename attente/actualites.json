@@ -1,1 +1,71 @@
-[]
+[
+ {
+  "d": "2026-11-05",
+  "dl": "5 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Fuite de données",
+  "t": "Bureau Vallée confirme deux cyberattaques : des données de clients copiées",
+  "s": "L’enseigne de fournitures de bureau Bureau Vallée a informé ses clients de deux incidents distincts chez un prestataire informatique. Des fichiers contenant noms, prénoms et coordonnées (adresse, e-mail, téléphone), ainsi que des tickets de caisse et des bons de fidélité, ont été copiés. Selon l’enseigne, les données bancaires et le site de vente en ligne (comptes, mots de passe, commandes) ne sont pas touchés. Des pirates affirment détenir les données de 4,82 millions de clients, un chiffre que Bureau Vallée dit ne pas pouvoir confirmer.",
+  "tip": "Si vous êtes client, méfiez-vous des e-mails, SMS ou appels se présentant comme Bureau Vallée (remboursement, fidélité, facture) : ne cliquez pas et ne donnez jamais vos codes. En cas de doute sur un message ou un lien déjà ouvert, nous pouvons vérifier votre ordinateur ou votre téléphone.",
+  "src": [
+   [
+    "Cyberattaque.org (5 novembre 2026)",
+    "https://www.cyberattaque.org/bureau-vallee-confirme-deux-cyberattaques-48-millions-de-clients-revendiques-par-les-hackers/"
+   ],
+   [
+    "Presse83 (5 novembre 2026)",
+    "https://presse83.fr/2026/11/05/bureau-vallee-victime-dune-cyberattaque-donnees-clients-compromises/france-monde/lperard/"
+   ]
+  ],
+  "ajoute_le": "8 novembre 2026 à 21h54",
+  "par": "recherche",
+  "verif": "Deux incidents chez un prestataire, types de données, cartes bancaires et site en ligne non touchés, chiffre de 4,82 millions non confirmé par l’enseigne : identiques dans les deux articles qui citent le message de Bureau Vallée."
+ },
+ {
+  "d": "2026-11-04",
+  "dl": "4 novembre 2026",
+  "sc": "Monde",
+  "th": "Smartphones",
+  "tag": "iCloud",
+  "t": "iCloud : Apple vérifiera les photos et fichiers partagés avec « Toute personne disposant du lien »",
+  "s": "Apple a publié une page d’aide annonçant qu’à partir d’iOS, iPadOS, macOS et visionOS 27.3, les éléments iCloud partagés avec l’option « Toute personne disposant du lien » seront vérifiés par Apple pour détecter les contenus nuisibles. Sont concernées les photos d’iCloud Photos et les fichiers d’iCloud Drive. Les partages limités aux « personnes que vous choisissez » ne sont pas visés. En cas de contenu interdit, Apple peut supprimer l’élément et bloquer le compte Apple.",
+  "tip": "Pour vos photos et documents personnels, préférez le partage réservé aux personnes choisies plutôt qu’un lien ouvert à tous, et faites régulièrement le tri de vos anciens liens. Besoin d’aide pour régler iCloud ou sauvegarder votre iPhone ? Passez à l’atelier.",
+  "src": [
+   [
+    "MacRumors (4 novembre 2026)",
+    "https://www.macrumors.com/2026/11/04/ios-27-3-icloud-link-check/"
+   ],
+   [
+    "9to5Mac (4 novembre 2026)",
+    "https://9to5mac.com/2026/11/04/with-ios-27-3-apple-will-start-checking-icloud-public-links-for-harmful-content/"
+   ]
+  ],
+  "ajoute_le": "8 novembre 2026 à 21h54",
+  "par": "recherche",
+  "verif": "Version 27.3, options de partage concernées, photos et fichiers iCloud, sanctions possibles sur le compte : identiques dans les deux articles qui citent la page d’aide d’Apple (non lisible directement)."
+ },
+ {
+  "d": "2026-11-05",
+  "dl": "5 novembre 2026",
+  "sc": "Monde",
+  "th": "IA",
+  "tag": "Google",
+  "t": "Google désactivera par défaut ses outils d’IA pour les élèves",
+  "s": "Google a annoncé que Gemini, Gemini Notebook, Gemini dans Classroom et son moteur de recherche seront désactivés par défaut sur les comptes scolaires, de la maternelle au lycée. Ce sont les administrateurs des établissements qui pourront les réactiver, service par service. Le changement commencera aux États-Unis avant d’être étendu au monde entier, sans date fixée. Google répond ainsi à des mois de critiques de parents et d’écoles.",
+  "tip": "Sur l’ordinateur ou la tablette familiale, le contrôle parental permet aussi de choisir les applications et sites accessibles aux enfants. Nous pouvons vous aider à le mettre en place.",
+  "src": [
+   [
+    "AFP via Techniques de l’Ingénieur (5 novembre 2026)",
+    "https://www.techniques-ingenieur.fr/actualite/breves-afp/google-va-desactiver-par-defaut-ses-outils-dia-pour-les-eleves-165649/"
+   ],
+   [
+    "KultureGeek (4 novembre 2026)",
+    "https://kulturegeek.fr/news-363300/google-ecoles-desactivent-lia-pourraient-priver-eleves-search"
+   ]
+  ],
+  "ajoute_le": "8 novembre 2026 à 21h54",
+  "par": "recherche",
+  "verif": "Outils concernés, âges, réactivation par les administrateurs : identiques dans les deux sources ; extension mondiale sans date selon l’AFP (KultureGeek : « dans les prochains mois »)."
+ }
+]
