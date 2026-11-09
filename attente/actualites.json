@@ -1,1 +1,25 @@
-[]
+[
+ {
+  "d": "2026-11-08",
+  "dl": "8 novembre 2026",
+  "sc": "Monde",
+  "th": "Smartphones",
+  "tag": "WhatsApp",
+  "t": "WhatsApp : on peut inviter à un événement des proches qui n’ont pas l’application",
+  "s": "WhatsApp améliore sa fonction Événements : l’organisateur partage un simple lien, et les invités peuvent voir les détails et répondre depuis leur navigateur, sans installer l’application ni créer de compte. Un nouvel espace « Événements », dans les Réglages, regroupe les invitations envoyées et reçues, passées et à venir. L’organisateur peut ajouter une photo de couverture, suivre les réponses, envoyer des rappels et permettre à un invité de venir accompagné. Le numéro de téléphone n’est pas montré aux invités que l’on ne connaît pas, et l’adresse n’apparaît aux personnes sans WhatsApp qu’après leur réponse ; le déploiement se fait progressivement dans les prochaines semaines.",
+  "tip": "Pour profiter des nouveautés, gardez WhatsApp et votre téléphone à jour. Méfiez-vous des liens d’invitation reçus d’inconnus. Votre téléphone est trop ancien ou ne se met plus à jour ? Gouyerian Tech peut le réparer ou vous conseiller un modèle adapté.",
+  "src": [
+   [
+    "iGeneration (8 novembre 2026)",
+    "https://www.igen.fr/app-store/2026/11/avec-ses-nouveaux-evenements-whatsapp-concurrence-apple-invitations-vous-vous-souvenez-de-cette-app-159181"
+   ],
+   [
+    "YTECHB (7 novembre 2026)",
+    "https://www.ytechb.com/whatsapp-events-now-lets-you-invite-people-without-a-account/"
+   ]
+  ],
+  "ajoute_le": "9 novembre 2026 à 01h20",
+  "par": "recherche",
+  "verif": "Invitation par lien sans compte, espace Événements dans les Réglages, rappels, invité accompagné, numéro masqué, adresse après réponse et déploiement progressif confirmés par iGeneration et YTECHB (tous deux citent le blog officiel de WhatsApp, illisible par l’outil)."
+ }
+]
