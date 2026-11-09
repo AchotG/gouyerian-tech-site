@@ -1,1 +1,75 @@
-[]
+[
+ {
+  "d": "2026-11-09",
+  "dl": "9 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Arnaque",
+  "t": "Charente-Maritime : des escrocs affichent le numéro du commissariat de Saintes",
+  "s": "La police nationale de la Charente-Maritime alerte sur une recrudescence du « spoofing », l’usurpation de numéro de téléphone. Le mercredi 4 novembre, plusieurs appels frauduleux affichant le numéro du commissariat de Saintes ont été signalés. Les escrocs se font passer pour la police afin d’obtenir des informations personnelles, notamment bancaires. Un numéro officiel affiché à l’écran ne prouve donc pas l’identité de celui qui appelle.",
+  "tip": "En cas de doute, raccrochez puis rappelez vous-même le commissariat à partir d’un numéro trouvé sur un site officiel. Ne donnez jamais vos coordonnées bancaires ou un code reçu par SMS au téléphone. Si vous avez déjà communiqué des informations bancaires, contactez tout de suite votre banque.",
+  "src": [
+   [
+    "E.Niort (9 novembre 2026)",
+    "https://eniort.com/2026/11/09/spoofing-a-saintes-faux-appels-au-nom-du-commissariat/"
+   ],
+   [
+    "Hélène FM (9 novembre 2026)",
+    "https://www.helenefm.com/?p=72266"
+   ]
+  ],
+  "ajoute_le": "9 novembre 2026 à 11h52",
+  "par": "recherche",
+  "verif": "Date (mercredi 4 novembre), commissariat de Saintes, but des escrocs (informations personnelles et bancaires) et conseil de rappeler le commissariat confirmés par les deux médias, qui citent l’alerte de la police nationale de la Charente-Maritime."
+ },
+ {
+  "d": "2026-11-05",
+  "dl": "5 novembre 2026",
+  "sc": "France",
+  "th": "Internet",
+  "tag": "Orange",
+  "t": "Orange affiche désormais le nom des entreprises vérifiées qui vous appellent",
+  "s": "Depuis le 4 novembre 2026, Orange affiche sur l’écran de ses abonnés mobiles le nom de certaines entreprises qui les appellent, à côté du numéro. Le service, appelé Branded Call, est gratuit, sans application et fonctionne sur tous les smartphones. Seules les entreprises inscrites et vérifiées par Orange, dont l’appel passe le plus haut niveau de contrôle d’authentification, voient leur nom affiché. Bouygues Telecom propose un service du même nom depuis juin 2026.",
+  "tip": "Un nom affiché rassure, mais ce service ne bloque aucun appel frauduleux : un numéro seul, même familier, peut avoir été usurpé. En cas de doute, raccrochez et rappelez le numéro officiel, et transférez les SMS suspects au 33700.",
+  "src": [
+   [
+    "Génération NT (5 novembre 2026)",
+    "https://www.generation-nt.com/actualites/orange-branded-call-nom-entreprises-2083983"
+   ],
+   [
+    "JeChange (9 novembre 2026)",
+    "https://www.jechange.fr/telecom/mobile/news/69-pourcent-ne-decrochent-plus-inconnus-nom-entreprise-affiche-orange-bouygues"
+   ]
+  ],
+  "ajoute_le": "9 novembre 2026 à 11h52",
+  "par": "recherche",
+  "verif": "Date de lancement (4 novembre), gratuité, absence d’application, vérification des entreprises, certification de niveau A, absence de blocage et lancement de Bouygues Telecom en juin confirmés par les deux sources."
+ },
+ {
+  "d": "2026-11-05",
+  "dl": "5 novembre 2026",
+  "sc": "Monde",
+  "th": "Ordinateurs",
+  "tag": "Windows 11",
+  "t": "Windows 11 26H2 est désormais proposé à tous les PC compatibles",
+  "s": "Microsoft indique que Windows 11 version 26H2, sortie le 29 septembre 2026, est maintenant disponible pour tous les appareils compatibles. La mise à jour est gratuite et s’installe rapidement depuis Windows 11 24H2 ou 25H2, car elle active des fonctions déjà présentes. Les PC sous Windows 10 inscrits au programme de mises à jour de sécurité étendues peuvent aussi passer à cette version. Elle arrive par Windows Update.",
+  "tip": "Avant une grosse mise à jour, sauvegardez vos photos et documents. Si votre PC n’est pas compatible avec Windows 11, ou s’il rame après la mise à jour, un diagnostic en atelier permet de savoir s’il vaut mieux l’améliorer (SSD, mémoire) ou le remplacer.",
+  "src": [
+   [
+    "Microsoft (statut au 28 octobre 2026)",
+    "https://learn.microsoft.com/en-us/windows/release-health/status-windows-11-26h2"
+   ],
+   [
+    "Tom’s Hardware (5 novembre 2026)",
+    "https://www.tomshardware.fr/windows-11-26h2-microsoft-ouvre-enfin-sa-derniere-mise-a-jour-a-tous-les-pc-compatibles/"
+   ],
+   [
+    "Neowin",
+    "https://www.neowin.net/news/microsoft-confirms-supported-windows-10-pcs-can-now-directly-update-to-windows-11-26h2/"
+   ]
+  ],
+  "ajoute_le": "9 novembre 2026 à 11h52",
+  "par": "recherche",
+  "verif": "Disponibilité pour tous les appareils compatibles confirmée sur la page officielle de Microsoft ; date de sortie (29 septembre), gratuité et passage depuis Windows 10 sous support étendu confirmés par Tom’s Hardware et Neowin."
+ }
+]
