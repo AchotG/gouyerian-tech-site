@@ -200,3 +200,6 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - Inspection des 40 pages principales (services, boutique, pros, FAQ, rendez-vous, contact, zone, communes, infos pratiques, actualités) : 32 déjà indexées.
 - Indexation demandée pour les 8 autres : /services/telephones/, /services/ordinateurs/, /contact/, /infos-pratiques/fin-de-la-2g/, /infos-pratiques/batterie-smartphone/, /infos-pratiques/sauvegarder-ses-photos/, /communes/chateauneuf-sur-charente/, /communes/coteaux-du-blanzacais/.
 - Sitemap renvoyé (85 pages découvertes au 7 nov.). Le rapport « Pages » était encore en cours de calcul.
+
+## Actualités (depuis le 14 nov. 2026)
+Une seule recherche Claude par semaine (dimanche) qui écrit `attente/programmees.json` (chaque entrée avec `prevu`). Le workflow GitHub `publier-actualites.yml` publie ensuite 1-2 actualités par jour sans Claude (voir attente/LISEZMOI.md). Les anciennes tâches (alertes horaires, recherche 10 h, vérification 2 h) sont désactivées pour économiser l'utilisation.
