@@ -356,6 +356,11 @@ for pdef in PAGES:
 assert len({pd["path"] for pd in PAGES}) == len(PAGES)
 
 
+# Google AdSense : pas d'annonces sur les pages de paiement, de compte, de suivi et de formulaire (règles AdSense : pas de pub sur des pages sans contenu)
+ADS = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7142333632093018" crossorigin="anonymous"></script>\n'
+SANS_PUB = {"/paiement/", "/mon-espace/", "/suivi/", "/rendez-vous/", "/hors-ligne/", "/404.html"}
+
+
 def head(pd):
     url = SITE + pd["path"]
     t, d = escape(pd["title"]), escape(pd["desc"])
@@ -394,8 +399,7 @@ def head(pd):
 <link rel="preload" href="/assets/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 {pd["extra_head"]}
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7142333632093018" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/assets/site.css?v={VER}">
+{ADS if pd["path"] not in SANS_PUB and pd.get("index", True) else ""}<link rel="stylesheet" href="/assets/site.css?v={VER}">
 <script>try{{var t=localStorage.getItem("gt-theme2");if(t)document.documentElement.dataset.gt=t}}catch(e){{}}</script>
 {lds}"""
 
@@ -458,6 +462,7 @@ CLEAN = """()=>{
   ['cookie','locp','locb','insth'].forEach(i=>{const e=document.getElementById(i);if(e)e.hidden=true});document.querySelectorAll('[data-locline],[data-install]').forEach(e=>e.hidden=true);
   const fn=document.getElementById('faqn');if(fn)fn.textContent='';
   document.querySelectorAll('svg.art,svg.ba-art,svg.art-f').forEach(e=>{e.innerHTML=''});  /* rendus 3D : redessinés par le script au chargement */
+  document.querySelectorAll('.gt-ad').forEach(e=>{e.innerHTML=''});
   document.documentElement.removeAttribute('data-gt');
   return '<!doctype html>\\n'+document.documentElement.outerHTML+'\\n'}"""
 

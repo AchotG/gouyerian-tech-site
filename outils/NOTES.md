@@ -203,3 +203,11 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 
 ## Actualités (depuis le 14 nov. 2026)
 Une seule recherche Claude par semaine (dimanche) qui écrit `attente/programmees.json` (chaque entrée avec `prevu`). Le workflow GitHub `publier-actualites.yml` publie ensuite 1-2 actualités par jour sans Claude (voir attente/LISEZMOI.md). Les anciennes tâches (alertes horaires, recherche 10 h, vérification 2 h) sont désactivées pour économiser l'utilisation.
+
+## Google AdSense (14 nov. 2026)
+- Compte AdSense : celui du compte Google « GT Movie » (pas le compte personnel d'Achot). Éditeur ca-pub-7142333632093018. `ads.txt` généré par build.py.
+- Le script AdSense est dans l'en-tête de toutes les pages publiques SAUF paiement, mon-espace, suivi, rendez-vous, hors-ligne, 404 (constante SANS_PUB dans build.py) : pas de pub sur les pages de formulaire ou de compte.
+- Emplacements réservés (`<div class="gt-ad" data-ad="…">`) : accueil (avant « Infos pratiques »), liste des actualités (sous la liste), page d'une actualité (après le conseil), infos pratiques (sous les articles), page d'un article (avant la navigation).
+  Ils restent invisibles tant que le numéro du bloc n'est pas renseigné dans `GT_ADS.slots` (source/gouyerian-tech.html). Pour les activer : AdSense > Annonces > Par bloc d'annonces > « Display » responsive, copier le `data-ad-slot` dans la clé correspondante.
+- Les annonces automatiques de Google fonctionnent sans ces numéros (réglage dans AdSense > Annonces > Par site).
+- Message de consentement RGPD publié dans AdSense (Confidentialité et messages), avec bouton « Refuser ».

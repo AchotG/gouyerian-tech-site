@@ -993,6 +993,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0
 .nw-tag{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--acc);font:500 .74rem var(--f-mono)}
 .nw h2{font-size:1.2rem;line-height:1.3}
 .nw p{font-size:.95rem}
+.gt-ad{margin:clamp(20px,4vw,32px) auto;max-width:970px;min-height:280px;text-align:center;overflow:hidden;border-block:1px solid var(--line);padding-block:10px}
+.gt-ad:empty{display:none}
+.gt-ad-l{display:block;margin-bottom:6px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+@media print{.gt-ad{display:none}}
 .nw-tip{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--ok-bg);color:var(--fg)!important}
 .nw-evt{font:600 .74rem/1.3 var(--f-mono);color:var(--muted);letter-spacing:.02em}
 .nw-when{display:flex;gap:10px;align-items:center;margin:0 0 14px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);width:fit-content;max-width:100%}.nw-when svg{width:20px;height:20px;flex:none;color:var(--acc)}.nw-when b{display:block;font:600 .72rem/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -2015,6 +2019,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
   <div class="wrap"><div class="rev-nav"><button type="button" class="icon-btn" id="rprev" aria-label="Avis précédent" data-ic="prev"></button><button type="button" class="icon-btn" id="rnext" aria-label="Avis suivant" data-ic="next"></button></div><p class="rev-note">Sélection d’avis publiés sur la fiche Google de Gouyerian Tech, non vérifiés par l’atelier, présentés du plus récent au plus ancien. La date indiquée est celle de la visite, telle qu’affichée par Google ; la date de publication de chaque avis est visible sur la fiche Google.</p><div class="rev-foot"><a class="btn" href="https://search.google.com/local/writereview?placeid=ChIJY1Q5ZwBhAEgRGG3fYcH4qpk" target="_blank" rel="noopener" data-ic="star">Laisser un avis sur Google</a><a class="btn ghost" href="https://share.google/utfNh9Wsa3BPC4K1E" target="_blank" rel="noopener">Voir tous les avis sur Google</a></div></div>
   </section>
 
+  <div class="wrap"><div class="gt-ad" data-ad="accueil"></div></div>
   <section class="sec"><div class="wrap">
     <div class="sec-h"><div><span class="eyebrow">Actualités et infos pratiques</span><h2>Infos pratiques de l’atelier, et l’actu tech</h2><p>Des réponses simples aux questions qu’on nous pose le plus, et l’essentiel de l’actualité tech en France et dans le monde.</p></div><a class="lnk" href="#conseils">Tout voir <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
     <div class="ca-grid"><div class="arts two h-swipe" id="homeArts"></div>
@@ -2343,6 +2348,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
   <section class="sec tight"><div class="wrap">
     <a class="hub-mini" id="hubMini" href="#actus"></a>
     <div class="arts" id="arts"></div>
+    <div class="gt-ad" data-ad="infos"></div>
     <div class="other" style="margin-top:clamp(24px,4vw,36px)"><span class="oic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg></span><div><h3>Une question précise ?</h3><p>Délais, garanties, livraison, paiement : les réponses sont dans la FAQ. Sinon, appelez le 06 05 79 48 94.</p></div><div class="row2"><a class="btn" href="#faq">Voir la FAQ</a></div></div>
   </div></section>
 </div>
@@ -2367,6 +2373,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
   <section class="sec tight"><div class="wrap">
     <div class="nchips" id="nseg" role="group" aria-label="Filtrer les actualités par thème"></div>
     <div class="news" id="news"></div>
+    <div class="gt-ad" data-ad="liste"></div>
     <p class="news-note">Résumés rédigés par Gouyerian Tech à partir des articles cités, vérifiés à leur source. Cliquez sur une source pour lire l’article d’origine.</p>
   </div></section>
 </div>
@@ -2599,6 +2606,14 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
 const $=id=>document.getElementById(id);
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 /* Mode : aperçu (adresses en #) ou site en ligne (vraies adresses, page décrite par window.GT_PAGE) */
+/* ---------- Emplacements d'annonces Google AdSense ----------
+   Chaque emplacement reste invisible tant que son numéro de bloc (data-ad-slot, créé dans AdSense > Annonces > Par bloc d'annonces)
+   n'est pas renseigné ci-dessous. Les « annonces automatiques » de Google fonctionnent sans ces numéros. */
+const GT_ADS={client:"ca-pub-7142333632093018",slots:{actu:"",liste:"",article:"",infos:"",accueil:""}};
+const adBox=k=>`<div class="gt-ad" data-ad="${k}"></div>`;
+function gtAds(){if(!window.GT_PAGE)return;document.querySelectorAll(".gt-ad:empty").forEach(b=>{const id=GT_ADS.slots[b.dataset.ad];if(!id||b.closest("[hidden]"))return;
+  b.innerHTML=`<span class="gt-ad-l">Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="${GT_ADS.client}" data-ad-slot="${id}" data-ad-format="auto" data-full-width-responsive="true"></ins>`;
+  try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}})}
 const PG=window.GT_PAGE||null,ASSETS=PG?"/assets/":"assets/",QP=new URLSearchParams(location.search);
 const ROUTES={home:"/",services:"/services/",boutique:"/boutique/",demande:"/rendez-vous/",zone:"/zone-intervention/",secteurs:"/communes/",contact:"/contact/",legal:"/mentions-legales/",suivi:"/suivi/",paiement:"/paiement/",compte:"/mon-espace/",faq:"/faq/",pro:"/professionnels/",conseils:"/infos-pratiques/",actus:"/actualites/",cgv:"/cgv/",avis:"/#avis-sec",atelier:"/contact/#atelier-sec","pro-virus":"/professionnels/#pro-virus","pro-reseau":"/professionnels/#pro-reseau","pro-depannage":"/professionnels/#pro-depannage","pro-devis":"/professionnels/#pro-devis"};
 const link=h=>{if(!PG)return h;const k=h.replace(/^#/,"");if(k.startsWith("actu-"))return "/actualites/"+k.slice(5)+"/";return ROUTES[k]||(ART_SLUGS.includes(k)?"/infos-pratiques/"+k+"/":"/communes/"+k+"/")};
@@ -2893,7 +2908,7 @@ function copy(text){
   try{navigator.clipboard.writeText(text).then(()=>toast("Copié"),fb)}catch(e){fb()}
 }
 /* Sur téléphone (site en ligne), le bouton du numéro lance l’appel ; ailleurs il copie */
-document.addEventListener("click",e=>{const b=e.target.closest("[data-copy]");if(!b)return;if(PG&&b.dataset.copy===C.tel&&matchMedia("(pointer:coarse)").matches){location.href=hrefs.tel;return}copy(b.dataset.copy)});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-copy]");if(!b)return;copy(b.dataset.copy)});
 
 /* Thème : suit Windows, bouton pour forcer */
 const root=document.documentElement;
@@ -3197,7 +3212,7 @@ const ART=(()=>{
       `<radialGradient id="${r("spot")}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="currentColor" stop-opacity=".08"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient>`+
       `<filter id="${r("bl")}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.2"/></filter>`+
       `<filter id="${r("bl0")}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation=".5"/></filter>`+
-      `<filter id="${r("bl2")}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>`)}
+      `<filter id="${r("bl3")}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>`)}
   const MAT=S=>({steel:S.u("st"),steelF:S.u("sf"),black:S.u("bk"),blackF:S.u("bkc"),white:S.u("wh"),whiteF:S.u("whc"),alu:S.u("al"),aluF:S.u("alc"),silver:S.u("sv"),silverF:S.u("svc"),gold:S.u("gd"),cav:S.u("cv")});
 
   /* ---------- prises vues de face (coordonnées en mm, centrées) ---------- */
@@ -3415,7 +3430,7 @@ const ART=(()=>{
     inner+=plane(S,add(O,[0,h/2+.02,0]),U,neg(d),`<circle r="46" fill="none" stroke="#fff" stroke-opacity=".05" stroke-width="1.2"/><text x="0" y="4" text-anchor="middle" font-size="9" font-weight="700" font-family="Archivo,Arial,sans-serif" fill="#94a3b8" opacity=".75">${st.type==="bluray"?"Blu-ray":"DVD ± RW"}</text>`);
     /* disque posé devant à gauche */
     for(const a of[-1,1])for(const b of[-1,1])S.cam.K([-92+a*60,0,62+b*60]);
-    inner+=plane(S,[-92,.6,62],[1,0,0],[0,0,1],`<circle r="60" fill="#000" opacity=".35" filter="url(#${S.r("bl2")})" transform="translate(2 4)"/><circle r="60" fill="url(#${S.r("dk")})"/><circle r="60" fill="url(#${S.r("sh")})"/><circle r="19" fill="#e8ecf1" stroke="#b9c2ce" stroke-width=".6"/><circle r="7.5" fill="var(--art-bg2,#0f1a1a)" stroke="#9aa4b1" stroke-width=".6"/>`);
+    inner+=plane(S,[-92,.6,62],[1,0,0],[0,0,1],`<circle r="60" fill="#000" opacity=".35" filter="url(#${S.r("bl3")})" transform="translate(2 4)"/><circle r="60" fill="url(#${S.r("dk")})"/><circle r="60" fill="url(#${S.r("sh")})"/><circle r="19" fill="#e8ecf1" stroke="#b9c2ce" stroke-width=".6"/><circle r="7.5" fill="var(--art-bg2,#0f1a1a)" stroke="#9aa4b1" stroke-width=".6"/>`);
     /* câble USB */
     const t=st.type==="usbc"?["usba","usbc"]:["usba"];
     const pa=plug(S,"usba",[96,0,92],nrm([-.25,0,-1]));
@@ -3451,7 +3466,7 @@ const ART=(()=>{
     return s}
   function coque(){const S=scene(-18,58,1.9,320,190),m=MAT(S);
     const w=74,h=152,t=9;
-    let inner=plane(S,[6,0,6],[1,0,0],[0,0,1],`<rect x="${-w/2-4}" y="${-h/2-4}" width="${w+8}" height="${h+8}" rx="18" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/>`);
+    let inner=plane(S,[6,0,6],[1,0,0],[0,0,1],`<rect x="${-w/2-4}" y="${-h/2-4}" width="${w+8}" height="${h+8}" rx="18" fill="#000" opacity=".45" filter="url(#${S.r("bl3")})"/>`);
     /* coque (couleur de la marque du site) */
     inner+=ext(S,{d:rr(w+5,h+5,15),O:[0,0,0],U:[1,0,0],V:[0,0,1],N:[0,t,0],side:"var(--art-c,#2563eb)",cap:"var(--art-c,#2563eb)",capFx:
       `<rect x="${-w/2-2.5}" y="${-h/2-2.5}" width="${w+5}" height="${h+5}" rx="15" fill="#000" opacity=".12"/><rect x="${-w/2-2.5}" y="${-h/2-2.5}" width="${w+5}" height="${h+5}" rx="15" fill="${S.u("sh")}"/>`+
@@ -3461,7 +3476,7 @@ const ART=(()=>{
     return wrap(S,inner,"Coque de téléphone",{bot:"Coque et étui · selon votre modèle",bsz:16})}
   function verre(){const S=scene(-22,52,1.85,320,196),m=MAT(S);
     const w=74,h=154,t=8;
-    let inner=plane(S,[6,0,6],[1,0,0],[0,0,1],`<rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="16" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/>`);
+    let inner=plane(S,[6,0,6],[1,0,0],[0,0,1],`<rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="16" fill="#000" opacity=".45" filter="url(#${S.r("bl3")})"/>`);
     inner+=ext(S,{d:rr(w,h,13),O:[0,0,0],U:[1,0,0],V:[0,0,1],N:[0,t,0],side:m.silver,cap:"#0b0c10",capFx:`<g>${phoneFace(S,w,h,S.u("wp"),{frame:"#9ca3af",inner:homeUI(w-7,h-7)})}</g>`});
     /* verre trempé qui flotte au-dessus, décalé */
     inner+=ext(S,{d:rr(w-2,h-2,12),O:[-16,t+20.8,-10],U:[1,0,0],V:[0,0,1],N:[0,1.2,0],side:"rgba(200,230,255,.55)",cap:"rgba(190,220,255,.16)",capStroke:"rgba(220,240,255,.85)",capSW:1.2,
@@ -3478,7 +3493,7 @@ const ART=(()=>{
     inner+=plane(S,[O[0],H+.02,O[2]],[1,0,0],[0,0,1],k);
     /* souris : volume arrondi (silhouette + dégradés) */
     const c=S.cam.P([94,0,8]);S.cam.grow(c[0]-32,c[1]-36);S.cam.grow(c[0]+40,c[1]+32);
-    inner+=`<g transform="translate(${f1(c[0])} ${f1(c[1])})"><ellipse cx="4" cy="10" rx="34" ry="20" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/><path d="M-26 6C-30 -16 -16 -34 2 -34S32 -18 30 4 16 26 2 26 -22 24 -26 6Z" fill="${m.black}"/><path d="M-22 0C-24 -16 -12 -30 2 -30" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2.5" stroke-linecap="round"/><path d="M2 -33V-8" stroke="#05060a" stroke-width="1.2"/><rect x="-.8" y="-26" width="5.6" height="10" rx="2.8" fill="#4b525d"/></g>`;
+    inner+=`<g transform="translate(${f1(c[0])} ${f1(c[1])})"><ellipse cx="4" cy="10" rx="34" ry="20" fill="#000" opacity=".45" filter="url(#${S.r("bl3")})"/><path d="M-26 6C-30 -16 -16 -34 2 -34S32 -18 30 4 16 26 2 26 -22 24 -26 6Z" fill="${m.black}"/><path d="M-22 0C-24 -16 -12 -30 2 -30" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2.5" stroke-linecap="round"/><path d="M2 -33V-8" stroke="#05060a" stroke-width="1.2"/><rect x="-.8" y="-26" width="5.6" height="10" rx="2.8" fill="#4b525d"/></g>`;
     return wrap(S,inner,"Souris et claviers",{bot:"Filaires ou sans fil",bsz:16})}
 
   /* Appareils (vente) : téléphone, tablette, ordinateur portable */
@@ -3513,7 +3528,7 @@ const ART=(()=>{
     if(k==="cash"){const S=scene(-20,30,1.8,300,200);let inner="";const d=hz(-14),U=nrm(crs(d,UP));
       inner+=shadow(S,[-20,0,0],U,d,74,12,.5,1.6)+ext(S,{d:rr(72,150,13),O:add([-20,75,0],mul(d,4)),U,V:DN,N:mul(d,-8),side:S.u("sv"),cap:"#0b0c10",capFx:phoneFace(S,72,150,S.u("wp2"),{frame:"#d1d5db",inner:homeUI(66,144)})});
       const c=S.cam.P([62,30,10]);S.cam.grow(c[0]-66,c[1]-46);S.cam.grow(c[0]+66,c[1]+50);
-      inner+=`<g transform="translate(${f1(c[0])} ${f1(c[1])}) rotate(-12)"><rect x="-58" y="-34" width="116" height="68" rx="12" fill="#000" opacity=".4" filter="url(#${S.r("bl2")})" transform="translate(4 8)"/><path d="M-58 -22a12 12 0 0 1 12 -12H46a12 12 0 0 1 12 12V22a12 12 0 0 1 -12 12H-46a12 12 0 0 1 -12 -12V12a12 12 0 0 0 0 -24Z" fill="#22c55e"/><circle cx="-40" cy="0" r="5" fill="var(--art-bg,#fff)"/><text x="8" y="12" text-anchor="middle" font-size="34" font-weight="800" font-family="Archivo,Arial,sans-serif" fill="#052e16">€</text></g>`;
+      inner+=`<g transform="translate(${f1(c[0])} ${f1(c[1])}) rotate(-12)"><rect x="-58" y="-34" width="116" height="68" rx="12" fill="#000" opacity=".4" filter="url(#${S.r("bl3")})" transform="translate(4 8)"/><path d="M-58 -22a12 12 0 0 1 12 -12H46a12 12 0 0 1 12 12V22a12 12 0 0 1 -12 12H-46a12 12 0 0 1 -12 -12V12a12 12 0 0 0 0 -24Z" fill="#22c55e"/><circle cx="-40" cy="0" r="5" fill="var(--art-bg,#fff)"/><text x="8" y="12" text-anchor="middle" font-size="34" font-weight="800" font-family="Archivo,Arial,sans-serif" fill="#052e16">€</text></g>`;
       return wrap(S,inner,"Rachat de votre appareil",{bot:"Estimation gratuite de votre appareil",bsz:16})}
     return""}
 
@@ -3620,7 +3635,7 @@ const ART=(()=>{
         o=tube(S,path3(S,[[O[0]+L/2-30,5,O[2]-Wd/2],[O[0]+L/2+10,5,O[2]-Wd/2-30],[ph.end[0]+20,5,ph.end[2]-40],ph.end]),3.6*1.7)+o+ph.svg;
         /* manette (dessinée en vue de dessus, posée devant) */
         const c=S.cam.P([-150,6,96]);S.cam.grow(c[0]-90,c[1]-60);S.cam.grow(c[0]+90,c[1]+60);
-        o+=`<g transform="translate(${f1(c[0])} ${f1(c[1])}) rotate(-6) scale(1,.82)"><ellipse cx="4" cy="22" rx="92" ry="40" fill="#000" opacity=".45" filter="url(#${S.r("bl2")})"/><path d="M-60 -34C-34 -44 34 -44 60 -34C84 -26 96 10 92 36C88 58 66 62 52 44L36 24H-36L-52 44C-66 62 -88 58 -92 36C-96 10 -84 -26 -60 -34Z" fill="${m.black}"/><path d="M-58 -30C-34 -38 34 -38 58 -30" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2.5" stroke-linecap="round"/>`+
+        o+=`<g transform="translate(${f1(c[0])} ${f1(c[1])}) rotate(-6) scale(1,.82)"><ellipse cx="4" cy="22" rx="92" ry="40" fill="#000" opacity=".45" filter="url(#${S.r("bl3")})"/><path d="M-60 -34C-34 -44 34 -44 60 -34C84 -26 96 10 92 36C88 58 66 62 52 44L36 24H-36L-52 44C-66 62 -88 58 -92 36C-96 10 -84 -26 -60 -34Z" fill="${m.black}"/><path d="M-58 -30C-34 -38 34 -38 58 -30" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2.5" stroke-linecap="round"/>`+
           `<g fill="#14161a" stroke="#3a404a" stroke-width="1"><circle cx="-26" cy="10" r="13"/><circle cx="26" cy="10" r="13"/></g><circle cx="-26" cy="10" r="8" fill="#2b3038"/><circle cx="26" cy="10" r="8" fill="#2b3038"/>`+
           `<path d="M-62 -16h8v-8h8v8h8v8h-8v8h-8v-8h-8z" fill="#2b3038"/>${[[58,-24,"#22c55e"],[70,-12,"#ef4444"],[46,-12,"#3b82f6"],[58,0,"#eab308"]].map(([x,y,cl])=>`<circle cx="${x}" cy="${y}" r="5.5" fill="#2b3038"/><circle cx="${x}" cy="${y}" r="2.4" fill="${cl}"/>`).join("")}<rect x="-10" y="-20" width="20" height="5" rx="2.5" fill="#3b82f6" opacity=".9"/></g>`;
         return big(S,o,{over:badge(1060,150,42)})},
@@ -3703,8 +3718,9 @@ const REVIEWS=[ /* nom, texte, mois de la visite indiqué par Google ; du plus r
   const rv=$("rev"),tr=$("trk"),vh=$("v-home");let hold=0,inside=false,pos=0,last=0;
   const half=()=>{const c=tr.children[REVIEWS.length];return c?c.offsetLeft-tr.children[0].offsetLeft:tr.scrollWidth/2};
   const step=()=>{const c=tr.querySelector(".rv");return c?c.getBoundingClientRect().width+14:344};
-  const wrap=()=>{const h=half();if(rv.scrollLeft>=h)rv.scrollLeft-=h;else if(rv.scrollLeft<=0&&h)rv.scrollLeft+=h};
-  const go=d=>{hold=Date.now();wrap();rv.scrollTo({left:rv.scrollLeft+d*step(),behavior:RM?"auto":"smooth"})};
+  const wrap=()=>{const h=half();if(rv.scrollLeft>=h+step()*1.5)rv.scrollLeft-=h;else if(rv.scrollLeft<=0&&h)rv.scrollLeft+=h};
+  const go=d=>{hold=Date.now();wrap();const h=half();if(d<0&&h&&rv.scrollLeft<step())rv.scrollLeft+=h; /* retour avant le début : on passe sur la 2e série, identique */
+    rv.scrollTo({left:rv.scrollLeft+d*step(),behavior:RM?"auto":"smooth"})};
   $("rprev").onclick=()=>go(-1);$("rnext").onclick=()=>go(1);
   ["pointerdown","touchstart","touchmove","wheel","focusin"].forEach(ev=>rv.addEventListener(ev,()=>{hold=Date.now()},{passive:true}));
   rv.addEventListener("mouseenter",()=>{inside=true});rv.addEventListener("mouseleave",()=>{inside=false;hold=Date.now()});
@@ -4190,7 +4206,7 @@ const THL=c=>(NTH.find(x=>x[0]===c)||[c,c])[1];
 function renderArticle(a){
   $("aHead").innerHTML=`<div class="ph-top">${backTo("#conseils","Infos pratiques")}<span class="crumb"><a href="${link("#home")}">Accueil</a> / <a href="${link("#conseils")}">Infos pratiques</a> / ${a.cat}</span></div><span class="eyebrow">${a.cat} · ${a.min} min de lecture</span><h1>${nb(a.t)}</h1><p class="lead">${a.d}</p><span class="art-meta">Mis à jour le ${a.dl} · Gouyerian Tech</span>`;
   $("aBody").innerHTML=`<figure class="art-fig">${picHTML(a.s,"Illustration : "+a.t,"(max-width:900px) 100vw, 760px",true)}<figcaption>Illustration non contractuelle</figcaption></figure>`+nb(a.b)+(a.src.length?`<div class="art-src"><h2>Sources</h2><ul>${a.src.map(([l,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${l}</a></li>`).join("")}</ul></div>`:"");
-  $("aBody").insertAdjacentHTML("beforeend",pnHTML(ARTS,a,x=>"#"+x.s,"Article",false,"#conseils","Toutes les infos pratiques"));
+  $("aBody").insertAdjacentHTML("beforeend",adBox("article")+pnHTML(ARTS,a,x=>"#"+x.s,"Article",false,"#conseils","Toutes les infos pratiques"));
   const [sl,kind,sc]=a.svc,shop=kind==="boutique";
   $("aSide").innerHTML=`<div class="acard art-cta"><span class="eyebrow">Besoin d’aide ?</span><h3>${nb(sl)}</h3><p>Devis gratuit, à l’atelier de Saint-Fort-sur-le-Né ou chez vous.</p><a class="btn" href="${shop?(PG?"/boutique/?b="+norm(sc):"#boutique"):(PG?"/services/"+norm(sc)+"/":"#services")}" ${shop?`data-bcat="${sc}"`:`data-cat="${sc}"`}>${shop?"Voir la boutique":"Voir le service"}</a><a class="btn ghost" href="${link("#demande")}">Demander un rappel</a><span class="num">06 05 79 48 94</span></div>`;
   $("aMore").innerHTML=ARTS.filter(x=>x!==a).slice(0,3).map(artCard).join("")}
@@ -4229,7 +4245,7 @@ const newsCard=n=>`<a class="hub-c" href="${link("#actu-"+n.id)}"><span class="h
 function renderNews(n){
   const img=n.tag==="Arnaques"?"arnaques-en-ligne":NIMG[n.th]||"cat-ordinateurs",[sl,sc]=NSVC[n.th]||NSVC.Ordinateurs;
   $("nHead").innerHTML=`<div class="ph-top">${backTo("#actus","Actualités")}<span class="crumb"><a href="${link("#home")}">Accueil</a> / <a href="${link("#actus")}">Actualités</a> / ${THL(n.th)}</span></div>${isUrg(n)?'<span class="urg big">Alerte en cours</span>':""}<span class="eyebrow">${n.sc} · ${n.tag}</span><h1>${nb(n.t)}</h1><span class="art-meta">Publié le ${pubLabel(n)} · Résumé rédigé par Gouyerian Tech</span>`;
-  $("nBody").innerHTML=`<p class="nw-when">${svg("cal")}<span><b>Date des faits</b>${n.dl}</span></p><p class="lead-p">${nb(n.s)}</p>${n.tip?`<div class="nw-tip big">${svg("check")}<span><b>Le conseil de Gouyerian Tech</b>${n.tip}</span></div>`:""}<figure class="art-fig">${picHTML(img,"","(max-width:900px) 100vw, 760px")}<figcaption>Illustration non contractuelle</figcaption></figure><div class="art-src"><h2>Source${n.src.length>1?"s":""}</h2><ul>${n.src.map(([l,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${l}</a></li>`).join("")}</ul><p class="news-note" style="margin:0">Résumé rédigé par Gouyerian Tech à partir de ${n.src.length>1?"ces articles":"cet article"}, vérifié à la source. Cliquez pour lire l’article d’origine.</p></div>`;
+  $("nBody").innerHTML=`<p class="nw-when">${svg("cal")}<span><b>Date des faits</b>${n.dl}</span></p><p class="lead-p">${nb(n.s)}</p>${n.tip?`<div class="nw-tip big">${svg("check")}<span><b>Le conseil de Gouyerian Tech</b>${n.tip}</span></div>`:""}${adBox("actu")}<figure class="art-fig">${picHTML(img,"","(max-width:900px) 100vw, 760px")}<figcaption>Illustration non contractuelle</figcaption></figure><div class="art-src"><h2>Source${n.src.length>1?"s":""}</h2><ul>${n.src.map(([l,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${l}</a></li>`).join("")}</ul><p class="news-note" style="margin:0">Résumé rédigé par Gouyerian Tech à partir de ${n.src.length>1?"ces articles":"cet article"}, vérifié à la source. Cliquez pour lire l’article d’origine.</p></div>`;
   $("nSide").innerHTML=`<div class="acard art-cta"><span class="eyebrow">Besoin d’aide ?</span><h3>${nb(sl)}</h3><p>Devis gratuit, à l’atelier de Saint-Fort-sur-le-Né ou chez vous.</p><a class="btn" href="${PG?"/services/"+norm(sc)+"/":"#services"}" data-cat="${sc}">Voir le service</a><a class="btn ghost" href="${link("#demande")}">Demander un rappel</a><span class="num">06 05 79 48 94</span></div>`;
   $("nBody").insertAdjacentHTML("beforeend",pnHTML(NEWS,n,x=>"#actu-"+x.id,"Actualité",true,"#actus","Toutes les actualités"));
   const others=NEWS.filter(x=>x!==n),same=others.filter(x=>x.th===n.th);
@@ -4438,7 +4454,7 @@ document.addEventListener("click",e=>{const a=e.target.closest("[data-back]");if
 (()=>{const b=$("totop");if(!b)return;const f=()=>{b.hidden=scrollY<innerHeight*1.5||document.body.classList.contains("lock")||($("cp")&&!$("cp").hidden)};
   addEventListener("scroll",f,{passive:true});document.addEventListener("click",()=>setTimeout(f,0));f();
   b.onclick=()=>{scrollTo({top:0,behavior:RM?"auto":"smooth"});const h=document.querySelector(".view:not([hidden]) h1");if(h){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}}})();
-route();fixLinks();
+route();fixLinks();gtAds();
 
 /* Assistant automatique */
 const BOT={
@@ -4518,7 +4534,7 @@ function livMsg(f){if(!CART.length)return"";
   if(f.km==null)return `<div class="liv hint">${svg("truck")}<span>${livTxt()} Indiquez votre adresse pour calculer la livraison.</span></div>`;
   if(f.far)return `<div class="liv hint">${svg("truck")}<span>Au-delà de ${LIV.frais[LIV.frais.length-1][0]} km, la livraison est sur devis : Gouyerian Tech vous rappelle.</span></div>`;
   if(f.free)return `<div class="liv ok"><span>✅ Livraison offerte ! Vous économisez ${f.base} €.</span></div>`;
-  if(f.need!=null)return livBar(`Plus que <b>${f.need} €</b> d’achat et la livraison est offerte ✅`,cartTotal(),f.thr,`Livraison offerte dès ${f.thr} € à ${f.km} km de l’atelier.`);
+  if(f.need!=null)return livBar(`Plus que <b>${f.need} €</b> d’achat et la livraison est offerte ✅`,cartTotal(),f.thr,`Livraison offerte dès ${f.thr} € ${f.km<1?"dans votre commune":"à "+f.km+" km de l’atelier"}.`);
   return ""}
 /* Bandeau de livraison offerte en haut du panier (étape 1) */
 /* Bandeau calculé pour la commune mémorisée : un client à 6 km ne voit que son seuil (50 €), jamais celui des 40 km */
