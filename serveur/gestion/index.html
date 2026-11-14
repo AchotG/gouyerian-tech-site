@@ -46,6 +46,7 @@ label small{font-weight:400;color:var(--muted)}
 input,textarea,select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit}
 textarea{min-height:84px;resize:vertical}
 input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
+.sum{margin:0 0 12px;padding-left:20px;display:grid;gap:4px;font-weight:600}
 .chk{display:flex;gap:10px;align-items:flex-start;font-weight:500}
 .tvl{display:grid;gap:8px;margin:10px 0}.tvr{display:grid;grid-template-columns:minmax(0,1fr) 108px 44px;gap:8px;align-items:center}.tvr input{margin:0;min-width:0}
 .tvr .tvp{position:relative}.tvr .tvp input{padding-right:28px;text-align:right}.tvr .tvp:after{content:"€";position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
@@ -316,18 +317,19 @@ a{color:var(--acc)}
         <label><input type="radio" name="tvm" value="informer"><span><b>Informer le client</b><small>Le nouveau prix et le détail apparaissent dans son suivi</small></span></label>
         <label><input type="radio" name="tvm" value="accord"><span><b>Demander son accord</b><small>Il doit accepter le nouveau devis en ligne avant la suite des travaux</small></span></label>
       </div>
-      <div id="tvplus" hidden>
-        <label><span>Message au client <small>(facultatif)</small></span><textarea id="tvnote" maxlength="1000" placeholder="Ex. : En démontant, la batterie est gonflée : il faut aussi la remplacer."></textarea></label>
-        <label class="chk"><input type="checkbox" id="tvmail" checked><span id="tvmail-l">Envoyer l’e-mail au client</span></label>
-      </div>
-      <button class="btn" type="button" id="tvsave">Enregistrer le prix</button>
     </div>
     <div class="card" style="margin-top:14px">
       <h2>Changer l’étape</h2>
       <div class="steps" id="steps"></div>
-      <label><span>Message au client <small>(facultatif, visible dans le suivi et l’e-mail)</small></span><textarea id="snote" maxlength="1000" placeholder="Ex. : Devis : remplacement de l’écran 89 €, garantie 6 mois."></textarea></label>
+      <p class="muted" style="margin:6px 0 0;font-size:.85rem">Touchez à nouveau une étape pour l’annuler.</p>
+    </div>
+    <div class="card savebar" style="margin-top:14px">
+      <h2>✉️ Enregistrer et prévenir le client</h2>
+      <ul class="sum" id="ssum"></ul>
+      <label><span>Message au client <small>(facultatif, visible dans le suivi et l’e-mail)</small></span><textarea id="snote" maxlength="1000" placeholder="Ex. : En démontant, la batterie est gonflée : il faut aussi la remplacer."></textarea></label>
       <label class="chk"><input type="checkbox" id="smail"><span id="smail-l">Envoyer l’e-mail au client</span></label>
-      <button class="btn" type="button" id="ssave" disabled>Enregistrer l’étape</button>
+      <button class="btn" type="button" id="ssave" disabled>Enregistrer</button>
+      <p class="muted" style="margin:8px 0 0;font-size:.85rem">Prix et étape sont enregistrés ensemble : le client reçoit un seul e-mail.</p>
     </div>
     <div class="card" style="margin-top:14px"><h2>💳 Paiement en ligne</h2><div id="fpay"></div></div>
     <section class="chat" id="fmsg" aria-label="Messages avec le client">
@@ -429,7 +431,7 @@ function rendre(f){
   $("bresend").hidden=!f.avis_email;gps($("fgps"),f.adresse);tvInit(f);
   payPanel($("fpay"),"r:"+f.id,f.paiements||[],f.email,prixNum(f.prix),"Réparation "+f.appareil+" ("+f.numero+")",()=>ouvrir(f.id));
   $("steps").innerHTML=PARCOURS.map(k=>{const e=ETAPES.find(x=>x.etape===k);return `<button type="button" data-e="${k}" aria-pressed="false" class="${k===f.etape?"cur":""}">${esc(e?e.libelle:k)}</button>`}).join("");
-  $("snote").value="";$("smail").checked=!!f.avis_email;$("smail").disabled=!f.email;$("smail-l").textContent=!f.email?"Pas d’e-mail pour ce client : il verra l’étape dans son suivi":f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Envoyer quand même un e-mail ("+f.email+") : le client n’a pas coché le suivi par e-mail";$("ssave").disabled=true;
+  $("snote").value="";$("smail").checked=!!f.avis_email;$("smail").disabled=!f.email;$("smail-l").textContent=!f.email?"Pas d’e-mail pour ce client : il verra l’étape dans son suivi":f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Envoyer quand même un e-mail ("+f.email+") : le client n’a pas coché le suivi par e-mail";SEL=null;sMaj();
   $("fhist").innerHTML=f.historique.map(h=>`<li><b>${esc(h.libelle)}</b><small>${dt(h.le)}${+h.mail?" · e-mail envoyé":""}</small>${h.note?`<span>${esc(h.note)}</span>`:""}</li>`).join("");
   $("mav").textContent=(f.nom||"?").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join("")||"?";$("mwho").textContent=f.nom||"Client";
   $("msub").textContent=f.numero+" · "+(f.email?f.email:"pas d’e-mail : le client lit dans son suivi");
@@ -439,35 +441,41 @@ function rendre(f){
   $("delc").hidden=true;$("bdel").hidden=false;
   $("bon").innerHTML=`<h2>Gouyerian Tech · Bon de dépôt</h2><p>1 route de Segonzac, 16130 Saint-Fort-sur-le-Né · 06 05 79 48 94</p><div class="box"><p>Numéro de suivi : <b class="code">${esc(f.numero)}</b></p><p>Code : <b class="code">${esc(f.code)}</b></p><p>Suivez votre réparation sur <b>gouyerian-tech.fr/suivi</b></p></div><div class="box"><p>Client : ${esc(f.nom)}${f.telephone?" · "+esc(f.telephone):""}</p><p>Appareil : ${esc(f.appareil)}</p>${f.panne?`<p>Demande : ${esc(f.panne)}</p>`:""}${f.prix?`<p>Prix annoncé : ${esc(f.prix)}</p>`:""}<p>Déposé le ${new Date(f.cree_le.replace(" ","T")).toLocaleDateString("fr-FR")}</p></div><p style="margin-top:12px;font-size:12px">Conservez ce bon : il est demandé pour récupérer l’appareil. Conditions générales de vente : gouyerian-tech.fr/cgv</p>`;
 }
-$("steps").onclick=e=>{const b=e.target.closest("button");if(!b)return;SEL=b.dataset.e;$("steps").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));$("ssave").disabled=false};
+$("steps").onclick=e=>{const b=e.target.closest("button");if(!b)return;SEL=SEL===b.dataset.e?null:b.dataset.e;$("steps").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.e===SEL));sMaj()};
+/* Un seul bouton en bas : ce qui sera enregistré et envoyé */
+let TV0="";
+const tvSig=()=>JSON.stringify(TV.map(x=>[String(x.l).trim(),tvNum(x.p)]).filter(x=>x[0]||x[1]));
+function sMaj(){if(!FICHE)return;const m=(document.querySelector('input[name="tvm"]:checked')||{}).value||"interne",chg=tvSig()!==TV0,f=FICHE,L=[];
+  if(chg||m!=="interne")L.push(m==="interne"?"💶 Nouveau prix "+$("tvtot").textContent+" (pas montré au client)":m==="accord"?"💶 Nouveau devis "+$("tvtot").textContent+" : le client doit l’accepter":"💶 Prix "+$("tvtot").textContent+" : le client est informé");
+  if(SEL){const e=ETAPES.find(x=>x.etape===SEL);L.push("🔧 Nouvelle étape : "+(e?e.libelle:SEL))}
+  const vu=!!SEL||m!=="interne",mail=vu&&$("smail").checked&&!!f.email;
+  $("ssum").innerHTML=L.length?L.map(x=>"<li>"+esc(x)+"</li>").join(""):"<li class='muted'>Changez le prix ou choisissez une étape.</li>";
+  $("ssave").disabled=!L.length;$("smail").disabled=!f.email||!vu;
+  $("ssave").textContent=mail?"Enregistrer et envoyer le mail":"Enregistrer"}
+$("smail").onchange=sMaj;
 /* ---------- Prix et travaux (détail ligne par ligne) ---------- */
 let TV=[];
 const tvEur=n=>(Math.round(n*100)/100).toLocaleString("fr-FR",{minimumFractionDigits:Number.isInteger(Math.round(n*100)/100)?0:2,maximumFractionDigits:2})+" €";
 const tvNum=v=>{const x=parseFloat(String(v).replace(/\s/g,"").replace(",","."));return isNaN(x)?0:x};
-function tvTot(){const t=TV.reduce((a,x)=>a+tvNum(x.p),0);$("tvtot").textContent=tvEur(t);const o=FICHE&&FICHE.prix;$("tvold").textContent=o&&o!==tvEur(t)?"Prix actuel : "+o:""}
+function tvTot(){const t=TV.reduce((a,x)=>a+tvNum(x.p),0);$("tvtot").textContent=tvEur(t);const o=FICHE&&FICHE.prix;$("tvold").textContent=o&&o!==tvEur(t)?"Prix actuel : "+o:"";sMaj()}
 function tvDraw(){$("tvl").innerHTML=TV.map((x,i)=>`<div class="tvr"><input type="text" data-i="${i}" data-k="l" maxlength="120" placeholder="Ex. : Remplacement de l’écran" value="${esc(x.l)}" aria-label="Réparation ou pièce"><span class="tvp"><input type="text" inputmode="decimal" data-i="${i}" data-k="p" placeholder="0" value="${esc(String(x.p))}" aria-label="Prix en euros"></span><button type="button" class="tvx" data-del="${i}" aria-label="Retirer cette ligne"${TV.length<2?" disabled":""}>×</button></div>`).join("");tvTot()}
 $("tvl").addEventListener("input",e=>{const t=e.target;if(t.dataset.i==null)return;TV[+t.dataset.i][t.dataset.k]=t.value;tvTot()});
 $("tvl").addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(!b)return;TV.splice(+b.dataset.del,1);tvDraw()});
 $("tvadd").onclick=()=>{TV.push({l:"",p:""});tvDraw();const ins=$("tvl").querySelectorAll('input[data-k="l"]');ins[ins.length-1].focus()};
-function tvMode(){const m=document.querySelector('input[name="tvm"]:checked').value,f=FICHE||{};$("tvplus").hidden=m==="interne";
-  $("tvmail").disabled=!f.email;$("tvmail-l").textContent=f.email?"Envoyer l’e-mail au client ("+f.email+")":"Pas d’e-mail pour ce client : il verra le changement dans son suivi";if(!f.email)$("tvmail").checked=false;
-  $("tvsave").textContent=m==="interne"?"Enregistrer le prix":m==="informer"?"Enregistrer et informer le client":"Enregistrer et demander son accord"}
+function tvMode(){sMaj()}
 document.querySelectorAll('input[name="tvm"]').forEach(r=>r.onchange=tvMode);
 function tvInit(f){TV=(f.travaux||[]).map(x=>({l:x.l,p:String(x.p).replace(".",",")}));
   if(!TV.length)TV=[{l:f.prix?(f.panne||"Réparation").split("\n")[0].slice(0,120):"",p:prixNum(f.prix).replace(".",",")}];
-  document.querySelector('input[name="tvm"][value="interne"]').checked=true;$("tvnote").value="";$("tvmail").checked=!!f.email;
+  document.querySelector('input[name="tvm"][value="interne"]').checked=true;TV0=tvSig();
   const st=$("tvst"),fin=f.etape==="rendu"||f.etape==="annule";
   if(f.devis_etat==="attente"){st.className="tvst";st.textContent="⏳ En attente de l’accord du client"+(f.prix?" ("+f.prix+")":"");st.hidden=false}
   else if(f.devis_etat==="accepte"){st.className="tvst ok";st.textContent="✓ Devis accepté par le client"+(f.prix?" ("+f.prix+")":"");st.hidden=false}
   else if(f.devis_etat==="refuse"){st.className="tvst no";st.textContent="✕ Devis refusé par le client";st.hidden=false}else st.hidden=true;
   document.querySelector('input[name="tvm"][value="accord"]').disabled=fin;tvDraw();tvMode()}
-$("tvsave").onclick=async()=>{if(!FICHE)return;const m=document.querySelector('input[name="tvm"]:checked').value,b=$("tvsave");b.disabled=true;
-  try{const j=await api("travaux",{id:FICHE.id,mode:m,lignes:TV,note:$("tvnote").value,mail:$("tvmail").checked});rendre(j.fiche);
-    flash("Prix enregistré : "+j.fiche.prix+"."+(m==="accord"?" Le client doit maintenant accepter le nouveau devis.":m==="informer"?" Le client le voit dans son suivi.":"")+(j.mail?" E-mail envoyé.":""))}
-  catch(err){flash(err.message,false)}b.disabled=false};
-$("ssave").onclick=async()=>{if(!SEL||!FICHE)return;$("ssave").disabled=true;
-  try{const j=await api("etape",{id:FICHE.id,etape:SEL,note:$("snote").value,mail:$("smail").checked});rendre(j.fiche);flash("Étape « "+j.fiche.libelle+" » enregistrée."+(j.mail?" E-mail envoyé au client.":""))}
-  catch(err){flash(err.message,false);$("ssave").disabled=false}};
+$("ssave").onclick=async()=>{if(!FICHE)return;const m=document.querySelector('input[name="tvm"]:checked').value,chg=tvSig()!==TV0,b=$("ssave");b.disabled=true;
+  try{const j=await api("maj",{id:FICHE.id,travaux:chg||m!=="interne",mode:m,lignes:TV,etape:SEL||"",note:$("snote").value,mail:$("smail").checked&&!$("smail").disabled});rendre(j.fiche);
+    flash("Enregistré."+(m==="accord"?" Le client doit maintenant accepter le nouveau devis.":"")+(j.mail?" Un e-mail envoyé au client.":""))}
+  catch(err){flash(err.message,false);b.disabled=false}};
 /* Bulles d'une conversation (fiche réparation et onglet Messages) */
 /* ---------- Paiement en ligne SumUp ---------- */
 let SUMUP=false,PAYS=[],PAYF="";

@@ -472,15 +472,7 @@ switch ($action) {
     $r = fiche((int)($d['id'] ?? 0));
     $mode = txt($d['mode'] ?? 'interne', 10);
     if (!in_array($mode, ['interne', 'informer', 'accord'], true)) fail('Choix inconnu.');
-    $lignes = [];
-    foreach (array_slice(is_array($d['lignes'] ?? null) ? $d['lignes'] : [], 0, 20) as $x) {
-      $l = txt((string)($x['l'] ?? ''), 120);
-      $p = round((float)str_replace([',', ' '], ['.', ''], (string)($x['p'] ?? '')), 2);
-      if ($l === '' && !$p) continue;
-      if ($l === '') fail('Donnez un nom à chaque ligne (ex. : Remplacement de l’écran).');
-      if ($p < 0 || $p > 10000) fail("Prix impossible pour « $l ».");
-      $lignes[] = ['l' => $l, 'p' => $p];
-    }
+    $lignes = lignes_travaux($d['lignes'] ?? null);
     if (!$lignes) fail('Ajoutez au moins une ligne avec son prix.');
     if ($mode === 'accord' && in_array($r['etape'], CLOS, true)) fail('Cette réparation est terminée : impossible de demander un nouvel accord.');
     $avant = (string)$r['prix'];
@@ -496,6 +488,40 @@ switch ($action) {
         . "\n" . implode("\n", array_map(fn($x) => '• ' . $x['l'] . ' : ' . euros($x['p']), $lignes)) . ($note !== '' ? "\n\n" . $note : '');
       $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, ?)')->execute([$r['id'], 'travaux', $h, now(), $mail ? 1 : 0]);
     }
+    out(['ok' => true, 'fiche' => vue(fiche((int)$r['id']), true), 'mail' => $mail]);
+
+  /* Fiche réparation : prix ET étape enregistrés ensemble, UN SEUL e-mail au client */
+  case 'maj':
+    $r = fiche((int)($d['id'] ?? 0));
+    $note = txt($d['note'] ?? '', 1000);
+    $veut_mail = !empty($d['mail']);
+    $tr = null; $etape = '';
+    if (!empty($d['travaux'])) {
+      $mode = txt($d['mode'] ?? 'interne', 10);
+      if (!in_array($mode, ['interne', 'informer', 'accord'], true)) fail('Choix inconnu.');
+      $lignes = lignes_travaux($d['lignes'] ?? null);
+      if (!$lignes) fail('Ajoutez au moins une ligne avec son prix.');
+      if ($mode === 'accord' && in_array($r['etape'], CLOS, true)) fail('Cette réparation est terminée : impossible de demander un nouvel accord.');
+      $avant = (string)$r['prix'];
+      $total = euros(array_sum(array_column($lignes, 'p')));
+      $pdo->prepare('UPDATE gt_reparations SET travaux = ?, prix = ?, maj_le = ?' . ($mode === 'accord' ? ", devis_etat = 'attente', devis_vu = 1" : '') . ' WHERE id = ?')
+        ->execute([json_encode($lignes, JSON_UNESCAPED_UNICODE), $total, now(), $r['id']]);
+      if ($mode !== 'interne') $tr = ['lignes' => $lignes, 'avant' => $avant, 'total' => $total, 'accord' => $mode === 'accord'];
+    }
+    if (($d['etape'] ?? '') !== '') {
+      $etape = txt($d['etape'], 20);
+      if (!isset(ETAPES[$etape])) fail('Étape inconnue.');
+      $pdo->prepare('UPDATE gt_reparations SET etape = ?, maj_le = ?, clos_le = ?, devis_etat = ? WHERE id = ?')
+        ->execute([$etape, now(), in_array($etape, CLOS, true) ? now() : null, $etape === 'devis' ? 'attente' : (string)fiche((int)$r['id'])['devis_etat'], $r['id']]);
+    }
+    if (!$tr && $etape === '' && empty($d['travaux'])) fail('Rien à enregistrer.');
+    $r2 = fiche((int)$r['id']);
+    $mail = false;
+    if ($veut_mail && ($tr || $etape !== '')) $mail = $etape !== '' ? mail_etape($r2, $etape, $note, true, $tr) : mail_travaux($r2, $tr['lignes'], $tr['avant'], $note, $tr['accord']);
+    $h = $pdo->prepare('INSERT INTO gt_historique (reparation_id, etape, note, le, mail) VALUES (?, ?, ?, ?, ?)');
+    if ($tr) $h->execute([$r['id'], 'travaux', ($tr['accord'] ? 'Votre accord est demandé. ' : '') . 'Nouveau montant : ' . $tr['total'] . ($tr['avant'] !== '' && $tr['avant'] !== $tr['total'] ? " (avant : {$tr['avant']})" : '') . '.'
+      . "\n" . implode("\n", array_map(fn($x) => '• ' . $x['l'] . ' : ' . euros($x['p']), $tr['lignes'])) . ($etape === '' && $note !== '' ? "\n\n" . $note : ''), now(), $mail ? 1 : 0]);
+    if ($etape !== '') $h->execute([$r['id'], $etape, $note, now(), $mail ? 1 : 0]);
     out(['ok' => true, 'fiche' => vue(fiche((int)$r['id']), true), 'mail' => $mail]);
 
   case 'modifier':

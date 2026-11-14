@@ -782,7 +782,22 @@ function pied_mail(array $r): string {
   return "\n\nSuivre votre réparation : " . lien_suivi($r) . "\nNuméro de suivi : {$r['numero']} · code : {$r['code']}\n";
 }
 
-function mail_etape(array $r, string $etape, string $note, bool $force = false): bool {
+/* Lignes « Prix et travaux » envoyées par la gestion, nettoyées */
+function lignes_travaux($in): array {
+  $lignes = [];
+  foreach (array_slice(is_array($in) ? $in : [], 0, 20) as $x) {
+    $l = txt((string)($x['l'] ?? ''), 120);
+    $p = round((float)str_replace([',', ' '], ['.', ''], (string)($x['p'] ?? '')), 2);
+    if ($l === '' && !$p) continue;
+    if ($l === '') fail('Donnez un nom à chaque ligne (ex. : Remplacement de l’écran).');
+    if ($p < 0 || $p > 10000) fail("Prix impossible pour « $l ».");
+    $lignes[] = ['l' => $l, 'p' => $p];
+  }
+  return $lignes;
+}
+
+/* $tr (facultatif) : nouveau prix annoncé dans le même e-mail ['lignes','avant','total','accord'] */
+function mail_etape(array $r, string $etape, string $note, bool $force = false, ?array $tr = null): bool {
   if ((!(int)$r['avis_email'] && !$force) || $r['email'] === '') return false;
   [$lib, $phrase] = ETAPES[$etape];
   $m = ['pre' => "$lib · $phrase", 'etiquette' => "Réparation {$r['numero']}", 'titre' => $lib,
@@ -794,7 +809,12 @@ function mail_etape(array $r, string $etape, string $note, bool $force = false):
   elseif ($etape === 'prete') { $m['bouton'] = ['Voir ma réparation', lien_suivi($r)]; $m['note'] = 'Appelez le 06 05 79 48 94 pour convenir de l’heure de passage ou d’une livraison.'; }
   elseif ($etape === 'rendu') { $m['bouton'] = ['Laisser un avis Google', 'https://search.google.com/local/writereview?placeid=ChIJY1Q5ZwBhAEgRGG3fYcH4qpk']; $m['lien2'] = ['Voir ma garantie dans mon espace', rtrim(cfg()['site'] ?? 'https://gouyerian-tech.fr', '/') . '/mon-espace/']; }
   else $m['bouton'] = ['Suivre ma réparation', lien_suivi($r)];
-  return mail_pro($r['email'], "Votre réparation {$r['numero']} : $lib", $m);
+  if ($tr) {
+    array_splice($m['paras'], 2, 0, [($tr['accord'] ? 'Nouveau devis à valider' : 'Le devis a été mis à jour') . ' : ' . $tr['total'] . ($tr['avant'] !== '' && $tr['avant'] !== $tr['total'] ? " au lieu de {$tr['avant']}." : '.')]);
+    $m['infos'] = array_merge(array_map(fn($x) => [$x['l'], euros((float)$x['p'])], $tr['lignes']), [['Total', $tr['total']]], $m['infos'] ?? []);
+    if ($tr['accord']) { $m['bouton'] = ['Voir et accepter le devis', lien_suivi($r)]; $m['note'] = 'Les travaux continuent dès votre accord. Une question ? Écrivez-nous depuis la page de suivi ou appelez le 06 05 79 48 94.'; }
+  }
+  return mail_pro($r['email'], "Votre réparation {$r['numero']} : $lib" . ($tr ? ($tr['accord'] ? ' · nouveau devis à valider' : ' · devis mis à jour') : ''), $m);
 }
 
 /* Prix ou travaux modifiés : e-mail au client avec le détail ; $accord = le client doit accepter en ligne */
