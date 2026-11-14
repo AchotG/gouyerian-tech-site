@@ -77,7 +77,7 @@ CATP = {
     "assistance": dict(cat="Assistance", crumb="Assistance et professionnels", h1="Assistance informatique à domicile et pour les pros",
         lead="Dépannage à domicile jusqu’à 40 km autour de Saint-Fort-sur-le-Né, assistance à distance, installation de box, de Wi-Fi et d’imprimante, accompagnement des seniors. Pour les professionnels de Nouvelle-Aquitaine : virus, Wi-Fi et réseau entre bâtiments, dépannage courant.",
         title="Assistance informatique à domicile et pros · Gouyerian Tech",
-        desc="Dépannage informatique à domicile (10 à 20 €), assistance à distance, box, Wi-Fi, imprimante, seniors ; virus, réseau et dépannage pour les pros, près de Cognac."),
+        desc="Dépannage informatique à domicile, déplacement gratuit jusqu’à 40 km : assistance à distance, box, Wi-Fi, imprimante, seniors, virus et réseau pour les pros."),
 }
 
 VOFF = """<div class="view" id="v-off">
@@ -138,7 +138,7 @@ assert len(DATA["faq"]) >= 20 and len(DATA["arts"]) >= 7
 
 
 def fee(km):
-    return "10 €" if km <= 10 else "20 €" if km <= 40 else "sur devis"
+    return "gratuit" if km <= 40 else "sur devis"
 
 
 PAGES = []  # dict(path, view, markup, title, desc, crumbs, ld, pg, changefreq, priority)
@@ -191,7 +191,7 @@ BUSINESS = {
         offer("Réinstallation de Windows", "50", "Sans conservation des données, en 24 h"),
         offer("Réinstallation de Windows avec sauvegarde des données", "80", "Si l’état de l’appareil le permet, 48 à 72 h"),
         offer("Récupération de données", "80", "Si la récupération est possible, 48 à 72 h"),
-        offer("Déplacement à domicile (jusqu’à 40 km)", ("10", "20"), "10 € jusqu’à 10 km, 20 € de 10 à 40 km"),
+        offer("Déplacement à domicile (jusqu’à 40 km)", "0", "Gratuit jusqu’à 40 km autour de Saint-Fort-sur-le-Né"),
     ]},
 }
 
@@ -205,7 +205,7 @@ HOME = ("Accueil", "/")
 
 # Accueil
 add("/", "home", VIEW["home"], "Réparation informatique près de Cognac · Gouyerian Tech",
-    "Réparation de téléphones, tablettes, ordinateurs et consoles près de Cognac : vente d’accessoires, devis gratuit, déplacement jusqu’à 40 km.",
+    "Réparation de téléphones, tablettes, ordinateurs et consoles près de Cognac : vente d’accessoires, devis gratuit, déplacement et livraison gratuits jusqu’à 40 km.",
     [HOME], ld=[BUSINESS, {"@context": "https://schema.org", "@type": "WebSite", "@id": SITE + "/#site", "name": "Gouyerian Tech", "url": SITE + "/", "inLanguage": "fr-FR", "publisher": {"@id": ORG_ID}}], prio="1.0")
 
 # Services et catégories
@@ -306,7 +306,7 @@ add("/rendez-vous/", "demande", VIEW["demande"], "Prendre rendez-vous · Gouyeri
     "Demandez un rappel en 3 étapes pour fixer votre rendez-vous, à l’atelier de Saint-Fort-sur-le-Né ou à domicile. Lun–sam 9h–20h, dim 9h–13h. Devis gratuit.",
     [HOME, ("Rendez-vous", "/rendez-vous/")], prio="0.8")
 add("/zone-intervention/", "zone", VIEW["zone"], "Zone d’intervention à domicile (40 km) · Gouyerian Tech",
-    "Déplacement à domicile jusqu’à 40 km autour de Saint-Fort-sur-le-Né : 10 € jusqu’à 10 km, 20 € au-delà. Trouvez votre commune ou adresse sur la carte.",
+    "Déplacement et livraison gratuits jusqu’à 40 km autour de Saint-Fort-sur-le-Né. Trouvez votre commune ou adresse sur la carte.",
     [HOME, ("Zone d’intervention", "/zone-intervention/")], prio="0.8",
     extra_head='<link rel="preconnect" href="https://data.geopf.fr" crossorigin>')
 add("/communes/", "secteurs", VIEW["secteurs"], "Communes desservies autour de Cognac · Gouyerian Tech",

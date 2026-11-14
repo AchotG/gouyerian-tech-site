@@ -1,12 +1,12 @@
 <title>Gouyerian Tech</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Réparation et maintenance informatique à Saint-Fort-sur-le-Né (16) : téléphones, tablettes, ordinateurs, consoles, accessoires et chargeurs. Devis gratuit, déplacement à domicile jusqu’à 40 km, professionnels dans toute la Nouvelle-Aquitaine.">
+<meta name="description" content="Réparation et maintenance informatique à Saint-Fort-sur-le-Né (16) : téléphones, tablettes, ordinateurs, consoles, accessoires et chargeurs. Devis gratuit, déplacement et livraison gratuits jusqu’à 40 km, professionnels dans toute la Nouvelle-Aquitaine.">
 <meta property="og:type" content="website"><meta property="og:locale" content="fr_FR"><meta property="og:site_name" content="Gouyerian Tech">
 <meta property="og:title" content="Gouyerian Tech, réparation et maintenance informatique à Saint-Fort-sur-le-Né">
-<meta property="og:description" content="Téléphones, tablettes, ordinateurs, consoles et accessoires : réparation, maintenance, achat et vente. Devis gratuit, déplacement à domicile jusqu’à 40 km.">
+<meta property="og:description" content="Téléphones, tablettes, ordinateurs, consoles et accessoires : réparation, maintenance, achat et vente. Devis gratuit, déplacement et livraison gratuits jusqu’à 40 km.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Cinzel:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"ComputerStore","name":"Gouyerian Tech","description":"Réparation, maintenance, achat et vente de téléphones, tablettes, ordinateurs et accessoires (chargeurs), réparation de consoles de jeux. Devis gratuit, déplacement à domicile jusqu’à 40 km.","telephone":"+33605794894","email":"contact@gouyerian-tech.fr","paymentAccepted":"Carte bancaire, espèces","address":{"@type":"PostalAddress","streetAddress":"1 route de Segonzac","postalCode":"16130","addressLocality":"Saint-Fort-sur-le-Né","addressCountry":"FR"},"geo":{"@type":"GeoCoordinates","latitude":45.5749,"longitude":-0.30094},"areaServed":["Saint-Fort-sur-le-Né et 40 km alentour","Nouvelle-Aquitaine (professionnels)"],"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"09:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"09:00","closes":"13:00"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ComputerStore","name":"Gouyerian Tech","description":"Réparation, maintenance, achat et vente de téléphones, tablettes, ordinateurs et accessoires (chargeurs), réparation de consoles de jeux. Devis gratuit, déplacement et livraison gratuits jusqu’à 40 km.","telephone":"+33605794894","email":"contact@gouyerian-tech.fr","paymentAccepted":"Carte bancaire, espèces","address":{"@type":"PostalAddress","streetAddress":"1 route de Segonzac","postalCode":"16130","addressLocality":"Saint-Fort-sur-le-Né","addressCountry":"FR"},"geo":{"@type":"GeoCoordinates","latitude":45.5749,"longitude":-0.30094},"areaServed":["Saint-Fort-sur-le-Né et 40 km alentour","Nouvelle-Aquitaine (professionnels)"],"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"09:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"09:00","closes":"13:00"}]}</script>
 <style>
 /* Layout : bandes pleine largeur dans un conteneur de 1180px, en-tête collant avec méga-menu, diaporama « établi d'atelier », tarifs présentés comme des fiches de réparation */
 :root{
@@ -753,6 +753,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0
 .menu>li>a,.mb-t{white-space:nowrap}
 @media (min-width:1080px){.menu>li>a,.mb-t{padding:0 11px}.hdr-in{gap:16px}}
 @media (min-width:1080px) and (max-width:1179px){.hdr-act .btn.hide-m{display:none}}
+.free-badge{display:inline-flex;align-items:center;gap:10px;margin:2px 0 14px;padding:9px 16px 9px 10px;border-radius:999px;background:color-mix(in srgb,var(--ok) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--ok) 45%,var(--line));color:var(--fg);text-decoration:none;font-size:.95rem;line-height:1.3;max-width:100%}
+.free-badge b{color:var(--ok)}
+.free-badge>span:first-child{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:var(--ok);color:#fff}
+.free-badge:hover{border-color:var(--ok)}
+.fees td.free,.ms-row b.free{color:var(--ok);font-weight:700}
+.tb-free{font-weight:600}
 .promo{display:flex;gap:12px;align-items:center;margin-bottom:18px;padding:14px 18px;border-radius:var(--r);border:1px solid color-mix(in srgb,var(--ok) 35%,var(--line));background:color-mix(in srgb,var(--ok) 8%,var(--surface))}
 .promo>span{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:10px;background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
 .promo p{color:var(--fg);font-size:.95rem}
@@ -1713,7 +1719,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
 
 <div class="topbar"><div class="wrap topbar-in">
   <span class="status" id="status"><i class="dot"></i><span class="st-t">Lun–sam 9h–20h · dim 9h–13h</span></span>
-  <span class="tb"><a class="tb-trk hide-s" href="#suivi"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 12l2 2 4-4M9 17h6"/></svg>Suivre ma réparation</a><span class="sep hide-s"></span><span class="hide-s hide-md">Sur rendez-vous · 40 km autour de Saint-Fort-sur-le-Né</span><span class="sep hide-s hide-md"></span><button class="loc-chip" id="locb" type="button" hidden aria-haspopup="dialog" aria-controls="locp" aria-expanded="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="loct">Votre commune</span></button><a href="tel:+33605794894" style="text-decoration:none">06 05 79 48 94</a></span>
+  <span class="tb"><a class="tb-trk hide-s" href="#suivi"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 12l2 2 4-4M9 17h6"/></svg>Suivre ma réparation</a><span class="sep hide-s"></span><span class="hide-s hide-md tb-free">Déplacement et livraison gratuits · 40 km</span><span class="sep hide-s hide-md"></span><button class="loc-chip" id="locb" type="button" hidden aria-haspopup="dialog" aria-controls="locp" aria-expanded="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="loct">Votre commune</span></button><a href="tel:+33605794894" style="text-decoration:none">06 05 79 48 94</a></span>
 </div></div>
 
 <header class="hdr" id="hdr"><div class="wrap hdr-in">
@@ -1740,7 +1746,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
             <div class="ms-row"><span>Réinstallation de Windows</span><b>50 €</b></div>
             <div class="ms-row"><span>Avec sauvegarde des données</span><b>80 €</b></div>
             <div class="ms-row"><span>Récupération de données</span><b>80 €</b></div>
-            <div class="ms-row"><span>Déplacement (jusqu’à 40 km)</span><b>10–20 €</b></div>
+            <div class="ms-row"><span>Déplacement (jusqu’à 40 km)</span><b class="free">Gratuit</b></div>
             <a class="btn sm" href="#services" data-cat="Tous">Tous les tarifs</a>
             <a class="lnk" href="#demande">Demander un devis gratuit <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           </div>
@@ -1759,7 +1765,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
           </div>
           <div class="mega-side">
             <span class="eyebrow">Livraison</span>
-            <p style="font-size:.92rem">Retrait gratuit à l’atelier. Livraison offerte dès 50 € jusqu’à 20 km, et dès 80 € jusqu’à 40 km.</p>
+            <p style="font-size:.92rem"><b>Livraison gratuite</b> jusqu’à 40 km, sans minimum d’achat. Retrait gratuit à l’atelier.</p>
             <a class="btn sm" href="#boutique" data-bcat="Tout">Voir toute la boutique</a>
             <span class="eyebrow" style="margin-top:14px">Vendre votre appareil</span>
             <a class="lnk" href="#demande" data-shopneed="Vendre mon appareil">Demander une estimation de rachat <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
@@ -1834,6 +1840,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
           <div class="s-text">
             <span class="eyebrow">Saint-Fort-sur-le-Né · près de Cognac</span>
             <h1>Réparation et maintenance informatique près de Cognac</h1>
+            <a class="free-badge" href="#zone"><span data-ic="truck"></span><span><b>Déplacement et livraison gratuits</b> jusqu’à 40 km autour de Saint-Fort-sur-le-Né</span></a>
             <p class="lead">Téléphones, tablettes, ordinateurs et consoles : réparation, maintenance, achat et vente, à l’atelier ou à domicile.<span class="m-hide"> Devis gratuit, prix annoncé avant les travaux.</span></p>
             <div class="cta"><a class="btn" href="#demande">Prendre rendez-vous</a><a class="btn ghost m-hide" href="#services" data-cat="Tous">Services et tarifs</a></div>
           </div>
@@ -1842,7 +1849,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
             <div class="qa">
               <a class="qa-i" href="#demande"><span class="qa-ic" data-ic="tool"></span><b>Faire réparer</b><small>Téléphone, tablette, ordinateur, console</small></a>
               <a class="qa-i" href="#boutique" data-bcat="Tout"><span class="qa-ic" data-ic="bag"></span><b>Acheter</b><small>Appareils et accessoires</small></a>
-              <a class="qa-i" href="#zone"><span class="qa-ic" data-ic="pin"></span><b>Dépannage chez moi</b><small>Jusqu’à 40 km, dès 10 €</small></a>
+              <a class="qa-i" href="#zone"><span class="qa-ic" data-ic="pin"></span><b>Dépannage chez moi</b><small>Déplacement gratuit jusqu’à 40 km</small></a>
               <a class="qa-i" href="#pro"><span class="qa-ic" data-ic="brief"></span><b>Professionnels</b><small>Virus, réseau, dépannage</small></a>
             </div>
             <span class="lab bl">Saint-Fort-sur-le-Né · 16130</span><span class="lab br">Achat · Vente · Maintenance</span>
@@ -1904,14 +1911,14 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
         <article class="slide" aria-roledescription="diapositive" aria-label="5 sur 6">
           <div class="s-text">
             <span class="eyebrow">À domicile</span>
-            <h2 style="font-size:clamp(2rem,4.2vw,3.3rem)">Déplacement jusqu’à 40 km, à partir de 10 €</h2>
-            <p class="lead">10 € jusqu’à 10 km, 20 € au-delà. Les professionnels sont accompagnés dans toute la Nouvelle-Aquitaine.</p>
+            <h2 style="font-size:clamp(2rem,4.2vw,3.3rem)">Déplacement gratuit jusqu’à 40 km</h2>
+            <p class="lead">À domicile, sans frais de déplacement dans un rayon de 40 km, et livraison gratuite des achats. Les professionnels sont accompagnés dans toute la Nouvelle-Aquitaine.</p>
             <div class="cta"><a class="btn" href="#zone">Trouver ma commune</a><a class="btn ghost" href="#demande">Demander un rappel</a></div>
           </div>
           <div class="panel">
             <span class="lab tl">Rayon d’intervention</span><span class="lab tr">40 km</span>
             <div id="slideRadar" style="width:100%;display:grid;place-items:center"></div>
-            <span class="lab bl">≤ 10 km : 10 €</span><span class="lab br">10 à 40 km : 20 €</span>
+            <span class="lab bl">Déplacement : gratuit</span><span class="lab br">Livraison : gratuite</span>
           </div>
         </article>
         <article class="slide" aria-roledescription="diapositive" aria-label="6 sur 6">
@@ -1968,7 +1975,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
       <a class="card" href="#services" data-cat="Tablettes"><span class="card-mi" data-ic="tablet"></span><span class="pic" data-pic="cat-tablettes" data-alt="" data-sizes="(max-width:620px) 100vw, (max-width:1100px) 50vw, 230px"></span><h3>Tablettes</h3><p>Écran, batterie et connecteur selon le modèle, logiciel et transfert de données.</p><ul><li><span>Écran</span><span>Sur devis</span></li><li><span>Batterie</span><span>Sur devis</span></li></ul><span class="lnk">Voir les tarifs <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       <a class="card" href="#services" data-cat="Ordinateurs"><span class="card-mi" data-ic="laptop"></span><span class="pic" data-pic="cat-ordinateurs" data-alt="" data-sizes="(max-width:620px) 100vw, (max-width:1100px) 50vw, 230px"></span><h3>Ordinateurs</h3><p>Virus, réinstallation, récupération de données, mise à niveau et optimisation.</p><ul><li><span>Nettoyage de virus</span><span>30 €</span></li><li><span>Windows</span><span>dès 50 €</span></li></ul><span class="lnk">Voir les tarifs <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       <a class="card" href="#services" data-cat="Consoles"><span class="card-mi" data-ic="gamepad"></span><span class="pic" data-pic="cat-consoles" data-alt="" data-sizes="(max-width:620px) 100vw, (max-width:1100px) 50vw, 230px"></span><h3>Consoles</h3><p>Switch, PlayStation et Xbox : connecteur de charge, port HDMI, manettes, surchauffe.</p><ul><li><span>Charge</span><span>Sur devis</span></li><li><span>Port HDMI</span><span>Sur devis</span></li></ul><span class="lnk">Voir les tarifs <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
-      <a class="card" href="#services" data-cat="Assistance"><span class="card-mi" data-ic="headset"></span><span class="pic" data-pic="cat-assistance" data-alt="" data-sizes="(max-width:620px) 100vw, (max-width:1100px) 50vw, 230px"></span><h3>Assistance</h3><p>À domicile ou à distance : box, Wi-Fi, imprimante, accompagnement des seniors.</p><ul><li><span>Déplacement</span><span>10–20 €</span></li><li><span>À distance</span><span>Sur devis</span></li></ul><span class="lnk">Voir les tarifs <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      <a class="card" href="#services" data-cat="Assistance"><span class="card-mi" data-ic="headset"></span><span class="pic" data-pic="cat-assistance" data-alt="" data-sizes="(max-width:620px) 100vw, (max-width:1100px) 50vw, 230px"></span><h3>Assistance</h3><p>À domicile ou à distance : box, Wi-Fi, imprimante, accompagnement des seniors.</p><ul><li><span>Déplacement</span><span>Gratuit</span></li><li><span>À distance</span><span>Sur devis</span></li></ul><span class="lnk">Voir les tarifs <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
     </div>
   </div></section>
 
@@ -1976,7 +1983,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
     <div class="sec-h"><div><span class="eyebrow">Comment ça se passe</span><h2>De l’appel à l’appareil réparé</h2></div></div>
     <ol class="steps">
       <li><span class="n">Étape 1</span><h3>Vous appelez ou envoyez une demande</h3><p>Une place est souvent possible dans la journée. Le formulaire de rendez-vous permet aussi d’être rappelé.</p></li>
-      <li><span class="n">Étape 2</span><h3>Atelier ou domicile, sur rendez-vous</h3><p>Déposez l’appareil à l’atelier, ou recevez-moi chez vous jusqu’à 40 km (10 à 20 € de déplacement).</p></li>
+      <li><span class="n">Étape 2</span><h3>Atelier ou domicile, sur rendez-vous</h3><p>Déposez l’appareil à l’atelier, ou recevez-moi chez vous jusqu’à 40 km, déplacement gratuit.</p></li>
       <li><span class="n">Étape 3</span><h3>Devis gratuit, puis réparation</h3><p>Le prix est annoncé avant les travaux. Les réparations sont garanties de 3 à 12 mois.</p></li>
     </ol>
   </div></section>
@@ -2034,7 +2041,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
       <span class="eyebrow">Zone d’intervention</span>
       <h2>40 km autour de Saint-Fort-sur-le-Né</h2>
       <p class="lead">Cognac, Jarnac, Segonzac, Barbezieux, Jonzac, Pons, Saintes, Angoulême et toutes les communes entre deux. Au-delà de 40 km, l’intervention est possible sur devis.</p>
-      <table class="fees"><thead><tr><th>Distance</th><th>Déplacement</th></tr></thead><tbody><tr><td>Jusqu’à 10 km</td><td>10 €</td></tr><tr><td>De 10 à 40 km</td><td>20 €</td></tr><tr><td>Au-delà de 40 km</td><td>Sur devis</td></tr></tbody></table>
+      <table class="fees"><thead><tr><th>Distance</th><th>Déplacement</th><th>Livraison</th></tr></thead><tbody><tr><td>Jusqu’à 40 km</td><td class="free">Gratuit</td><td class="free">Gratuite</td></tr><tr><td>Au-delà de 40 km</td><td>Sur devis</td><td>Sur devis</td></tr></tbody></table>
       <p class="loc-line" data-locline hidden></p>
       <div style="display:grid;gap:10px"><b>Professionnels : toute la Nouvelle-Aquitaine</b><div class="depts"><span>Charente</span><span>Charente-Maritime</span><span>Gironde</span><span>Deux-Sèvres</span></div></div>
       <div class="cta"><a class="btn" href="#zone">Trouver ma commune</a></div>
@@ -2107,7 +2114,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
       </div>
       <div class="acard">
         <h3>À domicile ou à l’atelier</h3>
-        <p>Déplacement jusqu’à 40 km : 10 € jusqu’à 10 km, 20 € au-delà. Dépôt à l’atelier sur rendez-vous.</p>
+        <p>Déplacement gratuit jusqu’à 40 km. Dépôt à l’atelier sur rendez-vous.</p>
         <a class="lnk" href="#zone">Vérifier ma commune <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </aside>
@@ -2139,8 +2146,8 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
         <div class="zs" id="zs"></div>
       </div>
       <div class="acard">
-        <h3>Frais de déplacement</h3>
-        <table class="fees"><thead><tr><th>Distance</th><th>Déplacement</th></tr></thead><tbody><tr><td>Jusqu’à 10 km</td><td>10 €</td></tr><tr><td>De 10 à 40 km</td><td>20 €</td></tr><tr><td>Au-delà de 40 km</td><td>Sur devis</td></tr></tbody></table>
+        <h3>Déplacement et livraison</h3>
+        <table class="fees"><thead><tr><th>Distance</th><th>Déplacement</th><th>Livraison</th></tr></thead><tbody><tr><td>Jusqu’à 40 km</td><td class="free">Gratuit</td><td class="free">Gratuite</td></tr><tr><td>Au-delà de 40 km</td><td>Sur devis</td><td>Sur devis</td></tr></tbody></table>
         <p class="loc-line" data-locline hidden></p>
         <p style="font-size:.88rem">Pour une intervention à domicile, appelez le 06 05 79 48 94.</p>
       </div>
@@ -2200,7 +2207,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
     <p class="lead">Appareils neufs ou reconditionnés, chargeurs, adaptateurs, câbles TV, stockage, batteries externes et protections. Composez votre article, ajoutez-le au panier et envoyez votre demande : vous payez au retrait.</p>
   </div></header>
   <section class="sec tight"><div class="wrap">
-    <div class="promo"><span data-ic="truck"></span><p id="promo-t">Livraison offerte dès 50 € d’achat jusqu’à 20 km, et dès 80 € jusqu’à 40 km autour de Saint-Fort-sur-le-Né.</p></div>
+    <div class="promo"><span data-ic="truck"></span><p id="promo-t"><b>Livraison gratuite</b> jusqu’à 40 km autour de Saint-Fort-sur-le-Né, sans minimum d’achat. Retrait à l’atelier gratuit.</p></div>
     <div class="seg" id="bseg" role="group" aria-label="Catégorie de la boutique"></div>
     <div class="cfgs" id="cfgs"></div>
     <div class="shop" id="shop"></div>
@@ -2234,7 +2241,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
     <div class="cgrid">
       <div class="acard"><h3>Horaires</h3><table class="hours" data-hours><tbody><tr data-days="1-6"><td>Lundi au samedi</td><td>9h – 20h</td></tr><tr data-days="0"><td>Dimanche</td><td>9h – 13h</td></tr></tbody></table></div>
       <div class="acard"><h3>Vous avez été satisfait ?</h3><p>Votre avis aide d’autres clients du secteur à trouver un réparateur de confiance.</p><div class="row2"><a class="btn sm" href="https://search.google.com/local/writereview?placeid=ChIJY1Q5ZwBhAEgRGG3fYcH4qpk" target="_blank" rel="noopener">Laisser un avis sur Google</a></div></div>
-      <div class="acard"><h3>Bon à savoir</h3><p>Paiement par carte bancaire ou en espèces, pas de chèque. Déplacement jusqu’à 40 km (10 à 20 €). Professionnels dans toute la Nouvelle-Aquitaine.</p><div class="row2"><a class="btn sm" href="#demande">Demander un rappel</a><a class="btn sm ghost" href="#zone">Zone d’intervention</a></div></div>
+      <div class="acard"><h3>Bon à savoir</h3><p>Paiement par carte bancaire ou en espèces, pas de chèque. Déplacement et livraison gratuits jusqu’à 40 km. Professionnels dans toute la Nouvelle-Aquitaine.</p><div class="row2"><a class="btn sm" href="#demande">Demander un rappel</a><a class="btn sm ghost" href="#zone">Zone d’intervention</a></div></div>
     </div>
   </div></section>
 </div>
@@ -2262,13 +2269,13 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
     <section class="faq-g" id="g-rdv"><h2><span data-ic="cal"></span>Rendez-vous et déplacement</h2><div class="faq">
       <details><summary>Faut-il prendre rendez-vous ?</summary><p>Oui, les interventions se font sur rendez-vous. Le plus simple est d’appeler le 06 05 79 48 94 : une place est souvent possible dans la journée. Vous pouvez aussi demander un rappel avec le formulaire de la page Rendez-vous.</p></details>
       <details><summary>Puis-je déposer mon appareil à l’atelier ?</summary><p>Oui, sur rendez-vous, au 1 route de Segonzac à Saint-Fort-sur-le-Né. Appelez le 06 05 79 48 94 pour convenir d’un horaire.</p></details>
-      <details><summary>Vous déplacez-vous à domicile ?</summary><p>Oui, jusqu’à 40 km autour de Saint-Fort-sur-le-Né. Le déplacement coûte 10 € jusqu’à 10 km, et 20 € au-delà, dans la limite de 40 km. Au-delà de 40 km, l’intervention est possible sur devis.</p></details>
+      <details><summary>Vous déplacez-vous à domicile ?</summary><p>Oui, et le déplacement est gratuit jusqu’à 40 km autour de Saint-Fort-sur-le-Né. Au-delà de 40 km, l’intervention est possible sur devis.</p></details>
       <details><summary>Quels sont vos horaires ?</summary><p>Du lundi au samedi de 9h à 20h, et le dimanche de 9h à 13h, sur rendez-vous.</p></details>
     </div></section>
     <section class="faq-g" id="g-shop"><h2><span data-ic="bag"></span>Boutique, commande et livraison</h2><div class="faq">
       <details><summary>Vendez-vous des appareils et des accessoires ?</summary><p>Oui : téléphones, tablettes et ordinateurs neufs ou reconditionnés, chargeurs Apple et Android, adaptateurs USB-C et Lightning, câbles HDMI et TNT, batteries externes, clés USB, cartes micro SD, graveurs CD et DVD, coques, protections d’écran, souris et claviers. Ajoutez vos articles au panier depuis la <a href="#boutique" data-bcat="Tout">Boutique</a>, puis envoyez votre demande : Gouyerian Tech vous rappelle pour confirmer la disponibilité. Aucun paiement en ligne : vous réglez au retrait, par carte bancaire ou en espèces.</p></details>
       <details><summary>Comment se passe une commande ?</summary><p>Composez vos articles dans la <a href="#boutique" data-bcat="Tout">Boutique</a>, ajoutez-les au panier, puis envoyez votre demande. Gouyerian Tech vous rappelle pour confirmer la disponibilité et le jour du retrait ou de la livraison. Il n’y a pas de paiement en ligne : vous réglez au retrait ou à la livraison.</p></details>
-      <details><summary>Livrez-vous à domicile ?</summary><p id="faq-liv">Oui, dans un rayon de 40 km autour de Saint-Fort-sur-le-Né. Livraison offerte dès 50 € d’achat jusqu’à 20 km, et dès 80 € jusqu’à 40 km. En dessous, la livraison coûte 10 € jusqu’à 10 km et 20 € au-delà. Le panier calcule la livraison dès que vous indiquez votre adresse. Le retrait à l’atelier est toujours gratuit.</p></details>
+      <details><summary>Livrez-vous à domicile ?</summary><p id="faq-liv">Oui, dans un rayon de 40 km autour de Saint-Fort-sur-le-Né. La livraison est gratuite, sans minimum d’achat. Au-delà de 40 km, elle est possible sur devis. Le retrait à l’atelier est toujours gratuit.</p></details>
       <details><summary>Puis-je changer d’avis après une commande ?</summary><p>Oui. Pour un article commandé depuis le site, vous disposez de 14 jours après le retrait ou la livraison pour vous rétracter, dans les conditions prévues par les <a href="#cgv">conditions générales de vente</a>.</p></details>
       <details><summary>Rachetez-vous les appareils ?</summary><p>Oui. Téléphone, tablette ou ordinateur dont vous ne vous servez plus : décrivez-le dans une <a href="#demande" data-shopneed="Vendre mon appareil">demande d’estimation</a> (modèle, capacité, état, accessoires fournis), vous serez rappelé avec une proposition de rachat.</p></details>
     </div></section>
@@ -2298,7 +2305,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
   <section class="sec tight" id="pro-prest"><div class="wrap">
     <div class="sec-h"><div><span class="eyebrow">Nos prestations</span><h2>Trois prestations, faites sérieusement</h2><p>Pour les petites structures qui n’ont pas de service informatique en interne.</p></div></div>
     <div class="prests"><article class="prest" id="pro-virus"><span class="pic" data-pic="pro-virus" data-alt="" data-sizes="(max-width:900px) 100vw, 380px"></span><h3>Prévention et nettoyage des virus</h3><p>Un poste infecté peut bloquer toute votre activité et exposer les données de vos clients.</p><ul><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Nettoyage complet des virus et logiciels indésirables</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Antivirus installé, réglé et vérifié</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Mises à jour de Windows et des logiciels</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Conseils simples pour vos équipes : e-mails piégés, mots de passe</span></li></ul><div class="prest-p"><span>Nettoyage</span><b>30 € par poste</b><span>Prévention</span><b>Sur devis</b></div><button type="button" class="btn" data-scroll="pro-devis" data-plan="Prévention ou nettoyage des virus">Demander un devis</button></article><article class="prest" id="pro-reseau"><span class="pic" data-pic="pro-reseau" data-alt="" data-sizes="(max-width:900px) 100vw, 380px"></span><h3>Wi-Fi et réseau entre bâtiments ou bureaux</h3><p>Le Wi-Fi ne passe pas dans l’atelier, le chai ou le bureau du fond ? Votre réseau est étendu là où vous en avez besoin.</p><ul><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Étude de la couverture de vos locaux</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Répéteurs, bornes Wi-Fi ou réseau maillé</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Câblage Ethernet entre bureaux ou bâtiments</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Wi-Fi invités séparé pour vos clients</span></li></ul><div class="prest-p"><span>Étude et devis</span><b>Gratuits</b><span>Matériel et pose</span><b>Sur devis</b></div><button type="button" class="btn" data-scroll="pro-devis" data-plan="Wi-Fi ou réseau entre bâtiments">Demander un devis</button></article><article class="prest" id="pro-depannage"><span class="pic" data-pic="pro-depannage" data-alt="" data-sizes="(max-width:900px) 100vw, 380px"></span><h3>Problèmes informatiques courants</h3><p>PC qui rame, imprimante qui ne répond plus, messagerie bloquée : intervention rapide pour reprendre le travail.</p><ul><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Ordinateur lent, bloqué ou qui ne démarre plus</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Imprimante, scanner ou périphérique en panne</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Messagerie, mises à jour, connexion Internet</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg><span>Sur place, ou à distance quand c’est possible</span></li></ul><div class="prest-p"><span>Devis</span><b>Gratuit</b><span>Intervention</span><b>Sur devis</b></div><button type="button" class="btn" data-scroll="pro-devis" data-plan="Problème informatique courant">Demander un devis</button></article></div>
-    <p class="plan-note">Prix nets, TVA non applicable (art. 293 B du CGI). Déplacement : 10 € jusqu’à 10 km et 20 € jusqu’à 40 km autour de Saint-Fort-sur-le-Né ; au-delà, dans toute la Nouvelle-Aquitaine, sur devis. Voir les <a href="#cgv">conditions générales de vente</a>.</p>
+    <p class="plan-note">Prix nets, TVA non applicable (art. 293 B du CGI). Déplacement gratuit jusqu’à 40 km autour de Saint-Fort-sur-le-Né ; au-delà, dans toute la Nouvelle-Aquitaine, sur devis. Voir les <a href="#cgv">conditions générales de vente</a>.</p>
   </div></section>
   <section class="sec tight"><div class="wrap">
     <div class="sec-h"><div><span class="eyebrow">Pour qui</span><h2>Pensé pour les petites structures</h2></div></div>
@@ -2414,13 +2421,12 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
       <tr><td>Réinstallation de Windows, sans conservation des données</td><td>50 €</td><td>24 h</td></tr>
       <tr><td>Réinstallation de Windows, avec sauvegarde des données si possible</td><td>80 €</td><td>48 à 72 h</td></tr>
       <tr><td>Récupération de données, si elle est possible</td><td>80 €</td><td>48 à 72 h</td></tr>
-      <tr><td>Déplacement à domicile, jusqu’à 10 km</td><td>10 €</td><td>—</td></tr>
-      <tr><td>Déplacement à domicile, de 10 à 40 km</td><td>20 €</td><td>—</td></tr>
+      <tr><td>Déplacement à domicile, jusqu’à 40 km</td><td>Gratuit</td><td>—</td></tr>
     </tbody></table></div>
     <p>Les autres prestations sont sur devis. Les distances sont calculées à vol d’oiseau depuis Saint-Fort-sur-le-Né ; au-delà de 40 km, l’intervention est possible sur devis. Les prix des articles de la Boutique sont ceux affichés le jour de la demande, sous réserve de disponibilité.</p>
     <h2>Article 5 – Commandes de la Boutique</h2>
     <p>Le client compose son panier sur le site et envoie une demande. Cette demande n’est pas un paiement : Gouyerian Tech rappelle le client pour confirmer la disponibilité, le prix des articles « sur demande » et le jour du retrait ou de la livraison. La commande est ferme une fois confirmée par téléphone ou par écrit.</p>
-    <p><b>Retrait à l’atelier :</b> gratuit, sur rendez-vous. <b>Livraison à domicile</b> dans un rayon de 40 km : 10 € jusqu’à 10 km et 20 € au-delà ; offerte dès 50 € d’achat jusqu’à 20 km, et dès 80 € d’achat jusqu’à 40 km (montant des articles dont le prix est connu au moment de la demande). Le client vérifie l’article au moment de la remise.</p>
+    <p><b>Retrait à l’atelier :</b> gratuit, sur rendez-vous. <b>Livraison à domicile</b> gratuite dans un rayon de 40 km, sans minimum d’achat ; au-delà, sur devis. Le client vérifie l’article au moment de la remise.</p>
     <h2>Article 6 – Rendez-vous et délais</h2>
     <p>Toutes les interventions se font sur rendez-vous, du lundi au samedi de 9 h à 20 h et le dimanche de 9 h à 13 h : à l’atelier, au domicile du client dans un rayon de 40 km, ou dans toute la Nouvelle-Aquitaine pour les professionnels. Les délais sont indicatifs : 24 h pour un nettoyage de virus ou une réinstallation, 48 à 72 h avec récupération de données, 3 à 4 jours en général pour un écran. Le client est prévenu de tout retard dans la livraison des pièces.</p>
     <h2>Article 7 – Données et confidentialité</h2>
@@ -2430,7 +2436,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
     <p><b>Paiement en ligne :</b> Gouyerian Tech peut aussi envoyer un lien de paiement (par e-mail, dans la messagerie ou sur la page de suivi) pour régler un acompte, une réparation ou une commande par carte bancaire. Le paiement est traité sur la page sécurisée de SumUp (SumUp Limited, prestataire de paiement agréé) ; Gouyerian Tech n’a jamais accès aux données de la carte. Un reçu est envoyé par e-mail dès le paiement ; la facture est remise avec l’appareil ou les articles. Le montant d’un lien est fixé par l’atelier et ne peut pas être modifié.</p>
     <p><b>Professionnels :</b> les factures sont payables à réception, sauf accord écrit. Tout retard de paiement entraîne des pénalités au taux de refinancement de la Banque centrale européenne majoré de 10 points, et une indemnité forfaitaire de 40 € pour frais de recouvrement.</p>
     <h2>Article 9 – Prestations pour les professionnels</h2>
-    <p>Pour les professionnels, Gouyerian Tech propose la prévention et le nettoyage des virus, l’extension du réseau Wi-Fi ou Ethernet entre bâtiments ou bureaux, et la résolution des problèmes informatiques courants. Le nettoyage de virus est facturé 30 € par poste ; les autres interventions font l’objet d’un devis gratuit qui précise le prix, le matériel fourni et le délai. Le matériel (bornes Wi-Fi, répéteurs, câbles…) est facturé selon le devis accepté. Le déplacement suit le barème de l’article 4 ; au-delà de 40 km, il est indiqué sur le devis.</p>
+    <p>Pour les professionnels, Gouyerian Tech propose la prévention et le nettoyage des virus, l’extension du réseau Wi-Fi ou Ethernet entre bâtiments ou bureaux, et la résolution des problèmes informatiques courants. Le nettoyage de virus est facturé 30 € par poste ; les autres interventions font l’objet d’un devis gratuit qui précise le prix, le matériel fourni et le délai. Le matériel (bornes Wi-Fi, répéteurs, câbles…) est facturé selon le devis accepté. Le déplacement est gratuit jusqu’à 40 km (article 4) ; au-delà, il est indiqué sur le devis.</p>
     <h2>Article 10 – Garanties</h2>
     <p><b>Garanties légales.</b> Pour les ventes aux particuliers, le client bénéficie de la garantie légale de conformité (articles L217-3 et suivants du Code de la consommation) pendant 2 ans à compter de la délivrance, y compris pour les appareils reconditionnés. Un défaut qui apparaît dans ce délai est présumé exister au moment de la délivrance pendant 24 mois pour un bien neuf, et pendant 12 mois pour un bien d’occasion ou reconditionné. Le client bénéficie aussi de la garantie des vices cachés (articles 1641 et suivants du Code civil).</p>
     <p><b>Garanties commerciales de Gouyerian Tech</b>, qui s’ajoutent aux garanties légales : appareils reconditionnés, 6 à 12 mois selon l’appareil ; réparations, 3 à 12 mois selon la réparation, sur la pièce remplacée et la main-d’œuvre. La durée est indiquée sur la facture. Elles ne couvrent pas la casse, l’oxydation, l’intervention d’un tiers ou une mauvaise utilisation après la réparation.</p>
@@ -2575,7 +2581,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
       <section class="cf-blk"><h3><i>2</i>Retrait ou livraison</h3>
         <fieldset class="cart-mode"><legend class="sr">Mode de retrait</legend>
           <label><input type="radio" name="cmode" value="atelier" checked><span class="cm-ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-6 9 6v10H3z"/><path d="M9 20v-6h6v6"/></svg></span><span><b>Retrait à l’atelier <em>Gratuit</em></b><small>1 route de Segonzac, Saint-Fort-sur-le-Né, sur rendez-vous</small></span></label>
-          <label><input type="radio" name="cmode" value="domicile"><span class="cm-ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3zM14 9h4l3 3.5V16h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span><span><b>Livraison à domicile</b><small id="livsm">Offerte dès 50 € jusqu’à 20 km, dès 80 € jusqu’à 40 km. Sinon 10 € jusqu’à 10 km, 20 € au-delà.</small></span></label>
+          <label><input type="radio" name="cmode" value="domicile"><span class="cm-ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3zM14 9h4l3 3.5V16h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span><span><b>Livraison à domicile <em>Gratuit</em></b><small id="livsm">Gratuite jusqu’à 40 km, sans minimum d’achat.</small></span></label>
         </fieldset>
         <div class="fld" id="cadrf" hidden><label for="cadr">Adresse de livraison</label><input id="cadr" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="sg-ca" aria-expanded="false" placeholder="Commencez à taper : 12 rue de la Paix…"><div class="sugg" id="sg-ca" role="listbox" aria-label="Adresses suggérées" hidden></div><small>Choisissez une suggestion : la commune et la distance se remplissent toutes seules.</small><button type="button" class="geo-btn" data-geo="cart" data-ic="locate">Utiliser ma position actuelle</button><small class="geo-m" role="status"></small></div>
         <div class="fld" id="ccomf" hidden><label for="ccom">Commune</label><input id="ccom" list="dl-com" autocomplete="off" placeholder="Ex. : Jarnac"><datalist id="dl-com"></datalist><small id="ccomi"></small></div>
@@ -2984,7 +2990,7 @@ const SV=[
 {c:"Consoles",n:"Surchauffe et nettoyage",d:"Console bruyante, qui chauffe ou s’éteint toute seule : nettoyage intérieur et pâte thermique.",p:"Sur devis"},
 {c:"Consoles",n:"Écran de console portable",d:"Écran cassé, tactile qui ne répond plus ou affichage défectueux.",p:"Sur devis"},
 {c:"Consoles",n:"Batterie de console portable",d:"Console portable qui se décharge vite ou ne tient plus la charge.",p:"Sur devis"},
-{c:"Assistance",n:"Déplacement à domicile",d:"10 € jusqu’à 10 km, 20 € au-delà, dans la limite de 40 km autour de Saint-Fort-sur-le-Né.",p:"10 à 20 €"},
+{c:"Assistance",n:"Déplacement à domicile",d:"Gratuit dans un rayon de 40 km autour de Saint-Fort-sur-le-Né. Au-delà, sur devis.",p:"Gratuit"},
 {c:"Assistance",n:"Assistance à distance",d:"Dépannage par prise en main à distance, sans déplacement.",p:"Sur devis"},
 {c:"Assistance",n:"Box, Wi-Fi et imprimante",d:"Installation et configuration.",p:"Sur devis"},
 {c:"Assistance",n:"Accompagnement des seniors",d:"Prise en main et explications, à votre rythme.",p:"Sur devis"},
@@ -3064,12 +3070,11 @@ const PRIX={
   cle:{capacite:{"16":6,"32":8,"64":10,"128":15,"256":28},connecteur:{usb:0,usbc:3,double:5}},
   microsd:{"32":8,"64":10,"128":15,"256":25,"512":45},
   graveur:{usb:25,usbc:30,bluray:80}};
-/* Livraison à domicile : [distance maximale en km, montant]. Offerte dès un montant d’achat, sinon frais selon la distance. */
-const LIV={offerte:[[20,50],[40,80]],frais:[[10,10],[40,20]]};
+/* Déplacement et livraison à domicile : gratuits jusqu’à LIV.max km, sur devis au-delà. */
+const LIV={max:40};
 /* Conditions qui s’appliquent à une distance : frais, seuil de livraison offerte, ou sur devis */
-function livCond(km){const mx=LIV.frais[LIV.frais.length-1][0];if(km>mx)return{far:true,k:"far"};
-  const fee=LIV.frais.find(([k])=>km<=k)[1],t=LIV.offerte.find(([k])=>km<=k),thr=t?t[1]:null;return{fee,thr,k:fee+"/"+thr}}
-const livTxt=()=>`Livraison offerte dès ${LIV.offerte[0][1]} € d’achat jusqu’à ${LIV.offerte[0][0]} km, et dès ${LIV.offerte[1][1]} € jusqu’à ${LIV.offerte[1][0]} km autour de Saint-Fort-sur-le-Né.`;
+function livCond(km){return km>LIV.max?{far:true,k:"far"}:{fee:0,k:"free"}}
+const livTxt=()=>`Livraison gratuite jusqu’à ${LIV.max} km autour de Saint-Fort-sur-le-Né, sans minimum d’achat.`;
 const nums=o=>typeof o==="number"?[o]:Object.values(o).flatMap(nums);
 const PORTN={lightning:"Lightning",usbc:"USB-C",micro:"micro-USB"};
 const CFG=[
@@ -3930,10 +3935,10 @@ const GEO="https://data.geopf.fr/geocodage/search";
 let SG={c:[],a:[]},sgT={},sgAb={},geoDown=false;
 
 const kmOf=(la,lo)=>{const q=proj(la,lo);return Math.round(Math.hypot(q.x,q.y))};
-const feeTxt=km=>km<=10?"déplacement 10 €":km<=40?"déplacement 20 €":"au-delà de 40 km, sur devis";
+const feeTxt=km=>km<=40?"déplacement gratuit":"au-delà de 40 km, sur devis";
 function comInfo(){
   let km=S.comKm;if(km==null&&S.com.trim()){const n=norm(S.com),p=LOC.find(p=>p.k===n);if(p)km=p.km}
-  if(km==null)return S.com.trim()?"Commune enregistrée. La distance et le prix du déplacement vous seront confirmés par téléphone.":"Obligatoire. Choisissez une commune dans la liste ou tapez son nom.";
+  if(km==null)return S.com.trim()?"Commune enregistrée. La distance vous sera confirmée par téléphone (déplacement gratuit jusqu’à 40 km).":"Obligatoire. Choisissez une commune dans la liste ou tapez son nom.";
   return `Environ ${km} km de Saint-Fort-sur-le-Né · ${feeTxt(km)}`;
 }
 function showSg(k,items){
@@ -4065,7 +4070,7 @@ function zoom(f,cx,cy){const nw=Math.min(140,Math.max(6,vb.w*f)),k=nw/vb.w;vb={x
 const mid=()=>[vb.x+vb.w/2,vb.y+vb.w/2];
 if(sv)$("zp").onclick=()=>zoom(.6,...mid());
 if(sv)$("zm2").onclick=()=>zoom(1.6,...mid());
-const DEF=`<p style="color:var(--muted)">Tapez votre commune, votre adresse ou votre lieu-dit, puis choisissez une suggestion pour voir la distance et le prix du déplacement.</p>`;
+const DEF=`<p style="color:var(--muted)">Tapez votre commune, votre adresse ou votre lieu-dit, puis choisissez une suggestion pour voir la distance (déplacement gratuit jusqu’à 40 km).</p>`;
 if(sv)$("zc2").onclick=()=>{vb={x:-45,y:-45,w:90};sel=null;ext=null;drawMap();$("zs").innerHTML="";$("zr").innerHTML=DEF};
 if(sv)sv.addEventListener("wheel",e=>{e.preventDefault();const[c,d]=pt(e);zoom(e.deltaY<0?.8:1.25,c,d)},{passive:false});
 const ptr=new Map();let pd=0;
@@ -4077,13 +4082,13 @@ if(sv)sv.addEventListener("pointermove",e=>{
 });
 if(sv)["pointerup","pointercancel"].forEach(t=>sv.addEventListener(t,e=>{ptr.delete(e.pointerId);pd=0}));
 function verdict(n,km){const N=esc(n);
-  if(km<=36)return `<span class="chip ok">${svg("check")}Dans la zone</span><p><b>${N}</b> est à environ ${km} km de Saint-Fort-sur-le-Né. Déplacement : ${km<=10?10:20} € (estimation à vol d’oiseau). Pour une intervention à domicile, appelez le 06 05 79 48 94.</p>`;
+  if(km<=36)return `<span class="chip ok">${svg("check")}Dans la zone</span><p><b>${N}</b> est à environ ${km} km de Saint-Fort-sur-le-Né. Déplacement gratuit (distance à vol d’oiseau). Pour une intervention à domicile, appelez le 06 05 79 48 94.</p>`;
   if(km<=44)return `<span class="chip warn">Limite des 40 km</span><p><b>${N}</b> est à environ ${km} km. Appelez le 06 05 79 48 94 pour confirmer.</p>`;
   return `<span class="chip out">Au-delà de 40 km · sur devis</span><p><b>${N}</b> est à environ ${km} km : l’intervention est possible sur devis. Appelez le 06 05 79 48 94.</p>`}
 function showPt(p,isExt){sel=isExt?null:p;ext=isExt?p:null;vb={x:p.x-15,y:p.y-15,w:30};drawMap();$("zr").innerHTML=verdict(p.n,p.km)}
 async function find(){
   const raw=$("zq").value.trim(),q=norm(raw),out=$("zr"),box=$("zs");box.innerHTML="";if(!q)return;
-  if(q.replace(/ /g,"")==="saintfortsurlene"){sel=null;ext=null;vb={x:-15,y:-15,w:30};drawMap();out.innerHTML=`<span class="chip ok">${svg("check")}Centre de la zone</span><p>Saint-Fort-sur-le-Né est le point de départ. Déplacement : 10 €.</p>`;return}
+  if(q.replace(/ /g,"")==="saintfortsurlene"){sel=null;ext=null;vb={x:-15,y:-15,w:30};drawMap();out.innerHTML=`<span class="chip ok">${svg("check")}Centre de la zone</span><p>Saint-Fort-sur-le-Né est le point de départ. Déplacement gratuit.</p>`;return}
   out.innerHTML=`<p style="color:var(--muted)">Recherche en cours…</p>`;
   try{
     const get=x=>fetch("https://data.geopf.fr/geocodage/search?q="+encodeURIComponent(raw)+"&limit=5"+x+"&lat="+CTR[0]+"&lon="+CTR[1],{signal:AbortSignal.timeout(7000)}).then(r=>{if(!r.ok)throw new Error("http");return r.json()});
@@ -4157,9 +4162,9 @@ const LOC=COMS.map(([n,cp,la,lo])=>{const q=proj(la,lo),P0=P.find(p=>p.n===n);if
 /* Pages par commune */
 const slug=n=>norm(n).replace(/ /g,"-");
 const seenS={};LOC.forEach(p=>{let s=slug(p.n);if(seenS[s])s+="-"+p.cp;seenS[s]=1;p.s=s});
-const fee=km=>km<=10?"10 €":km<=40?"20 €":"Sur devis";
+const fee=km=>km<=40?"Gratuit":"Sur devis";
 /* Pages communes : uniquement les villes principales (texte propre à chacune) */
-const CTXT={"Cognac": "Sous-préfecture de la Charente et capitale du cognac, Cognac est la plus grande ville du secteur. Gouyerian Tech y intervient à domicile pour les particuliers comme pour les commerces et les bureaux, que ce soit pour un ordinateur lent, une box à installer ou un téléphone à réparer.", "Châteaubernard": "Commune limitrophe de Cognac, Châteaubernard accueille la base aérienne 709 et une grande partie des zones commerciales de l’agglomération. C’est l’une des communes les plus proches de l’atelier, ce qui permet souvent de trouver un créneau dans la journée.", "Jarnac": "Ville des bords de Charente, connue pour être la ville natale de François Mitterrand, Jarnac est à l’est de Cognac. Les habitants de Jarnac et des villages voisins peuvent être dépannés chez eux ou déposer leur appareil à l’atelier, sur rendez-vous.", "Segonzac": "Au cœur de la Grande Champagne, premier cru du cognac, Segonzac partage le code postal 16130 avec Saint-Fort-sur-le-Né. L’atelier est tout proche : dépôt sur rendez-vous ou intervention à domicile, au choix.", "Archiac": "Juste de l’autre côté de la limite entre la Charente et la Charente-Maritime, Archiac est l’une des communes les plus proches de l’atelier. Le changement de département ne change rien : mêmes tarifs, mêmes délais.", "Châteauneuf-sur-Charente": "Sur les bords de la Charente, entre Cognac et Angoulême, Châteauneuf-sur-Charente est desservie à domicile comme les communes alentour. Pour un nettoyage de virus ou une réinstallation de Windows, l’ordinateur est en général rendu en 24 h.", "Barbezieux-Saint-Hilaire": "Principale ville du sud Charente, desservie par la N10, Barbezieux-Saint-Hilaire est dans la zone d’intervention à domicile, au même tarif de déplacement que Cognac ou Jarnac.", "Angoulême": "Préfecture de la Charente et ville du Festival international de la bande dessinée, Angoulême est en limite de la zone des 40 km. Le centre-ville reste au tarif de 20 € ; pour Soyaux, L’Isle-d’Espagnac ou l’est de l’agglomération, on approche des 40 km : appelez pour confirmer.", "Rouillac": "Au nord-est du Cognaçais, Rouillac et les villages alentour sont à une trentaine de kilomètres de l’atelier. Pour éviter le trajet, l’intervention se fait chez vous : ordinateur lent, box ou imprimante à installer, prise en main d’un nouvel appareil.", "Brossac": "Dans le sud Charente, Brossac est proche de la limite des 40 km. Le déplacement reste au tarif de 20 €, et l’assistance à distance permet de régler certains problèmes sans déplacement.", "Baignes-Sainte-Radegonde": "Dans le sud Charente, au sud de Barbezieux, Baignes-Sainte-Radegonde est desservie à domicile. Vous pouvez aussi déposer votre appareil à l’atelier de Saint-Fort-sur-le-Né, sur rendez-vous.", "Coteaux-du-Blanzacais": "Commune nouvelle du sud Charente regroupant notamment Blanzac-Porcheresse, Coteaux-du-Blanzacais est dans la zone d’intervention à domicile. Installation de box ou d’imprimante, accompagnement des seniors : tout se fait chez vous, sur rendez-vous.", "Matha": "En Charente-Maritime, au nord de Cognac, Matha est à une trentaine de kilomètres de l’atelier. Le déplacement à domicile est au tarif de 20 €, comme pour toutes les communes situées entre 10 et 40 km.", "Burie": "Entre Cognac et Saintes, Burie est desservie à domicile, tout comme les villages voisins. Pour un ordinateur à remettre en état, comptez 24 h pour un nettoyage de virus ou une réinstallation de Windows.", "Saintes": "Sous-préfecture de la Charente-Maritime, sur les bords de la Charente, Saintes est dans la zone d’intervention de Gouyerian Tech : dépannage à domicile, réparation de téléphones et d’ordinateurs, et accompagnement des professionnels.", "Pons": "Connue pour son donjon, Pons est à l’ouest de l’atelier, en Charente-Maritime. Pour un écran de téléphone, comptez 3 à 4 jours en général, et vous gardez votre téléphone le temps de recevoir les pièces.", "Jonzac": "Sous-préfecture de la Charente-Maritime et station thermale, Jonzac est au sud-ouest de l’atelier. Particuliers et professionnels de Jonzac et des communes voisines peuvent être dépannés chez eux ou à distance.", "Gémozac": "À l’ouest de Pons, en Saintonge, Gémozac est desservie à domicile au tarif de 20 €. Pour certains problèmes, l’assistance à distance évite même le déplacement.", "Mirambeau": "Dans le sud de la Charente-Maritime, desservie par l’autoroute A10, Mirambeau est dans la zone des 40 km. Le déplacement est au tarif de 20 € ; appelez pour convenir d’un créneau.", "Montendre": "Dans le sud de la Charente-Maritime, près de la limite avec la Gironde, Montendre est dans la zone d’intervention. Gouyerian Tech accompagne aussi les professionnels en Gironde, sur devis."};
+const CTXT={"Cognac": "Sous-préfecture de la Charente et capitale du cognac, Cognac est la plus grande ville du secteur. Gouyerian Tech y intervient à domicile pour les particuliers comme pour les commerces et les bureaux, que ce soit pour un ordinateur lent, une box à installer ou un téléphone à réparer.", "Châteaubernard": "Commune limitrophe de Cognac, Châteaubernard accueille la base aérienne 709 et une grande partie des zones commerciales de l’agglomération. C’est l’une des communes les plus proches de l’atelier, ce qui permet souvent de trouver un créneau dans la journée.", "Jarnac": "Ville des bords de Charente, connue pour être la ville natale de François Mitterrand, Jarnac est à l’est de Cognac. Les habitants de Jarnac et des villages voisins peuvent être dépannés chez eux ou déposer leur appareil à l’atelier, sur rendez-vous.", "Segonzac": "Au cœur de la Grande Champagne, premier cru du cognac, Segonzac partage le code postal 16130 avec Saint-Fort-sur-le-Né. L’atelier est tout proche : dépôt sur rendez-vous ou intervention à domicile, au choix.", "Archiac": "Juste de l’autre côté de la limite entre la Charente et la Charente-Maritime, Archiac est l’une des communes les plus proches de l’atelier. Le changement de département ne change rien : mêmes tarifs, mêmes délais.", "Châteauneuf-sur-Charente": "Sur les bords de la Charente, entre Cognac et Angoulême, Châteauneuf-sur-Charente est desservie à domicile comme les communes alentour. Pour un nettoyage de virus ou une réinstallation de Windows, l’ordinateur est en général rendu en 24 h.", "Barbezieux-Saint-Hilaire": "Principale ville du sud Charente, desservie par la N10, Barbezieux-Saint-Hilaire est dans la zone d’intervention à domicile, au même tarif de déplacement que Cognac ou Jarnac.", "Angoulême": "Préfecture de la Charente et ville du Festival international de la bande dessinée, Angoulême est en limite de la zone des 40 km. Le déplacement est gratuit jusqu’au centre-ville ; pour Soyaux, L’Isle-d’Espagnac ou l’est de l’agglomération, on approche des 40 km : appelez pour confirmer.", "Rouillac": "Au nord-est du Cognaçais, Rouillac et les villages alentour sont à une trentaine de kilomètres de l’atelier. Pour éviter le trajet, l’intervention se fait chez vous : ordinateur lent, box ou imprimante à installer, prise en main d’un nouvel appareil.", "Brossac": "Dans le sud Charente, Brossac est proche de la limite des 40 km. Le déplacement reste gratuit, et l’assistance à distance permet de régler certains problèmes sans déplacement.", "Baignes-Sainte-Radegonde": "Dans le sud Charente, au sud de Barbezieux, Baignes-Sainte-Radegonde est desservie à domicile. Vous pouvez aussi déposer votre appareil à l’atelier de Saint-Fort-sur-le-Né, sur rendez-vous.", "Coteaux-du-Blanzacais": "Commune nouvelle du sud Charente regroupant notamment Blanzac-Porcheresse, Coteaux-du-Blanzacais est dans la zone d’intervention à domicile. Installation de box ou d’imprimante, accompagnement des seniors : tout se fait chez vous, sur rendez-vous.", "Matha": "En Charente-Maritime, au nord de Cognac, Matha est à une trentaine de kilomètres de l’atelier. Le déplacement à domicile est gratuit, comme pour toutes les communes jusqu’à 40 km.", "Burie": "Entre Cognac et Saintes, Burie est desservie à domicile, tout comme les villages voisins. Pour un ordinateur à remettre en état, comptez 24 h pour un nettoyage de virus ou une réinstallation de Windows.", "Saintes": "Sous-préfecture de la Charente-Maritime, sur les bords de la Charente, Saintes est dans la zone d’intervention de Gouyerian Tech : dépannage à domicile, réparation de téléphones et d’ordinateurs, et accompagnement des professionnels.", "Pons": "Connue pour son donjon, Pons est à l’ouest de l’atelier, en Charente-Maritime. Pour un écran de téléphone, comptez 3 à 4 jours en général, et vous gardez votre téléphone le temps de recevoir les pièces.", "Jonzac": "Sous-préfecture de la Charente-Maritime et station thermale, Jonzac est au sud-ouest de l’atelier. Particuliers et professionnels de Jonzac et des communes voisines peuvent être dépannés chez eux ou à distance.", "Gémozac": "À l’ouest de Pons, en Saintonge, Gémozac est desservie à domicile, déplacement gratuit. Pour certains problèmes, l’assistance à distance évite même le déplacement.", "Mirambeau": "Dans le sud de la Charente-Maritime, desservie par l’autoroute A10, Mirambeau est dans la zone des 40 km. Le déplacement est gratuit ; appelez pour convenir d’un créneau.", "Montendre": "Dans le sud de la Charente-Maritime, près de la limite avec la Gironde, Montendre est dans la zone d’intervention. Gouyerian Tech accompagne aussi les professionnels en Gironde, sur devis."};
 const CPG=P.filter(p=>p.km<=40&&CTXT[p.n]).sort((a,b)=>a.n.localeCompare(b.n,"fr"));
 const DIRS=["à l’est","au nord-est","au nord","au nord-ouest","à l’ouest","au sud-ouest","au sud","au sud-est"];
 const dirOf=p=>DIRS[Math.round(((Math.atan2(-p.y,p.x)*180/Math.PI+360)%360)/45)%8];
@@ -4172,7 +4177,7 @@ const CBANDS=[[10,"Jusqu’à 10 km"],[20,"De 10 à 20 km"],[40,"De 20 à 40 km"
 const citem=p=>`<li>${CPG.includes(p)?`<a href="${link("#"+p.s)}"><b>${p.n}</b><span><i class="cg-cp">${p.cp} · </i>${p.km} km</span></a>`:`<span class="cg-x"><b>${p.n}</b><span><i class="cg-cp">${p.cp} · </i>${p.km} km</span></span>`}</li>`;
 function drawTiles(){const q=norm($("cfilter").value);let tot=0;
   const h=CBANDS.map(([mx,t],i)=>{const mn=i?CBANDS[i-1][0]:-1,L=ZONE.filter(p=>p.km>mn&&p.km<=mx&&(!q||p.k.includes(q)||p.cp.startsWith(q)));tot+=L.length;if(!L.length)return "";
-    const c=livCond(mx);return `<details class="cg"${q?" open":""}><summary><span class="cg-t">${t}</span><span class="cg-n">${L.length} commune${L.length>1?"s":""}</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><span class="cg-i">Déplacement ${c.fee} € · livraison offerte dès ${c.thr} € d’achat</span></summary><ul class="cg-l">${L.map(citem).join("")}</ul></details>`}).join("");
+    const c=livCond(mx);return `<details class="cg"${q?" open":""}><summary><span class="cg-t">${t}</span><span class="cg-n">${L.length} commune${L.length>1?"s":""}</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><span class="cg-i">Déplacement et livraison gratuits</span></summary><ul class="cg-l">${L.map(citem).join("")}</ul></details>`}).join("");
   $("ctiles").innerHTML=h||`<p class="cg-none">Aucune commune trouvée dans la zone des 40 km. Au-delà, l’intervention est possible sur devis.</p>`;
   $("ccount").textContent=tot+" commune"+(tot>1?"s":"")}
 if($("cfilter")){$("cmain").innerHTML=CPG.map(tile).join("");$("cfilter").addEventListener("input",drawTiles);drawTiles();$("cnb").textContent=ZONE.length}
@@ -4184,7 +4189,7 @@ function renderCommune(p){
   $("cBody").innerHTML=`<div class="cfacts"><div><small>Distance</small><span class="v">≈ ${p.km} km</span><small>depuis Saint-Fort-sur-le-Né</small></div><div><small>Déplacement</small><span class="v">${fee(p.km)}</span><small>${inZone?"dans la zone des 40 km":"au-delà de 40 km"}</small></div><div><small>Délai</small><span class="v">24 h</span><small>virus ou réinstallation</small></div></div>
 <h2 style="font-size:1.4rem">Gouyerian Tech à ${p.n}</h2>
 <p>${CTXT[p.n]}</p>
-<p>${p.n} est à environ ${p.km} km ${dirOf(p)} de l’atelier de Saint-Fort-sur-le-Né, en ${dept(p)}. Le déplacement à domicile coûte ${fee(p.km)} et le devis est gratuit. Vous pouvez aussi déposer votre appareil à l’atelier, 1 route de Segonzac, sur rendez-vous.</p>
+<p>${p.n} est à environ ${p.km} km ${dirOf(p)} de l’atelier de Saint-Fort-sur-le-Né, en ${dept(p)}. ${p.km<=40?"Le déplacement à domicile et le devis sont gratuits":"Le déplacement à domicile est sur devis, le devis de réparation est gratuit"}. Vous pouvez aussi déposer votre appareil à l’atelier, 1 route de Segonzac, sur rendez-vous.</p>
 <p>Autour de ${p.n}, Gouyerian Tech intervient aussi à ${near.map(q=>q.n+" ("+q.km+" km)").join(", ")}.</p>
 <div class="cta"><a class="btn" href="${PG?link("#demande")+"?commune="+encodeURIComponent(p.n):"#demande"}" data-commune="${p.n}">Demander un rappel</a><button class="btn ghost" type="button" data-copy="06 05 79 48 94">${svg("handset")}06 05 79 48 94</button></div>`;
   $("cLab1").textContent=p.n;
@@ -4464,9 +4469,9 @@ const BOT={
 intro:"Bonjour, je suis l’assistant automatique de Gouyerian Tech. Choisissez un sujet ou posez votre question.",
 qs:[["Tarifs","tarifs"],["Boutique","accessoires"],["Délais","delai"],["Horaires","horaires"],["Déplacement","zone"],["Garantie","garantie"],["Professionnels","pro"],["Contact","contact"]],
 a:{
-tarifs:"Quelques tarifs :\n• Nettoyage de virus : 30 €\n• Réinstallation de Windows : 50 € sans conserver vos données, 80 € avec sauvegarde si possible\n• Récupération de données : 80 €, si elle est possible\n• Déplacement : 10 € jusqu’à 10 km, 20 € de 10 à 40 km\nÉcrans, batteries et le reste : devis gratuit, prix annoncé avant les travaux.",
+tarifs:"Quelques tarifs :\n• Nettoyage de virus : 30 €\n• Réinstallation de Windows : 50 € sans conserver vos données, 80 € avec sauvegarde si possible\n• Récupération de données : 80 €, si elle est possible\n• Déplacement et livraison : gratuits jusqu’à 40 km\nÉcrans, batteries et le reste : devis gratuit, prix annoncé avant les travaux.",
 horaires:"Du lundi au samedi de 9h à 20h, et le dimanche de 9h à 13h, sur rendez-vous.",
-zone:"Déplacement à domicile jusqu’à 40 km autour de Saint-Fort-sur-le-Né : 10 € jusqu’à 10 km, 20 € au-delà. Au-delà de 40 km, l’intervention est possible sur devis.",
+zone:"Déplacement à domicile gratuit jusqu’à 40 km autour de Saint-Fort-sur-le-Né. Au-delà de 40 km, l’intervention est possible sur devis.",
 rdv:"Les interventions se font sur rendez-vous. Le plus simple est d’appeler le 06 05 79 48 94 : une place est souvent possible dans la journée. Vous pouvez aussi demander un rappel avec le formulaire.",
 atelier:"Vous pouvez déposer votre appareil à l’atelier, 1 route de Segonzac à Saint-Fort-sur-le-Né, sur rendez-vous. Appelez le 06 05 79 48 94.",
 donnees:"Avant une réinstallation de Windows, vos données peuvent être sauvegardées si l’état de l’appareil le permet : 80 €, au lieu de 50 € sans sauvegarde.",
@@ -4505,7 +4510,7 @@ function chips(act){cq.innerHTML="";
   BOT.qs.forEach(q=>{const b=document.createElement("button");b.type="button";b.textContent=q[0];b.onclick=()=>ask(q[0],q[1]);cq.appendChild(b)})}
 function ask(t,key){say(t,true);setTimeout(()=>{const k=key||botFind(t);
   const c=!key&&(["zone","livraison","fallback"].includes(k)||/deplac|venir|venez|livr|frais|\bkm\b|loin|chez moi|domicile/.test(norm(t)))?botCom(t):null;
-  if(c){say(`${c.n} est à environ ${c.km} km de l’atelier : déplacement ${depl(c.km)}, ${livFor(c.km)}. Le retrait à l’atelier est gratuit.`);chips(["Prendre rendez-vous","#demande"]);return}
+  if(c){say(`${c.n} est à environ ${c.km} km de l’atelier : ${c.km<=LIV.max?"déplacement et livraison gratuits":"déplacement et livraison sur devis"}. Le retrait à l’atelier est gratuit.`);chips(["Prendre rendez-vous","#demande"]);return}
   say(BOT.a[k]);chips(BOT.act[k])},300)}
 function send(){const v=$("ci").value.trim();if(!v)return;$("ci").value="";ask(v)}
 cb.onclick=()=>{const open=cp.hidden;cp.hidden=!open;cb.setAttribute("aria-expanded",String(open));if(open&&!cm.children.length){say(BOT.intro);chips()}if(open&&desk())$("ci").focus()};
@@ -4525,33 +4530,25 @@ function badge(){const n=cartCount(),b=$("cartn");if(!b)return;b.hidden=!n;b.tex
 function cartKm(){if(CF.km!=null)return CF.km;const k=norm(CF.com);if(!k)return null;const c=LOC.find(p=>p.k===k);return c?c.km:null}
 function cartFee(){if(CF.mode!=="domicile")return{v:0,t:"Gratuit"};const km=cartKm();
   if(km==null)return{v:0,t:CF.com.trim()?"confirmée par téléphone":"selon l’adresse",km:null};
-  const maxKm=LIV.frais[LIV.frais.length-1][0];if(km>maxKm)return{v:0,t:"sur devis",km,far:true};
-  const base=LIV.frais.find(([k])=>km<=k)[1],tier=LIV.offerte.find(([k])=>km<=k),st=cartTotal();
-  if(tier&&st>=tier[1])return{v:0,t:"Offerte",km,free:true,base};
-  return{v:base,t:base+" €",km,base,need:tier?tier[1]-st:null,thr:tier?tier[1]:null}}
+  if(km>LIV.max)return{v:0,t:"sur devis",km,far:true};
+  return{v:0,t:"Gratuite",km,free:true}}
 const askNote=()=>cartAsk()?" Les articles à prix sur demande seront comptés quand leur prix sera confirmé.":"";
-const livBar=(html,v,max,small)=>`<div class="liv"><span>${html}</span><div class="liv-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${v}" aria-label="Montant vers la livraison offerte"><i style="width:${Math.max(4,Math.min(100,Math.round(v/max*100)))}%"></i></div><small>${small}${askNote()}</small></div>`;
+const livBar=(html,v,max,small)=>`<div class="liv"><span>${html}</span><div class="liv-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${v}" aria-label="Progression"><i style="width:${Math.max(4,Math.min(100,Math.round(v/max*100)))}%"></i></div><small>${small}${askNote()}</small></div>`;
 /* Message de livraison selon l’adresse (étape 2) */
 function livMsg(f){if(!CART.length)return"";
   if(CF.mode!=="domicile"){const L=cartLoc();return `<div class="liv hint">${svg("truck")}<span>${L&&L.km!=null?`Envie d’être livré à ${esc(L.com)} ? ${livFor(L.km).replace(/^l/,"L")}.`:"Envie d’être livré ? "+livTxt()}</span></div>`}
   if(f.km==null)return `<div class="liv hint">${svg("truck")}<span>${livTxt()} Indiquez votre adresse pour calculer la livraison.</span></div>`;
-  if(f.far)return `<div class="liv hint">${svg("truck")}<span>Au-delà de ${LIV.frais[LIV.frais.length-1][0]} km, la livraison est sur devis : Gouyerian Tech vous rappelle.</span></div>`;
-  if(f.free)return `<div class="liv ok"><span>✅ Livraison offerte ! Vous économisez ${f.base} €.</span></div>`;
-  if(f.need!=null)return livBar(`Plus que <b>${f.need} €</b> d’achat et la livraison est offerte ✅`,cartTotal(),f.thr,`Livraison offerte dès ${f.thr} € ${f.km<1?"dans votre commune":"à "+f.km+" km de l’atelier"}.`);
-  return ""}
+  if(f.far)return `<div class="liv hint">${svg("truck")}<span>Au-delà de ${LIV.max} km, la livraison est sur devis : Gouyerian Tech vous rappelle.</span></div>`;
+  return `<div class="liv ok"><span>✅ Livraison gratuite chez vous${f.km>=1?` (${f.km} km)`:""}, sans minimum d’achat.</span></div>`}
 /* Bandeau de livraison offerte en haut du panier (étape 1) */
 /* Bandeau calculé pour la commune mémorisée : un client à 6 km ne voit que son seuil (50 €), jamais celui des 40 km */
 let CB=null; /* distance montrée à l’étape 1, comparée ensuite à l’adresse de livraison */
 function livHome(L){const c=livCond(L.km),t=cartTotal(),w=`chez vous à <b>${esc(L.com)}</b> (${L.km} km)`;
   if(c.far)return `<div class="liv hint">${svg("truck")}<span>Livraison ${w} : sur devis, Gouyerian Tech vous rappelle pour la confirmer. Le retrait à l’atelier est gratuit.</span></div>`;
-  if(t>=c.thr)return `<div class="liv ok"><span>✅ Livraison offerte ${w} !</span></div>`;
-  return livBar(`Plus que <b>${c.thr-t} €</b> d’achat et la livraison est offerte ${w} ✅`,t,c.thr,`Sinon ${c.fee} € de livraison. Livré ailleurs ? L’adresse de l’étape suivante recalcule les frais.`)}
+  return `<div class="liv ok"><span>✅ Livraison gratuite ${w}, sans minimum d’achat !</span></div>`}
 function freeBar(){const st=cartStep===1;if(st)CB=null;if(!CART.length)return"";const f=cartFee();if(CF.mode==="domicile"&&f.km!=null){if(st)CB={com:CF.com,km:f.km};return livMsg(f)}
   const L=cartLoc();if(L&&L.km!=null){if(st)CB={com:L.com,km:L.km};return livHome(L)}
-  const t=cartTotal(),[k1,s1]=LIV.offerte[0],[k2,s2]=LIV.offerte[1];
-  if(t<s1)return livBar(`Plus que <b>${s1-t} €</b> d’achat et la livraison est offerte ✅`,t,s1,`Livraison offerte jusqu’à ${k1} km de l’atelier, et dès ${s2} € jusqu’à ${k2} km.`);
-  if(t<s2)return livBar(`✅ Livraison offerte jusqu’à ${k1} km ! Plus que <b>${s2-t} €</b> pour l’avoir jusqu’à ${k2} km.`,t,s2,"");
-  return `<div class="liv ok"><span>✅ Livraison offerte jusqu’à ${k2} km autour de l’atelier !</span></div>`}
+  return `<div class="liv ok"><span>✅ Livraison gratuite jusqu’à ${LIV.max} km autour de l’atelier, sans minimum d’achat !</span></div>`}
 function addCart(n,p,ic){const it=CART.find(x=>x.n===n);if(it)it.q=Math.min(QMAX,it.q+1);else CART.push({n,p:p==null||isNaN(p)?null:p,q:1,note:"",ic:IC[ic]?ic:"bag"});
   saveCart();badge();openCart(document.activeElement)}
 const shopLink=c=>PG?"/boutique/"+(c?"?b="+norm(c):""):"#boutique";
@@ -4569,24 +4566,20 @@ function drawCart(){const has=CART.length>0;
   sumCart()}
 function sumCart(){const has=CART.length>0,foot=$("cartfoot");foot.hidden=!has||cartStep===3;if(!has){$("cartsum").innerHTML="";return}
   const t=cartTotal(),ask=cartAsk(),f=cartFee(),known=cartStep===2||CF.mode==="domicile"&&f.km!=null;
-  const liv=!known?`<span>Retrait ou livraison</span><b class="mut">à l’étape suivante</b>`:`<span>${CF.mode==="domicile"?"Livraison":"Retrait à l’atelier"}</span><b${f.free||CF.mode!=="domicile"?' class="free"':""}>${f.free?`<s>${f.base} €</s> Offerte`:f.t}</b>`;
+  const liv=!known?`<span>Retrait ou livraison</span><b class="mut">à l’étape suivante</b>`:`<span>${CF.mode==="domicile"?"Livraison":"Retrait à l’atelier"}</span><b${f.free||CF.mode!=="domicile"?' class="free"':""}>${f.t}</b>`;
   const tot=t+(known?f.v:0);
   $("cartsum").innerHTML=`<div class="cart-s"><div><span>Sous-total (${art(cartCount())})</span><b>${t} €${ask?" *":""}</b></div><div>${liv}</div><div class="tot"><span>Total${ask?" estimé":""}</span><b>${tot} €${ask?" *":""}</b></div>${ask?`<small>* Hors articles à prix sur demande, confirmés par téléphone.</small>`:""}</div>`;
   $("cartgo").innerHTML=`Commander · ${tot} €${ask?" *":""}${svg("arrow")}`;
   $("cartmini").textContent=`· ${art(cartCount())}`;
   $("cartliv").innerHTML=bandNote(f)+livMsg(f);
   if(cartStep===1)$("cartfree").innerHTML=freeBar();
-  if($("ccomi"))$("ccomi").textContent=CF.mode==="domicile"&&CF.com.trim()?(f.km!=null?`Environ ${f.km} km de Saint-Fort-sur-le-Né · livraison ${f.free?"offerte":f.t}`:"Commune hors de la liste : la distance vous sera confirmée par téléphone."):""}
+  if($("ccomi"))$("ccomi").textContent=CF.mode==="domicile"&&CF.com.trim()?(f.km!=null?`Environ ${f.km} km de Saint-Fort-sur-le-Né · livraison ${f.free?"gratuite":f.t}`:"Commune hors de la liste : la distance vous sera confirmée par téléphone."):""}
 /* Message quand l’adresse de livraison ne donne pas les mêmes conditions que la commune affichée à l’étape 1 */
 function bandNote(f){if(cartStep!==2||!CB||CF.mode!=="domicile"||f.km==null||!CART.length)return"";
   const a=livCond(CB.km),b=livCond(f.km);if(a.k===b.k)return"";
-  const far=f.km>CB.km,lim=[...LIV.frais,...LIV.offerte].map(([k])=>k).filter(k=>k<f.km).sort((x,y)=>x-y).pop(),
-    where=`l’adresse de livraison est à ${f.km} km de l’atelier`,
-    cond=b.far?"la livraison se fait sur devis : Gouyerian Tech vous rappelle pour la confirmer. Le retrait à l’atelier reste gratuit"
-      :(a.far||a.fee===b.fee?`la livraison ${a.far?"coûte":"reste à"} ${b.fee} €`:`la livraison passe à ${b.fee} € (au lieu de ${a.fee} €)`)
-       +`, offerte dès ${b.thr} € d’achat`+(!a.far&&a.thr!==b.thr?` (au lieu de ${a.thr} €)`:"");
-  return far?`<div class="liv warn" role="status">${svg("truck")}<span><b>Finalement, ${where}${lim!=null?`, au-delà de ${lim} km`:""}</b> : ${cond}.</span></div>`
-    :`<div class="liv ok" role="status"><span>👍 Bonne nouvelle : ${where}, donc ${cond}.</span></div>`}
+  const where=`l’adresse de livraison est à ${f.km} km de l’atelier`;
+  return b.far?`<div class="liv warn" role="status">${svg("truck")}<span><b>Finalement, ${where}, au-delà de ${LIV.max} km</b> : la livraison se fait sur devis, Gouyerian Tech vous rappelle pour la confirmer. Le retrait à l’atelier reste gratuit.</span></div>`
+    :`<div class="liv ok" role="status"><span>👍 Bonne nouvelle : ${where}, donc la livraison est gratuite.</span></div>`}
 function setStep(n){cartStep=n;$("cartbody").hidden=n!==1;$("cartinfo").hidden=n!==2;$("cartok").hidden=n!==3;
   $("cartgo").hidden=n!==1;$("carts").hidden=n!==2;$("cartm").textContent="";
   document.querySelectorAll("#cartsteps li").forEach(li=>{const k=+li.dataset.s;li.className=k<n?"done":k===n?"cur":"";if(k===n)li.setAttribute("aria-current","step");else li.removeAttribute("aria-current")});
@@ -4609,7 +4602,7 @@ async function sendCart(){readCF();
   if(!bad&&bad2){$("cartm").textContent=bad2;$("ccgv").focus();return}
   $("cartm").textContent=bad;if(bad){const fld=!CF.nom.trim()?$("cn"):!CF.tel.trim()?$("ct"):CF.mode==="domicile"&&!CF.adr.trim()?$("cadr"):CF.mode==="domicile"&&!CF.com.trim()?$("ccom"):$("cmail");fld.focus();return}
   if($("chp").value)return;
-  const ref=cartRef(),L=cartLines(),t=cartTotal(),ask=cartAsk(),f=cartFee(),ret=CF.mode==="atelier"?"À l’atelier, sur rendez-vous":`Livraison à domicile : ${CF.adr.trim()}, ${CF.com.trim()}${f.km!=null?" (environ "+f.km+" km)":""}, livraison ${f.free?"offerte":f.t}`;
+  const ref=cartRef(),L=cartLines(),t=cartTotal(),ask=cartAsk(),f=cartFee(),ret=CF.mode==="atelier"?"À l’atelier, sur rendez-vous":`Livraison à domicile : ${CF.adr.trim()}, ${CF.com.trim()}${f.km!=null?" (environ "+f.km+" km)":""}, livraison ${f.free?"gratuite":f.t}`;
   const tot=`${t+f.v} €${ask?" + articles à prix sur demande":""}`,subj=`Commande ${ref} : ${art(cartCount())}, ${tot}`;
   const data={_subject:subj,_template:"table","Référence":ref};L.forEach((l,i)=>data["Article "+(i+1)]=l);
   Object.assign(data,{"CGV":"acceptées","Total estimé":tot,Nom:CF.nom.trim(),"Téléphone":CF.tel.trim(),"E-mail":CF.mail.trim()||"-",Retrait:ret,Message:CF.msg.trim()||"-"});
@@ -4620,17 +4613,17 @@ async function sendCart(){readCF();
     const snap=CART.map(x=>({...x})),nom=CF.nom.trim(),tel=CF.tel.trim(),mode=CF.mode;CART=[];saveCart();badge();attClear("cart");b.disabled=false;b.innerHTML=t0;$("cmsg").value="";
     $("cartok").innerHTML=`<div class="ok-hero"><span class="ok-ic">${svg("check")}</span><h3>Merci ${esc(nom)} !</h3><p>Votre demande <b>n° ${esc(window.GT_LAST_REF||ref)}</b> est bien envoyée.</p></div>
 <div class="ok-recap"><h4>Récapitulatif</h4><ul>${snap.map(x=>`<li><span class="ci-img">${svg(x.ic||"bag")}</span><span>${x.q} × ${esc(x.n)}${x.note.trim()?`<small>${esc(x.note.trim())}</small>`:""}</span><b>${x.p==null?"Sur demande":x.p*x.q+" €"}</b></li>`).join("")}</ul>
-<div class="cart-s"><div><span>${mode==="domicile"?"Livraison":"Retrait à l’atelier"}</span><b>${f.free?"Offerte":f.t}</b></div><div class="tot"><span>Total${ask?" estimé":""}</span><b>${t+f.v} €${ask?" *":""}</b></div></div></div>
+<div class="cart-s"><div><span>${mode==="domicile"?"Livraison":"Retrait à l’atelier"}</span><b>${f.t}</b></div><div class="tot"><span>Total${ask?" estimé":""}</span><b>${t+f.v} €${ask?" *":""}</b></div></div></div>
 <ol class="ok-next"><li><span><b>Gouyerian Tech vous rappelle</b> au ${esc(tel)} pour confirmer la disponibilité${ask?" et les prix":""}.</span></li><li><span><b>${mode==="domicile"?"Livraison chez vous":"Retrait à l’atelier"}</b>, au jour et à l’heure convenus.</span></li><li><span><b>Paiement ${mode==="domicile"?"à la livraison":"au retrait"}</b>, par carte bancaire ou en espèces.</span></li></ol>
 <div class="ok-act"><a class="btn" href="${shopLink("")}" data-bcat="Tout" data-cclose="1">Continuer mes achats</a><button type="button" class="btn ghost" data-cclose="1">Fermer</button></div>`;
     setStep(3);$("cartok").querySelector("h3").setAttribute("tabindex","-1");$("cartok").querySelector("h3").focus()}
   catch(e){b.disabled=false;b.innerHTML=t0;$("cartm").textContent="L’envoi direct n’a pas fonctionné : votre messagerie va s’ouvrir avec la demande déjà rédigée."+(F.length?" Ajoutez-y vos photos en pièce jointe.":"")+" Vous pouvez aussi appeler le 06 05 79 48 94.";
     const body=`Bonjour Gouyerian Tech,\nDemande ${ref}, je souhaite réserver :\n${L.map(l=>"- "+l).join("\n")}\nTotal estimé : ${tot}\nRetrait : ${ret}\nNom : ${CF.nom.trim()}\nTéléphone : ${CF.tel.trim()}${CF.mail.trim()?"\nE-mail : "+CF.mail.trim():""}${CF.msg.trim()?"\nMessage : "+CF.msg.trim():""}`;
     setTimeout(()=>{location.href=hrefs.mail+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body)},1500)}}
-if($("promo-t"))$("promo-t").innerHTML=`<b>Livraison offerte</b> dès ${LIV.offerte[0][1]} € d’achat jusqu’à ${LIV.offerte[0][0]} km, et dès ${LIV.offerte[1][1]} € jusqu’à ${LIV.offerte[1][0]} km. Retrait à l’atelier gratuit.`;
-if($("livsm"))$("livsm").textContent=`Offerte dès ${LIV.offerte[0][1]} € jusqu’à ${LIV.offerte[0][0]} km, dès ${LIV.offerte[1][1]} € jusqu’à ${LIV.offerte[1][0]} km. Sinon ${LIV.frais[0][1]} € jusqu’à ${LIV.frais[0][0]} km, ${LIV.frais[1][1]} € au-delà.`;
-if($("faq-liv"))$("faq-liv").textContent=`Oui, dans un rayon de ${LIV.frais[LIV.frais.length-1][0]} km autour de Saint-Fort-sur-le-Né. ${livTxt()} En dessous, la livraison coûte ${LIV.frais[0][1]} € jusqu’à ${LIV.frais[0][0]} km et ${LIV.frais[1][1]} € au-delà. Le panier calcule la livraison dès que vous indiquez votre adresse. Le retrait à l’atelier est toujours gratuit.`;
-BOT.a.livraison=`${livTxt()} Sinon, la livraison coûte ${LIV.frais[0][1]} € jusqu’à ${LIV.frais[0][0]} km et ${LIV.frais[1][1]} € jusqu’à ${LIV.frais[1][0]} km. Le retrait à l’atelier est gratuit.`;
+if($("promo-t"))$("promo-t").innerHTML=`<b>Livraison gratuite</b> jusqu’à ${LIV.max} km autour de Saint-Fort-sur-le-Né, sans minimum d’achat. Retrait à l’atelier gratuit.`;
+if($("livsm"))$("livsm").textContent=`Gratuite jusqu’à ${LIV.max} km, sans minimum d’achat.`;
+if($("faq-liv"))$("faq-liv").textContent=`Oui, et la livraison est gratuite dans un rayon de ${LIV.max} km autour de Saint-Fort-sur-le-Né, sans minimum d’achat. Au-delà, elle est possible sur devis. Le retrait à l’atelier est toujours gratuit.`;
+BOT.a.livraison=`${livTxt()} Au-delà, la livraison est possible sur devis. Le retrait à l’atelier est gratuit.`;
 BOT.act.livraison=["Voir la boutique","#boutique"];
 Object.assign(BOT.a,{
   paiement:"Le paiement se fait à la restitution de l’appareil, au retrait ou à la livraison, par carte bancaire ou en espèces. Les chèques ne sont pas acceptés. Si une pièce doit être commandée spécialement, un acompte ou la totalité du prix peut être demandé à la commande.",
@@ -4685,12 +4678,12 @@ function rememberLoc(o){saveLoc(o)}
 /* Panier : commune mémorisée, ou à défaut celle saisie pendant la visite (sans accord, elle ne sert qu’à calculer la livraison) */
 function cartLoc(){const L=locNow();if(L)return L;try{const l=JSON.parse(sessionStorage.getItem(LK)||"null");if(l&&l.com&&l.km!=null)return l}catch(e){}return null}
 function forgetLoc(){LOCU=null;try{localStorage.removeItem(LK);sessionStorage.removeItem(LK)}catch(e){}applyLoc()}
-const depl=km=>km<=LIV.frais[0][0]?LIV.frais[0][1]+" €":km<=LIV.frais[LIV.frais.length-1][0]?LIV.frais[LIV.frais.length-1][1]+" €":"sur devis";
-function livFor(km){const t=LIV.offerte.find(([k])=>km<=k);return t?`livraison offerte dès ${t[1]} € d’achat (sinon ${depl(km)})`:"livraison sur devis"}
+const depl=km=>km<=LIV.max?"gratuit":"sur devis";
+function livFor(km){return km<=LIV.max?"livraison gratuite, sans minimum d’achat":"livraison sur devis"}
 function applyLoc(){const ok=consent()==="oui",L=ok?locNow():null;
   if($("locb")){$("locb").hidden=!ok;$("loct").innerHTML=L?`${esc(L.com)}<span class="hide-xs"> · ${L.km} km</span>`:"Votre commune"}
   document.querySelectorAll("[data-locline]").forEach(p=>{p.hidden=!L;if(L)p.innerHTML=`${svg("pin")}<span>Chez vous à ${esc(L.com)}, à ${L.km} km : déplacement ${depl(L.km)}.</span>`});
-  if($("promo-t"))$("promo-t").innerHTML=L?`<b>Chez vous à ${esc(L.com)}</b> (${L.km} km) : ${livFor(L.km)}. Retrait à l’atelier gratuit.`:`<b>Livraison offerte</b> dès ${LIV.offerte[0][1]} € d’achat jusqu’à ${LIV.offerte[0][0]} km, et dès ${LIV.offerte[1][1]} € jusqu’à ${LIV.offerte[1][0]} km. Retrait à l’atelier gratuit.`;
+  if($("promo-t"))$("promo-t").innerHTML=L?`<b>Chez vous à ${esc(L.com)}</b> (${L.km} km) : ${livFor(L.km)}. Retrait à l’atelier gratuit.`:`<b>Livraison gratuite</b> jusqu’à ${LIV.max} km autour de Saint-Fort-sur-le-Né, sans minimum d’achat. Retrait à l’atelier gratuit.`;
   if($("locinfo"))$("locinfo").innerHTML=L?`<div class="liv ok"><span>${svg("pin")} ${esc(L.adr?L.adr+", ":"")}${esc(L.com)} · ${L.km} km de l’atelier · déplacement ${depl(L.km)}</span></div>`:"";
   if($("locforget"))$("locforget").hidden=!L;if($("locok"))$("locok").hidden=!L}
 /* Position actuelle : autorisation du navigateur, puis adresse via l’IGN (sinon la rue et la commune les plus proches, calculées sur l’appareil) */

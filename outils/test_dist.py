@@ -164,7 +164,7 @@ with sync_playwright() as p:
     if sg:
         pg.click(f"#sg-ca .sg >> nth={next((k for k, t in enumerate(sg) if 'Saint-Fort' in t), 0)}"); pg.wait_for_timeout(150)
     print("livraison (site en ligne) :", pg.inner_text("#cartliv").replace("\n", " "), "| commune :", pg.input_value("#ccom"))
-    if "Plus que 40" not in pg.inner_text("#cartliv"): bad("message de livraison offerte absent")
+    if "Livraison gratuite" not in pg.inner_text("#cartliv"): bad("message de livraison gratuite absent")
     pg.click("#cartx")
     pg.goto(SITE + "/rendez-vous/?app=T%C3%A9l%C3%A9phone&besoin=R%C3%A9parer+ou+d%C3%A9panner&detail=%C3%89cran+cass%C3%A9"); pg.wait_for_timeout(200)
     img = (DIST / "assets" / "og-image.jpg").read_bytes()
