@@ -208,6 +208,6 @@ Une seule recherche Claude par semaine (dimanche) qui écrit `attente/programmee
 - Compte AdSense : celui du compte Google « GT Movie » (pas le compte personnel d'Achot). Éditeur ca-pub-7142333632093018. `ads.txt` généré par build.py.
 - Le script AdSense est dans l'en-tête de toutes les pages publiques SAUF paiement, mon-espace, suivi, rendez-vous, hors-ligne, 404 (constante SANS_PUB dans build.py) : pas de pub sur les pages de formulaire ou de compte.
 - Emplacements réservés (`<div class="gt-ad" data-ad="…">`) : accueil (avant « Infos pratiques »), liste des actualités (sous la liste), page d'une actualité (après le conseil), infos pratiques (sous les articles), page d'un article (avant la navigation).
-  Ils restent invisibles tant que le numéro du bloc n'est pas renseigné dans `GT_ADS.slots` (source/gouyerian-tech.html). Pour les activer : AdSense > Annonces > Par bloc d'annonces > « Display » responsive, copier le `data-ad-slot` dans la clé correspondante.
+  Tous utilisent le bloc display responsive « Gouyerian Tech - contenu » (data-ad-slot 1679181548), renseigné dans `GT_ADS.slots` (source/gouyerian-tech.html). Le cadre « Publicité » n'apparaît que si Google place réellement une annonce (data-ad-status=filled) : aucun trou vide avant la validation du site.
 - Les annonces automatiques de Google fonctionnent sans ces numéros (réglage dans AdSense > Annonces > Par site).
 - Message de consentement RGPD publié dans AdSense (Confidentialité et messages), avec bouton « Refuser ».

@@ -993,9 +993,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0
 .nw-tag{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--acc);font:500 .74rem var(--f-mono)}
 .nw h2{font-size:1.2rem;line-height:1.3}
 .nw p{font-size:.95rem}
-.gt-ad{margin:clamp(20px,4vw,32px) auto;max-width:970px;min-height:280px;text-align:center;overflow:hidden;border-block:1px solid var(--line);padding-block:10px}
+.gt-ad{margin:0 auto;max-width:970px;text-align:center;overflow:hidden}
 .gt-ad:empty{display:none}
-.gt-ad-l{display:block;margin-bottom:6px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.gt-ad-l{display:none;margin-bottom:6px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* le cadre et la mention n'apparaissent que si Google a réellement placé une annonce : jamais de trou vide */
+.gt-ad:has(ins[data-ad-status="filled"]){margin-block:clamp(20px,4vw,32px);border-block:1px solid var(--line);padding-block:10px}
+.gt-ad:has(ins[data-ad-status="filled"]) .gt-ad-l{display:block}
 @media print{.gt-ad{display:none}}
 .nw-tip{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--ok-bg);color:var(--fg)!important}
 .nw-evt{font:600 .74rem/1.3 var(--f-mono);color:var(--muted);letter-spacing:.02em}
@@ -2609,7 +2612,7 @@ const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[
 /* ---------- Emplacements d'annonces Google AdSense ----------
    Chaque emplacement reste invisible tant que son numéro de bloc (data-ad-slot, créé dans AdSense > Annonces > Par bloc d'annonces)
    n'est pas renseigné ci-dessous. Les « annonces automatiques » de Google fonctionnent sans ces numéros. */
-const GT_ADS={client:"ca-pub-7142333632093018",slots:{actu:"",liste:"",article:"",infos:"",accueil:""}};
+const GT_ADS={client:"ca-pub-7142333632093018",slots:{actu:"1679181548",liste:"1679181548",article:"1679181548",infos:"1679181548",accueil:"1679181548"}};
 const adBox=k=>`<div class="gt-ad" data-ad="${k}"></div>`;
 function gtAds(){if(!window.GT_PAGE)return;document.querySelectorAll(".gt-ad:empty").forEach(b=>{const id=GT_ADS.slots[b.dataset.ad];if(!id||b.closest("[hidden]"))return;
   b.innerHTML=`<span class="gt-ad-l">Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="${GT_ADS.client}" data-ad-slot="${id}" data-ad-format="auto" data-full-width-responsive="true"></ins>`;
