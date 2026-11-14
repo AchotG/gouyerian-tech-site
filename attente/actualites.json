@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "d": "2026-11-10",
+    "dl": "10 novembre 2026",
+    "sc": "France",
+    "th": "Sécurité",
+    "tag": "Chrome",
+    "urg": 1,
+    "t": "Chrome : une faille déjà exploitée par des pirates, mettez à jour maintenant",
+    "s": "Le CERT-FR, centre d’alerte de l’ANSSI, a publié le 10 novembre un avis sur plusieurs failles de Google Chrome. Google indique que l’une d’elles, CVE-2026-125350, est déjà activement exploitée par des pirates. Sont concernées les versions de Chrome antérieures à 157.0.8103.50 sur Windows et Linux, et antérieures à 157.0.8103.51 sur Mac. Le correctif a été publié par Google le 9 novembre, mais il ne s’applique qu’après un redémarrage du navigateur.",
+    "tip": "Ouvrez Chrome, menu ⋮ > Aide > À propos de Google Chrome, laissez la mise à jour se faire puis cliquez sur « Relancer » : le numéro doit être 157.0.8103.50 ou plus récent (157.0.8103.51 sur Mac). Si vous n’êtes pas sûr de vos réglages ou que votre ordinateur se comporte bizarrement, nous pouvons le vérifier pour vous.",
+    "src": [
+      [
+        "CERT-FR – avis CERTFR-2026-AVI-1488 (10 novembre 2026)",
+        "https://cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1488/"
+      ],
+      [
+        "Armees.com (11 novembre 2026)",
+        "https://armees.com/chrome-faille-exploitee-cve-2026-125350-cert-fr-111126-presedd-1740/"
+      ]
+    ],
+    "ajoute_le": "14 novembre 2026 à 5h55",
+    "par": "alerte",
+    "verif": "Faille CVE-2026-125350 activement exploitée selon Google, versions corrigées (157.0.8103.50 Windows/Linux, 157.0.8103.51 Mac) et dates (correctif du 9 novembre, avis du 10 novembre) vérifiées sur l’avis officiel du CERT-FR et confirmées par Armees.com."
+  }
+]
