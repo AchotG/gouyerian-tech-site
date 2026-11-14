@@ -394,6 +394,7 @@ def head(pd):
 <link rel="preload" href="/assets/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 {pd["extra_head"]}
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7142333632093018" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="/assets/site.css?v={VER}">
 <script>try{{var t=localStorage.getItem("gt-theme2");if(t)document.documentElement.dataset.gt=t}}catch(e){{}}</script>
 {lds}"""
@@ -504,6 +505,7 @@ urls = [pd for pd in PAGES if pd["index"]]
 """, encoding="utf-8")
 # Fichier de validation Google Search Console (ne pas supprimer)
 (DIST / "googlec2ee2d1354c69554.html").write_text("google-site-verification: googlec2ee2d1354c69554.html", encoding="utf-8")
+(DIST / "ads.txt").write_text("google.com, pub-7142333632093018, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
 (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /gestion/\nDisallow: /paiement/\n\nSitemap: {SITE}/sitemap.xml\n", encoding="utf-8")
 # Suivi des réparations : serveur PHP (api/) et page de gestion de l'atelier (gestion/), copiés tels quels
 SRV = B.parent / "serveur"
