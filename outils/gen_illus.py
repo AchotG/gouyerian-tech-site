@@ -379,6 +379,13 @@ S["fin-de-la-2g"] = frame(
     + house(960, 420, 240, 190) + warning(1090, 230, .6) + check(840, 160, 40), 640, 360)
 
 
+S["black-friday-sans-pieges"] = frame(
+    # panier d'achat, étiquette de promo examinée à la loupe, vigilance (prix vérifié)
+    cart(500, 390, 1.7, INK)
+    + pricetag(900, 250, "-40%", 1.25, AM, -10) + magnifier(1010, 268, 88, CY, "none")
+    + check(1050, 520, 46) + warning(240, 150, .5), 640, 360)
+
+
 MARGE = 28          # marge minimale (px) au bord de l'image ; l'aperçu de partage coupe aussi ~22 px en haut et en bas
 CONTROLE_JS = """(m) => {
   const W = 1280, H = 720, g = document.querySelector('svg').lastElementChild, pb = [];
