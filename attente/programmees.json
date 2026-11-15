@@ -1,1 +1,341 @@
-[]
+[
+ {
+  "d": "2026-11-10",
+  "dl": "10 novembre 2026",
+  "sc": "Monde",
+  "th": "Sécurité",
+  "tag": "Windows",
+  "urg": 1,
+  "t": "Patch Tuesday de novembre : Microsoft corrige 1 093 failles, dont une faille d’Outlook déjà exploitée",
+  "s": "Le 10 novembre 2026, Microsoft a publié ses correctifs mensuels : 1 093 vulnérabilités corrigées, dont 63 jugées critiques. Parmi elles, une faille d’Outlook (CVE-2026-124194) est déjà exploitée par des pirates. Il suffit d’ouvrir un fichier piégé pour qu’Outlook se connecte à un serveur de l’attaquant sans afficher d’avertissement, ce qui peut faire fuiter des informations de connexion Windows. Cette faille-là se corrige par la mise à jour d’Office, pas seulement par Windows Update.",
+  "tip": "Faites deux mises à jour : Windows (Paramètres > Windows Update > Rechercher des mises à jour) puis Office (ouvrez Word > Fichier > Compte > Options de mise à jour > Mettre à jour maintenant). Si vous avez un doute ou plusieurs postes au bureau, nous pouvons vérifier que tout est à jour.",
+  "src": [
+   [
+    "IT-Connect (11 novembre 2026)",
+    "https://www.it-connect.fr/patch-tuesday-novembre-2026-recapitulatif/"
+   ],
+   [
+    "Malwarebytes (11 novembre 2026)",
+    "https://www.malwarebytes.com/fr/blog/bugs/2026/11/microsoft-patch-tuesday-fixes-outlook-flaw-already-under-attack"
+   ]
+  ],
+  "verif": "Les deux sources confirment la date (10 novembre), plus de 1 000 failles (1 093 selon IT-Connect), la faille Outlook CVE-2026-124194 déjà exploitée, le vol possible du hash NTLMv2 et le correctif via Office. 63 critiques : IT-Connect ; marche à suivre Office : Malwarebytes.",
+  "prevu": "2026-11-16T08:30",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-10",
+  "dl": "10 novembre 2026",
+  "sc": "Monde",
+  "th": "Ordinateurs",
+  "tag": "Windows 11",
+  "t": "Windows 11 : la mise à jour de novembre change le clic droit, mais bloque sur certains PC",
+  "s": "Microsoft a publié le 10 novembre la mise à jour obligatoire KB5132061 pour Windows 11 25H2 et 26H2. Le menu du clic droit devient plus rapide et personnalisable, et l’outil Cloud rebuild permet de réinstaller Windows depuis Internet, même quand le PC ne démarre plus. Elle répare aussi un bug qui empêchait certains périphériques audio USB de fonctionner (code d’erreur 10). Sur certains PC, l’installation échoue ou recommence en boucle, parfois à 99 % ; Microsoft a reconnu le problème le 11 novembre et applique une correction automatique sous 24 à 48 heures.",
+  "tip": "Si la mise à jour échoue (erreurs 0x80070306, 0x800f0989 ou 0x800f0993 par exemple), attendez 48 heures puis relancez Windows Update (Paramètres > Windows Update > Rechercher des mises à jour). Inutile de réinstaller Windows. Si le PC reste bloqué ensuite, Gouyerian Tech peut intervenir.",
+  "src": [
+   [
+    "Le Crabe Info (10 novembre 2026)",
+    "https://lecrabeinfo.net/mises-a-jour-windows/windows-11-kb5132061-novembre-2026/"
+   ],
+   [
+    "IT-Connect (11 novembre 2026)",
+    "https://www.it-connect.fr/windows-11-kb5132061-kb5131087-nouveautes-correctifs/"
+   ],
+   [
+    "Le Crabe Info (12 novembre 2026)",
+    "https://lecrabeinfo.net/actualites/windows-11-kb5132061-erreur-installation/"
+   ]
+  ],
+  "verif": "Date, KB, versions, clic droit, Cloud rebuild et audio USB (code 10) : Le Crabe Info et IT-Connect. Échecs d’installation, codes d’erreur, reconnaissance par Microsoft le 11 novembre et délai 24-48 h : Le Crabe Info du 12 novembre (renvoie au support Microsoft).",
+  "prevu": "2026-11-16T17:00",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-12",
+  "dl": "12 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Fuite",
+  "t": "Macif Avantages : noms, adresses et dates de naissance de clients dérobés chez un prestataire",
+  "s": "La Macif a prévenu le 12 novembre 2026 des utilisateurs de son service de bons d’achat Macif Avantages qu’un pirate a accédé à leurs données. L’attaque a eu lieu chez Qwertys, le prestataire qui gère la plateforme. Les données touchées sont les noms, prénoms, adresses postales, adresses e-mail et dates de naissance. Selon l’assureur, les données bancaires, les identifiants et les contrats d’assurance ne sont pas concernés. Le service a été fermé, la CNIL a été prévenue et une plainte a été déposée.",
+  "tip": "Méfiez-vous des e-mails, SMS ou appels « de la Macif » qui demandent une confirmation d’identité, des coordonnées bancaires ou un code. Passez toujours par l’application ou le site officiel. En cas de message douteux, montrez-le-nous avant de cliquer.",
+  "src": [
+   [
+    "Cyberattaque.org (12 novembre 2026)",
+    "https://www.cyberattaque.org/macif-avantages-une-cyberattaque-chez-qwertys-expose-les-donnees-personnelles-de-clients-de-lassureur/"
+   ],
+   [
+    "E.Niort (13 novembre 2026)",
+    "https://eniort.com/2026/11/13/fuite-de-donnees-macif-avantages-un-piratage-chez-le-prestataire-qwertys/"
+   ]
+  ],
+  "verif": "Les deux sources rapportent le courriel de la Macif du 12 novembre : prestataire Qwertys, données exposées, pas de données bancaires ni d’identifiants, service fermé, CNIL notifiée, plainte déposée. Nombre de victimes non communiqué, donc aucun chiffre.",
+  "prevu": "2026-11-17T08:30",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-09",
+  "dl": "9 novembre 2026",
+  "sc": "Monde",
+  "th": "Smartphones",
+  "tag": "iPhone",
+  "t": "iOS 27.2.1 corrige neuf failles de l’iPhone, dont deux dans iMessage",
+  "s": "Apple a publié iOS 27.2.1 le 9 novembre 2026. Cette version n’apporte aucune nouveauté mais corrige neuf failles de sécurité. Deux d’entre elles touchaient iMessage : un pirate pouvait rejoindre une conversation de groupe sans y être invité, ou lire des messages envoyés avant son arrivée. D’autres corrections concernent le Bluetooth (un appareil malveillant pouvait se connecter sans autorisation) et AirPlay. Apple n’a signalé aucune exploitation de ces failles, mais recommande d’installer la mise à jour.",
+  "tip": "Sur l’iPhone : Réglages > Général > Mise à jour logicielle, en Wi-Fi et avec assez de batterie. Les iPad, Mac et Apple Watch ont aussi reçu leur version 27.2.1, et les appareils plus anciens iOS 26.7.3. Si votre iPhone ne propose plus de mises à jour, venez nous voir pour faire le point.",
+  "src": [
+   [
+    "JustGeek (10 novembre 2026)",
+    "https://www.justgeek.fr/ios-27-2-1-mise-a-jour-iphone-161310/"
+   ],
+   [
+    "iPhoneSoft (9 novembre 2026)",
+    "https://iphonesoft.fr/2026/11/09/apple-publie-ios-27-2-1-plateformes"
+   ],
+   [
+    "9to5Mac (9 novembre 2026)",
+    "https://9to5mac.com/2026/11/09/apple-releases-ios-27-2-1-for-iphone-heres-whats-new/"
+   ]
+  ],
+  "verif": "Date (9 novembre), 9 failles (JustGeek), détail iMessage/Bluetooth/AirPlay recoupé dans les deux articles ; aucune exploitation signalée (JustGeek) ; versions 27.2.1 des autres appareils et iOS 26.7.3 (iPhoneSoft). Pas d’urg. Sortie le 9 novembre et absence de nouvelles fonctions confirmées aussi par 9to5Mac (note officielle d’Apple).",
+  "prevu": "2026-11-17T17:00",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-09",
+  "dl": "9 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Arnaque",
+  "t": "Faux avis de prélèvement « Banque de France » : le piège est le numéro à rappeler",
+  "s": "Le 9 novembre 2026, Signal-Arnaques a relayé une série de courriels qui annoncent un prélèvement ou un mandat SEPA au nom de la Banque de France, pour des montants de plusieurs centaines d’euros. Ces messages ne demandent pas d’argent : ils poussent à appeler un « service de prélèvements » qui n’existe pas. Au téléphone, les escrocs se font passer pour le service des fraudes et font valider des opérations à leur profit. La Banque de France rappelle qu’elle ne demande jamais de coordonnées bancaires et ne fait jamais valider ou annuler une opération.",
+  "tip": "N’appelez jamais le numéro écrit dans le message. Vérifiez vos comptes dans l’application de votre banque ou appelez le numéro au dos de votre carte. Si vous avez déjà appelé ou validé quelque chose, contactez votre banque tout de suite et appelez Info Escroqueries au 0 805 805 817 (gratuit).",
+  "src": [
+   [
+    "Signal-Arnaques (9 novembre 2026)",
+    "https://info.signal-arnaques.com/actualites/flash-arnaques-9-novembre-2026-faux-prelevements-banque/"
+   ],
+   [
+    "Banque de France (page mise à jour le 24 septembre 2026)",
+    "https://www.banque-france.fr/fr/actualites/la-banque-de-france-met-en-garde-le-public-face-aux-appels-telephoniques-et-aux-sms-frauduleux"
+   ]
+  ],
+  "verif": "Déroulé de l’arnaque et montants : Signal-Arnaques du 9 novembre. Mode opératoire, ce que la Banque de France ne demande jamais et numéro Info Escroqueries : page officielle de la Banque de France. Numéros des escrocs non repris.",
+  "prevu": "2026-11-18T08:30",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-12",
+  "dl": "12 novembre 2026",
+  "sc": "Monde",
+  "th": "Internet",
+  "tag": "Panne",
+  "t": "Microsoft 365 : Outlook, Teams et Copilot en panne pendant plus d’une journée",
+  "s": "Une panne mondiale a touché Microsoft 365 à partir du 12 novembre : Outlook, Teams, Copilot et SharePoint ont été perturbés. Microsoft a annoncé le 14 novembre que tout était rétabli. Il explique la panne par un problème réseau survenu après une mise à niveau de son infrastructure, et écarte toute cyberattaque. Downdetector a enregistré plus de 7,4 millions de signalements.",
+  "tip": "Les escrocs profitent déjà de la panne : de faux e-mails « Microsoft » proposent de récupérer des messages perdus. Ne cliquez sur aucun lien de ce type. Pour une petite entreprise, Gouyerian Tech peut mettre en place une boîte mail de secours et une sauvegarde.",
+  "src": [
+   [
+    "BlogNT (14 novembre 2026)",
+    "https://www.blog-nouvelles-technologies.fr/393435/microsoft-365-fin-panne-outlook-teams-copilot/"
+   ],
+   [
+    "KultureGeek (15 novembre 2026)",
+    "https://kulturegeek.fr/news-364043/grosse-panne-microsoft-365-outlook-microsoft-dit-quil-sest-passe"
+   ]
+  ],
+  "verif": "Début le 12, rétablissement le 14, services touchés, cause réseau, pas de cyberattaque, plus de 7,4 millions de signalements : les deux articles. Faux e-mails : KultureGeek (cite Microsoft Threat Intelligence).",
+  "prevu": "2026-11-18T17:00",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-11",
+  "dl": "11 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Fuite",
+  "t": "ARTE confirme la fuite d’adresses e-mail de clients de son service ARTE VOD",
+  "s": "Le 11 novembre 2026, un fichier présenté comme une base de données d’ARTE a été publié sur un forum de pirates. Il contient plusieurs centaines de milliers d’adresses e-mail, des noms, des numéros de téléphone et des comptes de la plateforme éducative Educ’ARTE. ARTE a ensuite confirmé un incident de cybersécurité qui a divulgué une base d’adresses e-mail de son service ARTE VOD, découvert le 12 novembre. Aucun mot de passe ne serait concerné, et la chaîne annonce une plainte.",
+  "tip": "Si vous avez un compte ARTE ou Educ’ARTE, attendez-vous à de faux e-mails de commande ou de remboursement « ARTE ». Ne cliquez pas sur leurs liens et changez votre mot de passe si vous l’utilisez ailleurs. Nous pouvons vous aider à mettre en place un gestionnaire de mots de passe.",
+  "src": [
+   [
+    "FrenchBreaches (11 novembre 2026, mis à jour le 14 novembre 2026)",
+    "https://frenchbreaches.com/alertes/arte-tv-fuite-donnees-membres-inscrits-emails-comptes-mwci00v7k0eq5jt966i"
+   ],
+   [
+    "Fuites Infos (11 novembre 2026)",
+    "https://fuitesinfos.fr/article/2026-11-11-arte"
+   ]
+  ],
+  "verif": "Confirmation d’ARTE (incident ARTE VOD découvert le 12 novembre, pas de mot de passe, plainte) dans la mise à jour FrenchBreaches du 14 novembre ; contenu du fichier décrit par Fuites Infos. Chiffres divergents entre sources, d’où « plusieurs centaines de milliers ».",
+  "prevu": "2026-11-19T08:30",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-09",
+  "dl": "9 novembre 2026",
+  "sc": "France",
+  "th": "Internet",
+  "tag": "Free",
+  "t": "Free Mobile fusionne avec Free le 1er décembre : rien à faire pour les abonnés",
+  "s": "Free prévient ses abonnés mobiles, dans un encadré de leurs dernières factures, que la société Free Mobile fusionnera avec Free le 1er décembre 2026. Selon l’opérateur, les forfaits, les tarifs, les contrats Free Flex et les moyens de paiement restent les mêmes, sans aucune démarche. Les données personnelles des clients (identité, coordonnées, facturation, consommation) seront transférées de Free Mobile vers Free.",
+  "tip": "Méfiez-vous des faux messages qui pourraient profiter de cette fusion : Free rappelle qu’il ne demande jamais vos coordonnées bancaires par e-mail ou SMS. En cas de doute sur votre box ou votre ligne, Gouyerian Tech peut vérifier votre installation.",
+  "src": [
+   [
+    "Univers Freebox (9 novembre 2026)",
+    "https://www.universfreebox.com/article/600752/free-annonce-une-fusion-historique-avec-free-mobile-quest-ce-que-cela-va-changer-pour-158-millions-dabonnes"
+   ],
+   [
+    "Presse-citron (10 novembre 2026)",
+    "https://www.presse-citron.net/fin-de-free-mobile-ce-qui-va-se-passer-pour-votre-forfait-des-le-1er-decembre/"
+   ]
+  ],
+  "verif": "Date du 1er décembre 2026, rien de changé, Free Flex et paiements maintenus, transfert des données : les deux articles. Rappel sur les coordonnées bancaires : Presse-citron.",
+  "prevu": "2026-11-19T17:00",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-10",
+  "dl": "10 novembre 2026",
+  "sc": "Monde",
+  "th": "Smartphones",
+  "tag": "Pixel",
+  "t": "Pixel : la mise à jour de novembre corrige plus de 30 bugs",
+  "s": "Google a lancé le 10 novembre la mise à jour mensuelle des Pixel, qui apporte Android 17 QPR2 aux Pixel 6a et modèles plus récents. Elle corrige plus de trente problèmes, dont le clavier qui n’apparaît pas dans les champs de recherche, l’indicateur de charge affiché sans chargeur branché, des saccades au défilement et des connexions Bluetooth instables. Les Pixel 11 reçoivent en plus un correctif pour des photos parfois mal enregistrées et pour une décharge anormale de la batterie en arrière-plan. Le déploiement se fait par vagues sur environ une semaine.",
+  "tip": "Lancez la recherche de mise à jour dans les paramètres du téléphone, en Wi-Fi et batterie chargée, et soyez patient si elle n’apparaît pas tout de suite. Si un souci de batterie ou de Bluetooth persiste après la mise à jour, Gouyerian Tech peut diagnostiquer le téléphone.",
+  "src": [
+   [
+    "Droid Life (10 novembre 2026)",
+    "https://www.droid-life.com/2026/11/10/30-fixes-inside-november-update-for-pixels/"
+   ],
+   [
+    "Android Authority (10 novembre 2026)",
+    "https://www.androidauthority.com/november-2026-pixel-update-3733597/"
+   ]
+  ],
+  "verif": "Date, modèles (Pixel 6a et plus récents), liste des correctifs, correctifs Pixel 11 et déploiement sur environ une semaine : Droid Life et Android Authority (qui reprennent la note de Google). Android 17 QPR2 : Android Authority.",
+  "prevu": "2026-11-20T08:30",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-12",
+  "dl": "12 novembre 2026",
+  "sc": "Monde",
+  "th": "Jeux",
+  "tag": "PC gaming",
+  "t": "Cartes graphiques AMD Radeon : un pilote corrige le bug qui usait les SSD",
+  "s": "AMD a publié le 12 novembre son pilote Adrenalin 26.11.1. Il corrige un bug du programme atieclxx.exe qui écrivait sans arrêt des données sur le SSD, même quand le PC ne faisait rien : de 0,3 à 5 Mo par seconde selon les utilisateurs. Ces écritures inutiles pouvaient user le SSD plus vite. Les notes de version citent les cartes Radeon RX 7000 et plus récentes.",
+  "tip": "Ce pilote est proposé comme mise à jour facultative : dans AMD Software, choisissez « Recommandé et facultatif » dans les préférences de mise à jour, ou téléchargez-le sur le site d’AMD. Gouyerian Tech peut vérifier l’état de santé de votre SSD et mettre à jour votre PC gamer.",
+  "src": [
+   [
+    "JustGeek (13 novembre 2026)",
+    "https://www.justgeek.fr/amd-adrenalin-26-11-1-correctif-bug-ssd-161552/"
+   ],
+   [
+    "Overclocking.com (13 novembre 2026)",
+    "https://overclocking.com/radeon-software-26-11-1-correction-des-ecritures-ssd/"
+   ],
+   [
+    "Club386 (9 novembre 2026)",
+    "https://www.club386.com/amd-radeon-driver-bug-reducing-ssd-lifespan/"
+   ]
+  ],
+  "verif": "Version 26.11.1, atieclxx.exe, RX 7000 et plus récentes, 0,3 à 5 Mo/s : JustGeek et Overclocking.com. Date et caractère facultatif : JustGeek. Bug reconnu par AMD : Club386. Volume par jour non cité (sources contradictoires).",
+  "prevu": "2026-11-20T17:00",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-09",
+  "dl": "9 novembre 2026",
+  "sc": "France",
+  "th": "Ordinateurs",
+  "tag": "Prix",
+  "t": "RAM et SSD : toujours au plus haut avant le Black Friday",
+  "s": "Le site Next a relevé début novembre des prix de 500 € pour une seule barrette de mémoire DDR5 de 16 Go et de 100 € pour un SSD de 240 Go, sans baisse en vue. Le cabinet TrendForce prévoit encore une hausse de 13 à 18 % de la mémoire des PC au dernier trimestre 2026, et de moins de 5 % pour les SSD. Les livraisons de PC portables ont chuté de 15,8 % au troisième trimestre. Pour tenir leurs prix en 2027, certains fabricants envisagent une mémoire moins performante ou des processeurs avec moins de cœurs.",
+  "tip": "Avant d’acheter un PC pendant le Black Friday, vérifiez la quantité de mémoire vive et la taille du SSD, pas seulement le prix. Un ordinateur actuel peut souvent continuer à servir après un nettoyage ou une réinstallation : Gouyerian Tech peut vous dire si cela vaut mieux qu’un neuf ou un reconditionné.",
+  "src": [
+   [
+    "Next (9 novembre 2026)",
+    "https://next.ink/266331/memoire-stockage-gpu-nos-releves-de-prix-avant-le-black-friday-toujours-plus-haut/"
+   ],
+   [
+    "Pause Hardware (11 novembre 2026)",
+    "https://pausehardware.com/memoire-pc-stocks-achats-fabricants-2027/"
+   ]
+  ],
+  "verif": "Prix relevés (500 € DDR5 16 Go, 100 € SSD 240 Go) : chapeau de Next. Chiffres TrendForce (+13 à 18 %, <5 % SSD, −15,8 % portables, composants revus pour 2027) : Pause Hardware.",
+  "prevu": "2026-11-21T08:30",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-12",
+  "dl": "12 novembre 2026",
+  "sc": "Monde",
+  "th": "IA",
+  "tag": "Gemini",
+  "t": "Google Search et Gemini passent à Gemini 4 Hydrogen, gratuit pour tous",
+  "s": "Le 12 novembre, Google a lancé Gemini 4 Hydrogen, un nouveau modèle d’IA rapide déployé dans le monde entier. Il est intégré à Google Search pour tous les utilisateurs : il doit mieux comprendre les questions longues ou mal tapées et donner des réponses plus visuelles (tableaux, images), avec davantage de liens vers des sites. Dans l’application Gemini, les comptes gratuits l’obtiennent automatiquement quand la demande s’y prête, et les abonnés payants peuvent le choisir dans la liste des modèles.",
+  "tip": "Pour en profiter, il suffit d’un navigateur et d’une application Gemini à jour. Si votre PC ou votre tablette rame sur ces nouvelles pages riches en images, Gouyerian Tech peut faire un nettoyage et une mise à jour pour retrouver de la fluidité.",
+  "src": [
+   [
+    "Google, blog officiel (12 novembre 2026, mis à jour le 13 novembre 2026)",
+    "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/"
+   ],
+   [
+    "Shattered (14 novembre 2026)",
+    "https://shattered.io/fr/gemini-4-hydrogen-mode-ia-google-prix-api-france/"
+   ]
+  ],
+  "verif": "Date, déploiement mondial, présence dans Google Search pour tous et accès des comptes gratuits : annonce de Google, reprise par Shattered. Rien d’affirmé de spécifique à la France (pas de date officielle).",
+  "prevu": "2026-11-21T17:00",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-10",
+  "dl": "10 novembre 2026",
+  "sc": "Monde",
+  "th": "Jeux",
+  "tag": "PS5",
+  "t": "La PS5 dépasse les 100 millions de consoles",
+  "s": "Sony a annoncé que la PlayStation 5 a dépassé les 100 millions d’unités au 10 novembre 2026, six ans après son lancement. Ce chiffre compte les consoles livrées aux magasins, pas celles achetées par les joueurs. La PS5 se rapproche de la première PlayStation (102,4 millions) mais reste derrière la PS4 (plus de 117 millions) et la PS2 (160 millions).",
+  "tip": "Avant les fêtes, pensez au stockage : un SSD compatible pour agrandir la PS5 évite de jongler entre les jeux. Gouyerian Tech conseille et installe le bon modèle.",
+  "src": [
+   [
+    "KultureGeek (11 novembre 2026)",
+    "https://kulturegeek.fr/news-363807/playstation-5-atteint-100-millions-ventes"
+   ],
+   [
+    "Shacknews (10 novembre 2026)",
+    "https://www.shacknews.com/article/151326/sony-ps5-has-sold-100-million-units-since-launch"
+   ],
+   [
+    "DLCompare (14 novembre 2026)",
+    "https://www.dlcompare.fr/actualites-gaming/la-ps5-depasse-les-100-millions-d-exemplaires-vendus-90695"
+   ]
+  ],
+  "verif": "Cap des 100 millions au 10 novembre, chiffres PS1/PS4/PS2 : KultureGeek et Shacknews. Consoles livrées et non vendues aux joueurs : DLCompare.",
+  "prevu": "2026-11-22T08:30",
+  "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-10",
+  "dl": "10 novembre 2026",
+  "sc": "Monde",
+  "th": "IA",
+  "tag": "Claude",
+  "t": "Claude d’Anthropic sait maintenant créer des tableurs et des tableaux blancs partagés",
+  "s": "Le 10 novembre, Anthropic a lancé en version bêta Claude Sheets et Claude Whiteboards, et rendu Claude Data disponible pour tous ses clients. Claude peut créer un tableur avec onglets, formules, mises en forme et listes déroulantes à partir d’une simple demande, puis le modifier avec vous. Le tableau blanc partagé sert à organiser des idées en équipe. Ces outils sont réservés aux formules payantes et marchent sur le web, sur ordinateur et sur mobile.",
+  "tip": "Le tableur de Claude reste simple pour l’instant : pour un usage plus poussé, exportez-le en .xlsx ou en CSV et ouvrez-le dans Excel. Gouyerian Tech peut aider une petite entreprise à installer et paramétrer ces outils sur ses postes.",
+  "src": [
+   [
+    "Claude by Anthropic (10 novembre 2026)",
+    "https://claude.com/fr/resources/articles/sheets-whiteboards-data"
+   ],
+   [
+    "SD Times (10 novembre 2026)",
+    "https://sdtimes.com/ai/anthropic-launches-tools-for-team-collaboration-with-whiteboards-spreadsheets-and-data/"
+   ]
+  ],
+  "verif": "Bêta Sheets et Whiteboards, Claude Data pour tous, formules payantes, export .xlsx/CSV, web/ordinateur/mobile : page officielle. Lancement confirmé par SD Times le même jour.",
+  "prevu": "2026-11-22T17:00",
+  "ajoute_le": "2026-11-15"
+ }
+]
