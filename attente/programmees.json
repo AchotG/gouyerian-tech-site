@@ -3,30 +3,6 @@
   "d": "2026-11-10",
   "dl": "10 novembre 2026",
   "sc": "Monde",
-  "th": "Sécurité",
-  "tag": "Windows",
-  "urg": 1,
-  "t": "Patch Tuesday de novembre : Microsoft corrige 1 093 failles, dont une faille d’Outlook déjà exploitée",
-  "s": "Le 10 novembre 2026, Microsoft a publié ses correctifs mensuels : 1 093 vulnérabilités corrigées, dont 63 jugées critiques. Parmi elles, une faille d’Outlook (CVE-2026-124194) est déjà exploitée par des pirates. Il suffit d’ouvrir un fichier piégé pour qu’Outlook se connecte à un serveur de l’attaquant sans afficher d’avertissement, ce qui peut faire fuiter des informations de connexion Windows. Cette faille-là se corrige par la mise à jour d’Office, pas seulement par Windows Update.",
-  "tip": "Faites deux mises à jour : Windows (Paramètres > Windows Update > Rechercher des mises à jour) puis Office (ouvrez Word > Fichier > Compte > Options de mise à jour > Mettre à jour maintenant). Si vous avez un doute ou plusieurs postes au bureau, nous pouvons vérifier que tout est à jour.",
-  "src": [
-   [
-    "IT-Connect (11 novembre 2026)",
-    "https://www.it-connect.fr/patch-tuesday-novembre-2026-recapitulatif/"
-   ],
-   [
-    "Malwarebytes (11 novembre 2026)",
-    "https://www.malwarebytes.com/fr/blog/bugs/2026/11/microsoft-patch-tuesday-fixes-outlook-flaw-already-under-attack"
-   ]
-  ],
-  "verif": "Les deux sources confirment la date (10 novembre), plus de 1 000 failles (1 093 selon IT-Connect), la faille Outlook CVE-2026-124194 déjà exploitée, le vol possible du hash NTLMv2 et le correctif via Office. 63 critiques : IT-Connect ; marche à suivre Office : Malwarebytes.",
-  "prevu": "2026-11-16T08:30",
-  "ajoute_le": "2026-11-15"
- },
- {
-  "d": "2026-11-10",
-  "dl": "10 novembre 2026",
-  "sc": "Monde",
   "th": "Ordinateurs",
   "tag": "Windows 11",
   "t": "Windows 11 : la mise à jour de novembre change le clic droit, mais bloque sur certains PC",
