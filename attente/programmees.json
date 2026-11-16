@@ -1,32 +1,5 @@
 [
  {
-  "d": "2026-11-10",
-  "dl": "10 novembre 2026",
-  "sc": "Monde",
-  "th": "Ordinateurs",
-  "tag": "Windows 11",
-  "t": "Windows 11 : la mise à jour de novembre change le clic droit, mais bloque sur certains PC",
-  "s": "Microsoft a publié le 10 novembre la mise à jour obligatoire KB5132061 pour Windows 11 25H2 et 26H2. Le menu du clic droit devient plus rapide et personnalisable, et l’outil Cloud rebuild permet de réinstaller Windows depuis Internet, même quand le PC ne démarre plus. Elle répare aussi un bug qui empêchait certains périphériques audio USB de fonctionner (code d’erreur 10). Sur certains PC, l’installation échoue ou recommence en boucle, parfois à 99 % ; Microsoft a reconnu le problème le 11 novembre et applique une correction automatique sous 24 à 48 heures.",
-  "tip": "Si la mise à jour échoue (erreurs 0x80070306, 0x800f0989 ou 0x800f0993 par exemple), attendez 48 heures puis relancez Windows Update (Paramètres > Windows Update > Rechercher des mises à jour). Inutile de réinstaller Windows. Si le PC reste bloqué ensuite, Gouyerian Tech peut intervenir.",
-  "src": [
-   [
-    "Le Crabe Info (10 novembre 2026)",
-    "https://lecrabeinfo.net/mises-a-jour-windows/windows-11-kb5132061-novembre-2026/"
-   ],
-   [
-    "IT-Connect (11 novembre 2026)",
-    "https://www.it-connect.fr/windows-11-kb5132061-kb5131087-nouveautes-correctifs/"
-   ],
-   [
-    "Le Crabe Info (12 novembre 2026)",
-    "https://lecrabeinfo.net/actualites/windows-11-kb5132061-erreur-installation/"
-   ]
-  ],
-  "verif": "Date, KB, versions, clic droit, Cloud rebuild et audio USB (code 10) : Le Crabe Info et IT-Connect. Échecs d’installation, codes d’erreur, reconnaissance par Microsoft le 11 novembre et délai 24-48 h : Le Crabe Info du 12 novembre (renvoie au support Microsoft).",
-  "prevu": "2026-11-16T17:00",
-  "ajoute_le": "2026-11-15"
- },
- {
   "d": "2026-11-12",
   "dl": "12 novembre 2026",
   "sc": "France",
