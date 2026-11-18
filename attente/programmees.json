@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-12",
-  "dl": "12 novembre 2026",
-  "sc": "Monde",
-  "th": "Internet",
-  "tag": "Panne",
-  "t": "Microsoft 365 : Outlook, Teams et Copilot en panne pendant plus d’une journée",
-  "s": "Une panne mondiale a touché Microsoft 365 à partir du 12 novembre : Outlook, Teams, Copilot et SharePoint ont été perturbés. Microsoft a annoncé le 14 novembre que tout était rétabli. Il explique la panne par un problème réseau survenu après une mise à niveau de son infrastructure, et écarte toute cyberattaque. Downdetector a enregistré plus de 7,4 millions de signalements.",
-  "tip": "Les escrocs profitent déjà de la panne : de faux e-mails « Microsoft » proposent de récupérer des messages perdus. Ne cliquez sur aucun lien de ce type. Pour une petite entreprise, Gouyerian Tech peut mettre en place une boîte mail de secours et une sauvegarde.",
-  "src": [
-   [
-    "BlogNT (14 novembre 2026)",
-    "https://www.blog-nouvelles-technologies.fr/393435/microsoft-365-fin-panne-outlook-teams-copilot/"
-   ],
-   [
-    "KultureGeek (15 novembre 2026)",
-    "https://kulturegeek.fr/news-364043/grosse-panne-microsoft-365-outlook-microsoft-dit-quil-sest-passe"
-   ]
-  ],
-  "verif": "Début le 12, rétablissement le 14, services touchés, cause réseau, pas de cyberattaque, plus de 7,4 millions de signalements : les deux articles. Faux e-mails : KultureGeek (cite Microsoft Threat Intelligence).",
-  "prevu": "2026-11-18T17:00",
-  "ajoute_le": "2026-11-15"
- },
- {
   "d": "2026-11-11",
   "dl": "11 novembre 2026",
   "sc": "France",
