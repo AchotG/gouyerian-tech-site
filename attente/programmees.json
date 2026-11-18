@@ -1,55 +1,5 @@
 [
  {
-  "d": "2026-11-09",
-  "dl": "9 novembre 2026",
-  "sc": "Monde",
-  "th": "Smartphones",
-  "tag": "iPhone",
-  "t": "iOS 27.2.1 corrige neuf failles de l’iPhone, dont deux dans iMessage",
-  "s": "Apple a publié iOS 27.2.1 le 9 novembre 2026. Cette version n’apporte aucune nouveauté mais corrige neuf failles de sécurité. Deux d’entre elles touchaient iMessage : un pirate pouvait rejoindre une conversation de groupe sans y être invité, ou lire des messages envoyés avant son arrivée. D’autres corrections concernent le Bluetooth (un appareil malveillant pouvait se connecter sans autorisation) et AirPlay. Apple n’a signalé aucune exploitation de ces failles, mais recommande d’installer la mise à jour.",
-  "tip": "Sur l’iPhone : Réglages > Général > Mise à jour logicielle, en Wi-Fi et avec assez de batterie. Les iPad, Mac et Apple Watch ont aussi reçu leur version 27.2.1, et les appareils plus anciens iOS 26.7.3. Si votre iPhone ne propose plus de mises à jour, venez nous voir pour faire le point.",
-  "src": [
-   [
-    "JustGeek (10 novembre 2026)",
-    "https://www.justgeek.fr/ios-27-2-1-mise-a-jour-iphone-161310/"
-   ],
-   [
-    "iPhoneSoft (9 novembre 2026)",
-    "https://iphonesoft.fr/2026/11/09/apple-publie-ios-27-2-1-plateformes"
-   ],
-   [
-    "9to5Mac (9 novembre 2026)",
-    "https://9to5mac.com/2026/11/09/apple-releases-ios-27-2-1-for-iphone-heres-whats-new/"
-   ]
-  ],
-  "verif": "Date (9 novembre), 9 failles (JustGeek), détail iMessage/Bluetooth/AirPlay recoupé dans les deux articles ; aucune exploitation signalée (JustGeek) ; versions 27.2.1 des autres appareils et iOS 26.7.3 (iPhoneSoft). Pas d’urg. Sortie le 9 novembre et absence de nouvelles fonctions confirmées aussi par 9to5Mac (note officielle d’Apple).",
-  "prevu": "2026-11-17T17:00",
-  "ajoute_le": "2026-11-15"
- },
- {
-  "d": "2026-11-09",
-  "dl": "9 novembre 2026",
-  "sc": "France",
-  "th": "Sécurité",
-  "tag": "Arnaque",
-  "t": "Faux avis de prélèvement « Banque de France » : le piège est le numéro à rappeler",
-  "s": "Le 9 novembre 2026, Signal-Arnaques a relayé une série de courriels qui annoncent un prélèvement ou un mandat SEPA au nom de la Banque de France, pour des montants de plusieurs centaines d’euros. Ces messages ne demandent pas d’argent : ils poussent à appeler un « service de prélèvements » qui n’existe pas. Au téléphone, les escrocs se font passer pour le service des fraudes et font valider des opérations à leur profit. La Banque de France rappelle qu’elle ne demande jamais de coordonnées bancaires et ne fait jamais valider ou annuler une opération.",
-  "tip": "N’appelez jamais le numéro écrit dans le message. Vérifiez vos comptes dans l’application de votre banque ou appelez le numéro au dos de votre carte. Si vous avez déjà appelé ou validé quelque chose, contactez votre banque tout de suite et appelez Info Escroqueries au 0 805 805 817 (gratuit).",
-  "src": [
-   [
-    "Signal-Arnaques (9 novembre 2026)",
-    "https://info.signal-arnaques.com/actualites/flash-arnaques-9-novembre-2026-faux-prelevements-banque/"
-   ],
-   [
-    "Banque de France (page mise à jour le 24 septembre 2026)",
-    "https://www.banque-france.fr/fr/actualites/la-banque-de-france-met-en-garde-le-public-face-aux-appels-telephoniques-et-aux-sms-frauduleux"
-   ]
-  ],
-  "verif": "Déroulé de l’arnaque et montants : Signal-Arnaques du 9 novembre. Mode opératoire, ce que la Banque de France ne demande jamais et numéro Info Escroqueries : page officielle de la Banque de France. Numéros des escrocs non repris.",
-  "prevu": "2026-11-18T08:30",
-  "ajoute_le": "2026-11-15"
- },
- {
   "d": "2026-11-12",
   "dl": "12 novembre 2026",
   "sc": "Monde",
