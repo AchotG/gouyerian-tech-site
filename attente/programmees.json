@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-11",
-  "dl": "11 novembre 2026",
-  "sc": "France",
-  "th": "Sécurité",
-  "tag": "Fuite",
-  "t": "ARTE confirme la fuite d’adresses e-mail de clients de son service ARTE VOD",
-  "s": "Le 11 novembre 2026, un fichier présenté comme une base de données d’ARTE a été publié sur un forum de pirates. Il contient plusieurs centaines de milliers d’adresses e-mail, des noms, des numéros de téléphone et des comptes de la plateforme éducative Educ’ARTE. ARTE a ensuite confirmé un incident de cybersécurité qui a divulgué une base d’adresses e-mail de son service ARTE VOD, découvert le 12 novembre. Aucun mot de passe ne serait concerné, et la chaîne annonce une plainte.",
-  "tip": "Si vous avez un compte ARTE ou Educ’ARTE, attendez-vous à de faux e-mails de commande ou de remboursement « ARTE ». Ne cliquez pas sur leurs liens et changez votre mot de passe si vous l’utilisez ailleurs. Nous pouvons vous aider à mettre en place un gestionnaire de mots de passe.",
-  "src": [
-   [
-    "FrenchBreaches (11 novembre 2026, mis à jour le 14 novembre 2026)",
-    "https://frenchbreaches.com/alertes/arte-tv-fuite-donnees-membres-inscrits-emails-comptes-mwci00v7k0eq5jt966i"
-   ],
-   [
-    "Fuites Infos (11 novembre 2026)",
-    "https://fuitesinfos.fr/article/2026-11-11-arte"
-   ]
-  ],
-  "verif": "Confirmation d’ARTE (incident ARTE VOD découvert le 12 novembre, pas de mot de passe, plainte) dans la mise à jour FrenchBreaches du 14 novembre ; contenu du fichier décrit par Fuites Infos. Chiffres divergents entre sources, d’où « plusieurs centaines de milliers ».",
-  "prevu": "2026-11-19T08:30",
-  "ajoute_le": "2026-11-15"
- },
- {
   "d": "2026-11-09",
   "dl": "9 novembre 2026",
   "sc": "France",
