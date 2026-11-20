@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-10",
-  "dl": "10 novembre 2026",
-  "sc": "Monde",
-  "th": "Smartphones",
-  "tag": "Pixel",
-  "t": "Pixel : la mise à jour de novembre corrige plus de 30 bugs",
-  "s": "Google a lancé le 10 novembre la mise à jour mensuelle des Pixel, qui apporte Android 17 QPR2 aux Pixel 6a et modèles plus récents. Elle corrige plus de trente problèmes, dont le clavier qui n’apparaît pas dans les champs de recherche, l’indicateur de charge affiché sans chargeur branché, des saccades au défilement et des connexions Bluetooth instables. Les Pixel 11 reçoivent en plus un correctif pour des photos parfois mal enregistrées et pour une décharge anormale de la batterie en arrière-plan. Le déploiement se fait par vagues sur environ une semaine.",
-  "tip": "Lancez la recherche de mise à jour dans les paramètres du téléphone, en Wi-Fi et batterie chargée, et soyez patient si elle n’apparaît pas tout de suite. Si un souci de batterie ou de Bluetooth persiste après la mise à jour, Gouyerian Tech peut diagnostiquer le téléphone.",
-  "src": [
-   [
-    "Droid Life (10 novembre 2026)",
-    "https://www.droid-life.com/2026/11/10/30-fixes-inside-november-update-for-pixels/"
-   ],
-   [
-    "Android Authority (10 novembre 2026)",
-    "https://www.androidauthority.com/november-2026-pixel-update-3733597/"
-   ]
-  ],
-  "verif": "Date, modèles (Pixel 6a et plus récents), liste des correctifs, correctifs Pixel 11 et déploiement sur environ une semaine : Droid Life et Android Authority (qui reprennent la note de Google). Android 17 QPR2 : Android Authority.",
-  "prevu": "2026-11-20T08:30",
-  "ajoute_le": "2026-11-15"
- },
- {
   "d": "2026-11-12",
   "dl": "12 novembre 2026",
   "sc": "Monde",
