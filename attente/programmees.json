@@ -3,56 +3,6 @@
   "d": "2026-11-12",
   "dl": "12 novembre 2026",
   "sc": "Monde",
-  "th": "Jeux",
-  "tag": "PC gaming",
-  "t": "Cartes graphiques AMD Radeon : un pilote corrige le bug qui usait les SSD",
-  "s": "AMD a publié le 12 novembre son pilote Adrenalin 26.11.1. Il corrige un bug du programme atieclxx.exe qui écrivait sans arrêt des données sur le SSD, même quand le PC ne faisait rien : de 0,3 à 5 Mo par seconde selon les utilisateurs. Ces écritures inutiles pouvaient user le SSD plus vite. Les notes de version citent les cartes Radeon RX 7000 et plus récentes.",
-  "tip": "Ce pilote est proposé comme mise à jour facultative : dans AMD Software, choisissez « Recommandé et facultatif » dans les préférences de mise à jour, ou téléchargez-le sur le site d’AMD. Gouyerian Tech peut vérifier l’état de santé de votre SSD et mettre à jour votre PC gamer.",
-  "src": [
-   [
-    "JustGeek (13 novembre 2026)",
-    "https://www.justgeek.fr/amd-adrenalin-26-11-1-correctif-bug-ssd-161552/"
-   ],
-   [
-    "Overclocking.com (13 novembre 2026)",
-    "https://overclocking.com/radeon-software-26-11-1-correction-des-ecritures-ssd/"
-   ],
-   [
-    "Club386 (9 novembre 2026)",
-    "https://www.club386.com/amd-radeon-driver-bug-reducing-ssd-lifespan/"
-   ]
-  ],
-  "verif": "Version 26.11.1, atieclxx.exe, RX 7000 et plus récentes, 0,3 à 5 Mo/s : JustGeek et Overclocking.com. Date et caractère facultatif : JustGeek. Bug reconnu par AMD : Club386. Volume par jour non cité (sources contradictoires).",
-  "prevu": "2026-11-20T17:00",
-  "ajoute_le": "2026-11-15"
- },
- {
-  "d": "2026-11-09",
-  "dl": "9 novembre 2026",
-  "sc": "France",
-  "th": "Ordinateurs",
-  "tag": "Prix",
-  "t": "RAM et SSD : toujours au plus haut avant le Black Friday",
-  "s": "Le site Next a relevé début novembre des prix de 500 € pour une seule barrette de mémoire DDR5 de 16 Go et de 100 € pour un SSD de 240 Go, sans baisse en vue. Le cabinet TrendForce prévoit encore une hausse de 13 à 18 % de la mémoire des PC au dernier trimestre 2026, et de moins de 5 % pour les SSD. Les livraisons de PC portables ont chuté de 15,8 % au troisième trimestre. Pour tenir leurs prix en 2027, certains fabricants envisagent une mémoire moins performante ou des processeurs avec moins de cœurs.",
-  "tip": "Avant d’acheter un PC pendant le Black Friday, vérifiez la quantité de mémoire vive et la taille du SSD, pas seulement le prix. Un ordinateur actuel peut souvent continuer à servir après un nettoyage ou une réinstallation : Gouyerian Tech peut vous dire si cela vaut mieux qu’un neuf ou un reconditionné.",
-  "src": [
-   [
-    "Next (9 novembre 2026)",
-    "https://next.ink/266331/memoire-stockage-gpu-nos-releves-de-prix-avant-le-black-friday-toujours-plus-haut/"
-   ],
-   [
-    "Pause Hardware (11 novembre 2026)",
-    "https://pausehardware.com/memoire-pc-stocks-achats-fabricants-2027/"
-   ]
-  ],
-  "verif": "Prix relevés (500 € DDR5 16 Go, 100 € SSD 240 Go) : chapeau de Next. Chiffres TrendForce (+13 à 18 %, <5 % SSD, −15,8 % portables, composants revus pour 2027) : Pause Hardware.",
-  "prevu": "2026-11-21T08:30",
-  "ajoute_le": "2026-11-15"
- },
- {
-  "d": "2026-11-12",
-  "dl": "12 novembre 2026",
-  "sc": "Monde",
   "th": "IA",
   "tag": "Gemini",
   "t": "Google Search et Gemini passent à Gemini 4 Hydrogen, gratuit pour tous",
