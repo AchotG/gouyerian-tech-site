@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-10",
-  "dl": "10 novembre 2026",
-  "sc": "Monde",
-  "th": "IA",
-  "tag": "Claude",
-  "t": "Claude d’Anthropic sait maintenant créer des tableurs et des tableaux blancs partagés",
-  "s": "Le 10 novembre, Anthropic a lancé en version bêta Claude Sheets et Claude Whiteboards, et rendu Claude Data disponible pour tous ses clients. Claude peut créer un tableur avec onglets, formules, mises en forme et listes déroulantes à partir d’une simple demande, puis le modifier avec vous. Le tableau blanc partagé sert à organiser des idées en équipe. Ces outils sont réservés aux formules payantes et marchent sur le web, sur ordinateur et sur mobile.",
-  "tip": "Le tableur de Claude reste simple pour l’instant : pour un usage plus poussé, exportez-le en .xlsx ou en CSV et ouvrez-le dans Excel. Gouyerian Tech peut aider une petite entreprise à installer et paramétrer ces outils sur ses postes.",
-  "src": [
-   [
-    "Claude by Anthropic (10 novembre 2026)",
-    "https://claude.com/fr/resources/articles/sheets-whiteboards-data"
-   ],
-   [
-    "SD Times (10 novembre 2026)",
-    "https://sdtimes.com/ai/anthropic-launches-tools-for-team-collaboration-with-whiteboards-spreadsheets-and-data/"
-   ]
-  ],
-  "verif": "Bêta Sheets et Whiteboards, Claude Data pour tous, formules payantes, export .xlsx/CSV, web/ordinateur/mobile : page officielle. Lancement confirmé par SD Times le même jour.",
-  "prevu": "2026-11-22T16:00",
-  "ajoute_le": "2026-11-15"
- },
- {
   "d": "2026-11-20",
   "dl": "20 novembre 2026",
   "sc": "France",
