@@ -386,6 +386,13 @@ S["black-friday-sans-pieges"] = frame(
     + check(1050, 520, 46) + warning(240, 150, .5), 640, 360)
 
 
+S["appareil-enfant-noel"] = frame(
+    # cadeau + téléphone prêt à l'emploi protégé par un bouclier validé
+    gift(430, 410, 1.5, AM)
+    + phone(830, 360, 220, 430, 4, screen="#14306a", extra=shield(830, 350, .9) + check(830, 350, 34))
+    + clock(1040, 200, 56), 640, 360)
+
+
 MARGE = 28          # marge minimale (px) au bord de l'image ; l'aperçu de partage coupe aussi ~22 px en haut et en bas
 CONTROLE_JS = """(m) => {
   const W = 1280, H = 720, g = document.querySelector('svg').lastElementChild, pb = [];
