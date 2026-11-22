@@ -71,5 +71,308 @@
   "verif": "Bêta Sheets et Whiteboards, Claude Data pour tous, formules payantes, export .xlsx/CSV, web/ordinateur/mobile : page officielle. Lancement confirmé par SD Times le même jour.",
   "prevu": "2026-11-22T16:00",
   "ajoute_le": "2026-11-15"
+ },
+ {
+  "d": "2026-11-20",
+  "dl": "20 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Arnaques",
+  "t": "Black Friday : la Douane et la DGCCRF mettent en garde contre faux SMS de dédouanement et faux sites",
+  "s": "Dans un communiqué du 20 novembre, la Douane et la DGCCRF appellent à la vigilance avant le Black Friday. La Douane ne contacte jamais les usagers par SMS, e-mail ou téléphone pour réclamer un droit de douane ou débloquer un colis, et son seul site officiel est douane.gouv.fr. Elles alertent aussi sur les offres trop alléchantes, les contrefaçons électroniques (139 000 articles saisis en 2025, plus de 110 000 depuis début 2026) et les pièges de présentation des sites. Cybermalveillance.gouv.fr publie de son côté 7 conseils contre les cyber-arnaques des périodes de promotions.",
+  "tip": "Un SMS vous réclame quelques euros pour « libérer un colis » ? Ne cliquez pas : passez par le site du vendeur ou du transporteur. En cas d’arnaque, signalez sur internet-signalement.gouv.fr ou demandez de l’aide sur Cybermalveillance.gouv.fr ; si vous avez cliqué et saisi des codes, nous pouvons vérifier votre ordinateur ou votre téléphone.",
+  "src": [
+   [
+    "Ministère de l’Économie, communiqué (20 novembre 2026)",
+    "https://presse.economie.gouv.fr/black-friday-la-douane-et-la-dgccrf-mobilisees-pour-proteger-et-accompagner-les-consommateurs-lors-de-leurs-achats/"
+   ],
+   [
+    "Cybermalveillance.gouv.fr (9 novembre 2026)",
+    "https://www.cybermalveillance.gouv.fr/tous-nos-contenus/actualites/7-conseils-pour-eviter-les-cyberescroqueries"
+   ]
+  ],
+  "verif": "Communiqué officiel lu en entier (date, chiffres de saisies, règle sur les contacts de la Douane, douane.gouv.fr). Page Cybermalveillance lue (7 conseils).",
+  "prevu": "2026-11-23T08:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-13",
+  "dl": "13 novembre 2026",
+  "sc": "Monde",
+  "th": "Ordinateurs",
+  "tag": "Impression",
+  "t": "Windows : des documents Word ne s’impriment plus depuis la mise à jour de novembre",
+  "s": "Microsoft reconnaît que les mises à jour de sécurité de novembre 2026 peuvent empêcher l’impression de documents contenant des images dont la hauteur ou la largeur tombe à zéro à la résolution d’impression. Ces images invisibles servent souvent de filigrane ou d’ancre de mise en page. Le bug touche surtout Word, via le moteur graphique GDI, mais d’autres logiciels peuvent aussi échouer. Au 16 novembre, il n’y avait pas encore de correctif.",
+  "tip": "Avant d’accuser l’imprimante ou de réinstaller son pilote, testez une page de test ou un document simple. Si seul un fichier pose problème, essayez sur une copie : retirez le filigrane ou l’objet graphique invisible, ou exportez en PDF et imprimez le PDF. Si l’impression reste bloquée pour tous vos documents, Gouyerian Tech diagnostique l’imprimante et le poste, à domicile ou en atelier.",
+  "src": [
+   [
+    "BleepingComputer (13 novembre 2026)",
+    "https://bleepingcomputer.com/news/microsoft/microsoft-says-november-security-updates-cause-printing-issues"
+   ],
+   [
+    "PhonAndroid (13 novembre 2026)",
+    "https://www.phonandroid.com/?p=2716014"
+   ],
+   [
+    "GinjFo (16 novembre 2026)",
+    "https://ginjfo.com/actualites/logiciels/windows-11/patch-tuesday-de-novembre-microsoft-corrige-le-bug-dactivation-de-windows-mais-limpression-reste-touchee-20261116"
+   ]
+  ],
+  "verif": "Trois sources lues, concordantes (alerte Microsoft, images de hauteur/largeur nulle, Word via GDI, pas de correctif au 16 novembre). Versions de Windows non précisées (sources divergentes). Conseil PDF : commentaire de lecteur non confirmé par Microsoft, présenté comme simple piste.",
+  "prevu": "2026-11-23T16:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-18",
+  "dl": "18 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Fuite de données",
+  "t": "Chargemap : des données de comptes d’utilisateurs dérobées, changez votre mot de passe",
+  "s": "L’application française de bornes de recharge Chargemap a subi une cyberattaque le 8 novembre. Elle l’a détectée le 10, corrigé la faille le 12, et a prévenu ses utilisateurs par e-mail le 18. Selon l’entreprise, les données exposées sont l’adresse e-mail, le nom d’utilisateur et, quand elles étaient renseignées, le nom, le téléphone, la date de naissance et la ville, ainsi que des empreintes (non lisibles en clair) de mots de passe. Les moyens de paiement, historiques de recharge et factures ne sont pas concernés. Le nombre de comptes touchés n’est pas précisé.",
+  "tip": "Si vous avez un compte Chargemap, changez son mot de passe, et celui de tout autre site où vous aviez le même. Méfiez-vous des e-mails ou SMS « Chargemap » qui vous demandent de vous reconnecter : passez toujours par l’application. Nous pouvons vous aider à mettre en place un gestionnaire de mots de passe et la double authentification.",
+  "src": [
+   [
+    "FrenchBreaches (18 novembre 2026)",
+    "https://frenchbreaches.com/alertes/chargemap-cyberattaque-fuite-donnees-personnelles-utilisateurs-mwmdclb8whoxcxtuijb"
+   ],
+   [
+    "L’argus (20 novembre 2026)",
+    "https://www.largus.fr/actualite-automobile/cyberattaque-chargemap-victime-dune-fuite-de-donnees-voici-comment-reagir-40018215.html"
+   ]
+  ],
+  "verif": "Deux pages lues, concordantes sur dates, données exposées et absence de données de paiement. Nombre de comptes touchés inconnu, donc non cité.",
+  "prevu": "2026-11-24T08:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-19",
+  "dl": "19 novembre 2026",
+  "sc": "Monde",
+  "th": "Jeux",
+  "tag": "GTA 6",
+  "t": "GTA 6 est sorti : 32,5 millions de précommandes et un record de lancement",
+  "s": "GTA 6 est disponible depuis le 19 novembre sur PS5 et Xbox Series. Rockstar annonce 32,5 millions de précommandes (un record) et Take-Two estime que le jeu a déjà rapporté plus de 3,79 milliards de dollars, soit le plus gros lancement de l’histoire du divertissement selon ActuGaming. La veille, le PlayStation Network a connu une panne mineure qui a gêné certains joueurs.",
+  "tip": "Un jeu aussi lourd demande de la place et un bon débit : libérez de l’espace sur le disque de la console et branchez-la en câble réseau plutôt qu’en Wi-Fi pour les mises à jour. Gouyerian Tech peut optimiser votre Wi-Fi ou tirer un câble réseau pour les téléchargements.",
+  "src": [
+   [
+    "ActuGaming (19 novembre 2026)",
+    "https://www.actugaming.net/gta-6-est-disponible-des-maintenant-sur-ps5-et-xbox-series-834002/"
+   ],
+   [
+    "ActuGaming (20 novembre 2026)",
+    "https://www.actugaming.net/gta-6-record-lancement-834441/"
+   ],
+   [
+    "ActuGaming (18 novembre 2026)",
+    "https://www.actugaming.net/panne-playstation-network-le-psn-rencontre-des-difficultes-a-quelques-heures-de-la-sortie-de-gta-6-833973/"
+   ]
+  ],
+  "verif": "Trois articles ActuGaming lus (sortie le 19, précommandes et recettes estimées par Take-Two, panne PSN). Communiqué de Take-Two non lu directement. Mention d’une version PC retirée (non confirmée).",
+  "prevu": "2026-11-24T16:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-17",
+  "dl": "17 novembre 2026",
+  "sc": "France",
+  "th": "Internet",
+  "tag": "Abonnements",
+  "t": "Hausses chez SFR et Sosh, prix gelés chez Free : ce que vous pouvez faire",
+  "s": "Le 17 novembre, Free (groupe iliad) a affirmé que les prix de ses abonnements Freebox et mobiles restent inchangés en 2026 pour ses abonnés. SFR annonce jusqu’à 4,99 € de plus par mois sur la box et jusqu’à 3,99 € par forfait mobile, et Sosh facture 3 € de plus (de 10,99 € à 13,99 €) sur son forfait 100 Go depuis le 17 novembre. Un abonné touché par une hausse a 4 mois, à partir du message de son opérateur, pour partir sans frais.",
+  "tip": "Regardez le message de votre opérateur et notez la date : c’est elle qui lance les 4 mois. Souscrivez la nouvelle box avant de résilier l’ancienne pour ne jamais rester sans internet ; le RIO s’obtient gratuitement au 3179. Gouyerian Tech peut installer la nouvelle box, configurer le Wi-Fi et récupérer vos équipements.",
+  "src": [
+   [
+    "Échos du Net (18 novembre 2026)",
+    "https://www.echosdunet.net/operateurs/actualites/free-prix-inchanges-2026-hausses-sfr-sosh-bouygues"
+   ]
+  ],
+  "verif": "Une seule source lue (Échos du Net, qui cite le communiqué d’iliad, non lu directement). Chiffres SFR, Sosh et délai de 4 mois repris tels quels.",
+  "prevu": "2026-11-25T08:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-17",
+  "dl": "17 novembre 2026",
+  "sc": "France",
+  "th": "Smartphones",
+  "tag": "Nouveauté",
+  "t": "Xiaomi 18 Pro et 18 Pro Max : en vente en France dès 1 399 €, avec un écran au dos",
+  "s": "Xiaomi commercialise en France depuis le 17 novembre ses Xiaomi 18 Pro et 18 Pro Max, qui ont un second écran tactile au dos de 2,7 ou 2,9 pouces, deux capteurs photo de 200 mégapixels et des puces Snapdragon gravées en 2 nm. Les prix vont de 1 399 € (18 Pro, 256 Go) à 1 799 € (18 Pro Max, 512 Go). Les versions européennes ont des batteries plus petites que les modèles chinois : 6 000 mAh pour le Pro et 7 050 mAh pour le Pro Max. Jusqu’au 3 janvier 2027, la version 512 Go est vendue au prix de la 256 Go, avec 100 € de reprise sur l’ancien téléphone.",
+  "tip": "Avant de changer de téléphone, faites une sauvegarde complète de l’ancien : photos, contacts, messageries. Un écran au dos double les endroits où le verre peut se rayer, donc un film et une coque adaptés sont recommandés dès le premier jour. Gouyerian Tech peut transférer vos données vers le nouvel appareil, le configurer et poser les protections.",
+  "src": [
+   [
+    "LesMobiles (18 novembre 2026)",
+    "https://www.lesmobiles.com/actualite/xiaomi-18-pro-et-18-pro-max-ecran-arriere-double-capteur-200-megapixels-et-prix-francais"
+   ],
+   [
+    "Droidsoft (20 novembre 2026)",
+    "https://droidsoft.fr/2026/11/20/xiaomi-18-pro-les-modeles-a-double-ecran-debarquent-enfin-en-france/"
+   ],
+   [
+    "Dealabs Magazine (17 novembre 2026)",
+    "https://www.dealabs.com/magazine/xiaomi-18-pro-et-18-pro-max-on-connait-les-vrais-prix-en-france-et-ils-font-mal-61764"
+   ]
+  ],
+  "verif": "Trois pages lues, prix concordants ; offre 512 Go et reprise : LesMobiles et Droidsoft ; date de mise en vente et batteries : LesMobiles, batteries confirmées par Dealabs.",
+  "prevu": "2026-11-25T16:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-20",
+  "dl": "20 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Fuite de données",
+  "t": "Seazon (FoodChéri) : adresses, commandes et mots de passe hachés de clients dérobés",
+  "s": "Le service de repas préparés Seazon, exploité par FoodChéri, a informé ses clients le 20 novembre d’un accès non autorisé à son application. L’intrusion a été détectée le 6 novembre et confirmée le 9 ; le site a été suspendu, la faille corrigée et les mots de passe réinitialisés. Sont concernés les noms, e-mails, téléphones, adresses de livraison et de facturation, historiques de commandes et mots de passe hachés, ainsi que les quatre derniers chiffres et la date d’expiration de la carte. Aucun numéro complet de carte ni cryptogramme n’est touché, et la CNIL a été prévenue.",
+  "tip": "Clients Seazon : changez ce mot de passe partout où vous l’avez réutilisé. Un faux message de livraison ou de remboursement citant votre vraie commande sera très crédible : ne cliquez pas, passez par l’application. Un doute sur un message reçu ? Montrez-le-nous, nous le vérifions avec vous.",
+  "src": [
+   [
+    "Fuites Infos (20 novembre 2026)",
+    "https://fuitesinfos.fr/article/2026-11-20-seazon"
+   ],
+   [
+    "FrenchBreaches (20 novembre 2026)",
+    "https://frenchbreaches.com/alertes/seazon-foodcheri-cyberattaque-fuite-donnees-clients-mots-de-passe-mwpcomhzc6ka3vashji"
+   ]
+  ],
+  "verif": "Deux pages lues. Dates, suspension du site, CNIL, données de carte : Fuites Infos ; types de données et absence de numéro complet de carte : FrenchBreaches. Nombre de clients non communiqué.",
+  "prevu": "2026-11-26T08:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-19",
+  "dl": "19 novembre 2026",
+  "sc": "France",
+  "th": "IA",
+  "tag": "Orange",
+  "t": "Orange ouvre à tous une appli qui réunit Claude, Gemini, GPT et Mistral gratuitement",
+  "s": "Depuis le 19 novembre, l’application « Orange » remplace « Orange et moi » (et « Sosh » remplace « MySosh »). Elle donne accès gratuitement, même aux clients d’un autre opérateur, à quatre IA : Claude, Gemini, GPT et Mistral, dans une limite d’usage quotidienne qu’Orange ne chiffre pas. Une option « Orange IAs Plus » à 10 € par mois est réservée aux clients Orange et Sosh. L’appli propose aussi gratuitement un assistant qui analyse un SMS, un lien ou un QR code suspect.",
+  "tip": "Pas besoin de réinstaller l’appli : une simple mise à jour suffit, et mieux vaut ne pas la supprimer car « Orange et moi » sert aussi à sécuriser la connexion au compte Orange. Ne tapez jamais de mot de passe, de RIB ou de pièce d’identité dans une IA. Gouyerian Tech peut vous aider à installer l’appli et à vérifier vos réglages de confidentialité.",
+  "src": [
+   [
+    "Orange Newsroom (10 novembre 2026)",
+    "https://newsroom.orange.com/orange-lance-deux-super-apps-orange-et-sosh-ouvertes-a-tous-et-enrichies-a-lintelligence-artificielle/?lang=fra"
+   ],
+   [
+    "Échos du Net (17 novembre 2026)",
+    "https://www.echosdunet.net/operateurs/actualites/orange-et-moi-mysosh-applis-orange-sosh-ia-19-novembre-2026"
+   ]
+  ],
+  "verif": "Communiqué officiel Orange et article Échos du Net lus, concordants (date du 19, quatre IA gratuites, option Plus à 10 €, assistant anti-arnaque). Conseil de ne pas supprimer l’appli : Échos du Net.",
+  "prevu": "2026-11-26T16:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-19",
+  "dl": "19 novembre 2026",
+  "sc": "Monde",
+  "th": "Ordinateurs",
+  "tag": "Windows 11",
+  "t": "Windows 11 : la mise à jour facultative KB5132057 apporte une nouvelle recherche et une fenêtre Exécuter refaite",
+  "s": "Microsoft a publié le 19 novembre KB5132057, une mise à jour facultative de prévisualisation pour Windows 11 25H2 et 26H2. Elle introduit une nouvelle recherche Windows en liste unique, qui permet aussi d’activer le Bluetooth ou le mode sombre, mais elle n’est pour l’instant disponible qu’en anglais. Elle ajoute aussi une fenêtre Exécuter modernisée, à activer dans Paramètres > Système > Avancé. Parmi les corrections figurent l’avertissement à tort « une autre personne utilise ce PC », Miracast et l’authentification par passkey avec un téléphone Android. Les nouveautés arrivent progressivement.",
+  "tip": "Une mise à jour facultative n’a rien d’urgent : si votre PC fonctionne bien, vous pouvez attendre la version qui sera diffusée à tous. Si une mise à jour bloque ou ralentit votre ordinateur, Gouyerian Tech peut la dépanner.",
+  "src": [
+   [
+    "GinjFo (20 novembre 2026)",
+    "https://www.ginjfo.com/actualites/logiciels/windows-11/windows-11-kb5132057-est-disponible-quoi-de-neuf-20261120"
+   ],
+   [
+    "Microsoft Support (19 novembre 2026)",
+    "https://support.microsoft.com/en-us/help/5132057"
+   ]
+  ],
+  "verif": "GinjFo lu en entier ; page Microsoft lue (début, points forts). Corrections (avertissement, Miracast, passkey) : GinjFo. Le conseil d’attendre est une recommandation de prudence, pas une affirmation des sources.",
+  "prevu": "2026-11-27T08:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-19",
+  "dl": "19 novembre 2026",
+  "sc": "France",
+  "th": "Sécurité",
+  "tag": "Failles PHP",
+  "t": "Impôts, Ameli, Justice : des sites publics partiellement coupés pour installer des correctifs PHP",
+  "s": "Le 19 novembre, plusieurs sites publics (impots.gouv.fr, ameli.fr, ministère de la Justice) ont mis tout ou partie de leurs services en maintenance. L’ANSSI explique que l’application urgente de correctifs pour des failles critiques peut entraîner ces arrêts, et dit n’avoir connaissance d’aucune attaque en cours. Le même jour, PHP a publié les versions 8.2.36, 8.3.37, 8.4.28 et 8.5.13, avec une vingtaine de failles corrigées dans chacune. Le CERT-FR avait déjà constaté en octobre des tentatives d’exploitation de failles PHP sur certains déploiements.",
+  "tip": "Pas d’inquiétude pour vos comptes : ces coupures sont préventives. En revanche, si votre site (WordPress, boutique en ligne, etc.) tourne sous PHP, demandez à votre hébergeur ou webmaster quelle version il utilise et si elle est à jour. Nous pouvons vérifier cela pour votre site professionnel.",
+  "src": [
+   [
+    "Clubic (19 novembre 2026)",
+    "https://www.clubic.com/actualite-640150-panne-massive-impots-assurance-maladie-plusieurs-sites-officiels-inaccessibles-ce-jeudi.html"
+   ],
+   [
+    "CERT-FR, alerte PHP (mise à jour du 27 octobre 2026)",
+    "https://cert.cyber.gouv.fr/alerte/CERTFR-2026-ALE-014/"
+   ]
+  ],
+  "verif": "Clubic lu (sites touchés, citation de l’ANSSI, versions PHP) ; alerte CERT-FR lue (tentatives d’exploitation). Le lien entre coupures et correctifs PHP reste une explication, d’où « peut entraîner ».",
+  "prevu": "2026-11-27T16:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-16",
+  "dl": "16 novembre 2026",
+  "sc": "Monde",
+  "th": "Smartphones",
+  "tag": "iOS 27.3",
+  "t": "iOS 27.3 en bêta 2 : nouvelle app Santé, Safari à onglets verticaux, Siri plus capable",
+  "s": "Apple a publié le 16 novembre la deuxième bêta développeurs d’iOS 27.3, après la première du 3 novembre et la bêta publique du 5. Cette version apporte une app Santé refaite, des onglets verticaux et un mode sombre adaptatif dans Safari, de nouvelles compétences pour Siri et un mode En veille personnalisable sur d’autres iPhone. La version finale est attendue vers le 14 décembre 2026 selon iPhon.fr, qui parle d’une estimation. Une bêta reste réservée aux curieux : bugs et pertes de données sont possibles.",
+  "tip": "Si vous n’êtes pas développeur, attendez la version finale plutôt que d’installer la bêta sur votre iPhone principal. Si vous l’avez déjà installée et que le téléphone rame ou plante, venez nous voir : Gouyerian Tech peut sauvegarder vos données puis revenir à une version stable d’iOS.",
+  "src": [
+   [
+    "9to5Mac (16 novembre 2026)",
+    "https://9to5mac.com/2026/11/16/apple-releases-ios-27-3-beta-2-for-iphone/"
+   ],
+   [
+    "iPhon.fr (20 novembre 2026)",
+    "https://www.iphon.fr/post/ios-27-3-quelles-nouveautes"
+   ]
+  ],
+  "verif": "Deux pages lues, concordantes sur le calendrier des bêtas et les nouveautés. Date de sortie finale : simple estimation d’iPhon.fr.",
+  "prevu": "2026-11-28T08:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-18",
+  "dl": "18 novembre 2026",
+  "sc": "Monde",
+  "th": "Sécurité",
+  "tag": "Alerte CERT-FR",
+  "t": "Serveurs web NGINX : deux failles critiques, mise à jour ou désactivation de HTTP/2",
+  "s": "Le CERT-FR a publié le 18 novembre une alerte sur deux failles critiques de NGINX (CVE-2026-123633 et CVE-2026-123007) qui permettent à un attaquant non authentifié d’exécuter du code à distance via HTTP/2. Il a connaissance d’une preuve de concept publique pour la seconde. Les versions corrigées sont NGINX 1.30.7 et 1.31.9 ; en attendant, il recommande de désactiver HTTP/2. NGINX fait tourner une grande partie des sites web : cela concerne surtout les entreprises qui gèrent leur propre serveur ou en font gérer un.",
+  "tip": "Si votre site ou votre outil métier tourne sur un serveur que vous gérez (VPS, serveur loué), demandez à votre prestataire ou hébergeur s’il utilise NGINX et si la mise à jour est faite. Un site chez un hébergeur mutualisé est en général géré par ce dernier. Nous pouvons faire le point avec vous sur vos serveurs et votre site.",
+  "src": [
+   [
+    "CERT-FR, alerte CERTFR-2026-ALE-017 (18 novembre 2026)",
+    "https://cert.cyber.gouv.fr/alerte/CERTFR-2026-ALE-017/"
+   ],
+   [
+    "Wiz Research (18 novembre 2026)",
+    "https://www.wiz.io/blog/nginx-http2-rce-vulnerabilities"
+   ]
+  ],
+  "verif": "Alerte CERT-FR et billet Wiz lus, concordants (CVE, versions corrigées, HTTP/2). Public surtout professionnel : pas marquée urgente pour le grand public.",
+  "prevu": "2026-11-28T16:00",
+  "ajoute_le": "2026-11-22"
+ },
+ {
+  "d": "2026-11-16",
+  "dl": "16 novembre 2026",
+  "sc": "France",
+  "th": "Internet",
+  "tag": "Livebox",
+  "t": "Orange facture 10 € l’envoi d’une Livebox ou d’un décodeur depuis le 16 novembre",
+  "s": "Depuis le 16 novembre, Orange facture 10 € l’envoi d’une Livebox ou d’un décodeur, sauf si l’envoi remplace un équipement en panne. Selon un courrier envoyé aux abonnés, la résiliation d’une offre internet passerait de 50 € à 69 € et une Livebox 6 ou 7 non rendue coûterait 300 € au lieu de 200 €. Le retour du matériel reste gratuit, dans les 30 jours après réception du bon de transport.",
+  "tip": "Si vous changez de box, rendez la Livebox dans les 30 jours en point relais et gardez le justificatif. Après un courrier d’Orange annonçant une hausse de frais, la loi permet de résilier sans frais dans les 4 mois. Gouyerian Tech peut installer et paramétrer votre nouvelle box et votre Wi-Fi.",
+  "src": [
+   [
+    "Échos du Net (3 novembre 2026)",
+    "https://www.echosdunet.net/operateurs/actualites/orange-frais-envoi-livebox-10-euros-resiliation-69-euros-16-novembre-2026"
+   ]
+  ],
+  "verif": "Une seule source lue (Échos du Net) : les montants viennent d’un courrier aux abonnés, sans page publique d’Orange trouvée. Seule la date du 16 novembre est donnée pour les 10 €.",
+  "prevu": "2026-11-29T08:00",
+  "ajoute_le": "2026-11-22"
  }
 ]
