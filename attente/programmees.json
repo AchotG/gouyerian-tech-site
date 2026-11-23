@@ -1,32 +1,5 @@
 [
  {
-  "d": "2026-11-13",
-  "dl": "13 novembre 2026",
-  "sc": "Monde",
-  "th": "Ordinateurs",
-  "tag": "Impression",
-  "t": "Windows : des documents Word ne s’impriment plus depuis la mise à jour de novembre",
-  "s": "Microsoft reconnaît que les mises à jour de sécurité de novembre 2026 peuvent empêcher l’impression de documents contenant des images dont la hauteur ou la largeur tombe à zéro à la résolution d’impression. Ces images invisibles servent souvent de filigrane ou d’ancre de mise en page. Le bug touche surtout Word, via le moteur graphique GDI, mais d’autres logiciels peuvent aussi échouer. Au 16 novembre, il n’y avait pas encore de correctif.",
-  "tip": "Avant d’accuser l’imprimante ou de réinstaller son pilote, testez une page de test ou un document simple. Si seul un fichier pose problème, essayez sur une copie : retirez le filigrane ou l’objet graphique invisible, ou exportez en PDF et imprimez le PDF. Si l’impression reste bloquée pour tous vos documents, Gouyerian Tech diagnostique l’imprimante et le poste, à domicile ou en atelier.",
-  "src": [
-   [
-    "BleepingComputer (13 novembre 2026)",
-    "https://bleepingcomputer.com/news/microsoft/microsoft-says-november-security-updates-cause-printing-issues"
-   ],
-   [
-    "PhonAndroid (13 novembre 2026)",
-    "https://www.phonandroid.com/?p=2716014"
-   ],
-   [
-    "GinjFo (16 novembre 2026)",
-    "https://ginjfo.com/actualites/logiciels/windows-11/patch-tuesday-de-novembre-microsoft-corrige-le-bug-dactivation-de-windows-mais-limpression-reste-touchee-20261116"
-   ]
-  ],
-  "verif": "Trois sources lues, concordantes (alerte Microsoft, images de hauteur/largeur nulle, Word via GDI, pas de correctif au 16 novembre). Versions de Windows non précisées (sources divergentes). Conseil PDF : commentaire de lecteur non confirmé par Microsoft, présenté comme simple piste.",
-  "prevu": "2026-11-23T16:00",
-  "ajoute_le": "2026-11-22"
- },
- {
   "d": "2026-11-18",
   "dl": "18 novembre 2026",
   "sc": "France",
