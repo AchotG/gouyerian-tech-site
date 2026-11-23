@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-20",
-  "dl": "20 novembre 2026",
-  "sc": "France",
-  "th": "Sécurité",
-  "tag": "Arnaques",
-  "t": "Black Friday : la Douane et la DGCCRF mettent en garde contre faux SMS de dédouanement et faux sites",
-  "s": "Dans un communiqué du 20 novembre, la Douane et la DGCCRF appellent à la vigilance avant le Black Friday. La Douane ne contacte jamais les usagers par SMS, e-mail ou téléphone pour réclamer un droit de douane ou débloquer un colis, et son seul site officiel est douane.gouv.fr. Elles alertent aussi sur les offres trop alléchantes, les contrefaçons électroniques (139 000 articles saisis en 2025, plus de 110 000 depuis début 2026) et les pièges de présentation des sites. Cybermalveillance.gouv.fr publie de son côté 7 conseils contre les cyber-arnaques des périodes de promotions.",
-  "tip": "Un SMS vous réclame quelques euros pour « libérer un colis » ? Ne cliquez pas : passez par le site du vendeur ou du transporteur. En cas d’arnaque, signalez sur internet-signalement.gouv.fr ou demandez de l’aide sur Cybermalveillance.gouv.fr ; si vous avez cliqué et saisi des codes, nous pouvons vérifier votre ordinateur ou votre téléphone.",
-  "src": [
-   [
-    "Ministère de l’Économie, communiqué (20 novembre 2026)",
-    "https://presse.economie.gouv.fr/black-friday-la-douane-et-la-dgccrf-mobilisees-pour-proteger-et-accompagner-les-consommateurs-lors-de-leurs-achats/"
-   ],
-   [
-    "Cybermalveillance.gouv.fr (9 novembre 2026)",
-    "https://www.cybermalveillance.gouv.fr/tous-nos-contenus/actualites/7-conseils-pour-eviter-les-cyberescroqueries"
-   ]
-  ],
-  "verif": "Communiqué officiel lu en entier (date, chiffres de saisies, règle sur les contacts de la Douane, douane.gouv.fr). Page Cybermalveillance lue (7 conseils).",
-  "prevu": "2026-11-23T08:00",
-  "ajoute_le": "2026-11-22"
- },
- {
   "d": "2026-11-13",
   "dl": "13 novembre 2026",
   "sc": "Monde",
