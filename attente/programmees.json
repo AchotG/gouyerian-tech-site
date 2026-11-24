@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-18",
-  "dl": "18 novembre 2026",
-  "sc": "France",
-  "th": "Sécurité",
-  "tag": "Fuite de données",
-  "t": "Chargemap : des données de comptes d’utilisateurs dérobées, changez votre mot de passe",
-  "s": "L’application française de bornes de recharge Chargemap a subi une cyberattaque le 8 novembre. Elle l’a détectée le 10, corrigé la faille le 12, et a prévenu ses utilisateurs par e-mail le 18. Selon l’entreprise, les données exposées sont l’adresse e-mail, le nom d’utilisateur et, quand elles étaient renseignées, le nom, le téléphone, la date de naissance et la ville, ainsi que des empreintes (non lisibles en clair) de mots de passe. Les moyens de paiement, historiques de recharge et factures ne sont pas concernés. Le nombre de comptes touchés n’est pas précisé.",
-  "tip": "Si vous avez un compte Chargemap, changez son mot de passe, et celui de tout autre site où vous aviez le même. Méfiez-vous des e-mails ou SMS « Chargemap » qui vous demandent de vous reconnecter : passez toujours par l’application. Nous pouvons vous aider à mettre en place un gestionnaire de mots de passe et la double authentification.",
-  "src": [
-   [
-    "FrenchBreaches (18 novembre 2026)",
-    "https://frenchbreaches.com/alertes/chargemap-cyberattaque-fuite-donnees-personnelles-utilisateurs-mwmdclb8whoxcxtuijb"
-   ],
-   [
-    "L’argus (20 novembre 2026)",
-    "https://www.largus.fr/actualite-automobile/cyberattaque-chargemap-victime-dune-fuite-de-donnees-voici-comment-reagir-40018215.html"
-   ]
-  ],
-  "verif": "Deux pages lues, concordantes sur dates, données exposées et absence de données de paiement. Nombre de comptes touchés inconnu, donc non cité.",
-  "prevu": "2026-11-24T08:00",
-  "ajoute_le": "2026-11-22"
- },
- {
   "d": "2026-11-19",
   "dl": "19 novembre 2026",
   "sc": "Monde",
