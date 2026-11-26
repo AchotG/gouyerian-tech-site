@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-20",
-  "dl": "20 novembre 2026",
-  "sc": "France",
-  "th": "Sécurité",
-  "tag": "Fuite de données",
-  "t": "Seazon (FoodChéri) : adresses, commandes et mots de passe hachés de clients dérobés",
-  "s": "Le service de repas préparés Seazon, exploité par FoodChéri, a informé ses clients le 20 novembre d’un accès non autorisé à son application. L’intrusion a été détectée le 6 novembre et confirmée le 9 ; le site a été suspendu, la faille corrigée et les mots de passe réinitialisés. Sont concernés les noms, e-mails, téléphones, adresses de livraison et de facturation, historiques de commandes et mots de passe hachés, ainsi que les quatre derniers chiffres et la date d’expiration de la carte. Aucun numéro complet de carte ni cryptogramme n’est touché, et la CNIL a été prévenue.",
-  "tip": "Clients Seazon : changez ce mot de passe partout où vous l’avez réutilisé. Un faux message de livraison ou de remboursement citant votre vraie commande sera très crédible : ne cliquez pas, passez par l’application. Un doute sur un message reçu ? Montrez-le-nous, nous le vérifions avec vous.",
-  "src": [
-   [
-    "Fuites Infos (20 novembre 2026)",
-    "https://fuitesinfos.fr/article/2026-11-20-seazon"
-   ],
-   [
-    "FrenchBreaches (20 novembre 2026)",
-    "https://frenchbreaches.com/alertes/seazon-foodcheri-cyberattaque-fuite-donnees-clients-mots-de-passe-mwpcomhzc6ka3vashji"
-   ]
-  ],
-  "verif": "Deux pages lues. Dates, suspension du site, CNIL, données de carte : Fuites Infos ; types de données et absence de numéro complet de carte : FrenchBreaches. Nombre de clients non communiqué.",
-  "prevu": "2026-11-26T08:00",
-  "ajoute_le": "2026-11-22"
- },
- {
   "d": "2026-11-19",
   "dl": "19 novembre 2026",
   "sc": "France",
