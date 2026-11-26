@@ -2,29 +2,6 @@
  {
   "d": "2026-11-19",
   "dl": "19 novembre 2026",
-  "sc": "France",
-  "th": "IA",
-  "tag": "Orange",
-  "t": "Orange ouvre à tous une appli qui réunit Claude, Gemini, GPT et Mistral gratuitement",
-  "s": "Depuis le 19 novembre, l’application « Orange » remplace « Orange et moi » (et « Sosh » remplace « MySosh »). Elle donne accès gratuitement, même aux clients d’un autre opérateur, à quatre IA : Claude, Gemini, GPT et Mistral, dans une limite d’usage quotidienne qu’Orange ne chiffre pas. Une option « Orange IAs Plus » à 10 € par mois est réservée aux clients Orange et Sosh. L’appli propose aussi gratuitement un assistant qui analyse un SMS, un lien ou un QR code suspect.",
-  "tip": "Pas besoin de réinstaller l’appli : une simple mise à jour suffit, et mieux vaut ne pas la supprimer car « Orange et moi » sert aussi à sécuriser la connexion au compte Orange. Ne tapez jamais de mot de passe, de RIB ou de pièce d’identité dans une IA. Gouyerian Tech peut vous aider à installer l’appli et à vérifier vos réglages de confidentialité.",
-  "src": [
-   [
-    "Orange Newsroom (10 novembre 2026)",
-    "https://newsroom.orange.com/orange-lance-deux-super-apps-orange-et-sosh-ouvertes-a-tous-et-enrichies-a-lintelligence-artificielle/?lang=fra"
-   ],
-   [
-    "Échos du Net (17 novembre 2026)",
-    "https://www.echosdunet.net/operateurs/actualites/orange-et-moi-mysosh-applis-orange-sosh-ia-19-novembre-2026"
-   ]
-  ],
-  "verif": "Communiqué officiel Orange et article Échos du Net lus, concordants (date du 19, quatre IA gratuites, option Plus à 10 €, assistant anti-arnaque). Conseil de ne pas supprimer l’appli : Échos du Net.",
-  "prevu": "2026-11-26T16:00",
-  "ajoute_le": "2026-11-22"
- },
- {
-  "d": "2026-11-19",
-  "dl": "19 novembre 2026",
   "sc": "Monde",
   "th": "Ordinateurs",
   "tag": "Windows 11",
