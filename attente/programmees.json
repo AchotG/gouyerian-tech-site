@@ -2,29 +2,6 @@
  {
   "d": "2026-11-19",
   "dl": "19 novembre 2026",
-  "sc": "Monde",
-  "th": "Ordinateurs",
-  "tag": "Windows 11",
-  "t": "Windows 11 : la mise à jour facultative KB5132057 apporte une nouvelle recherche et une fenêtre Exécuter refaite",
-  "s": "Microsoft a publié le 19 novembre KB5132057, une mise à jour facultative de prévisualisation pour Windows 11 25H2 et 26H2. Elle introduit une nouvelle recherche Windows en liste unique, qui permet aussi d’activer le Bluetooth ou le mode sombre, mais elle n’est pour l’instant disponible qu’en anglais. Elle ajoute aussi une fenêtre Exécuter modernisée, à activer dans Paramètres > Système > Avancé. Parmi les corrections figurent l’avertissement à tort « une autre personne utilise ce PC », Miracast et l’authentification par passkey avec un téléphone Android. Les nouveautés arrivent progressivement.",
-  "tip": "Une mise à jour facultative n’a rien d’urgent : si votre PC fonctionne bien, vous pouvez attendre la version qui sera diffusée à tous. Si une mise à jour bloque ou ralentit votre ordinateur, Gouyerian Tech peut la dépanner.",
-  "src": [
-   [
-    "GinjFo (20 novembre 2026)",
-    "https://www.ginjfo.com/actualites/logiciels/windows-11/windows-11-kb5132057-est-disponible-quoi-de-neuf-20261120"
-   ],
-   [
-    "Microsoft Support (19 novembre 2026)",
-    "https://support.microsoft.com/en-us/help/5132057"
-   ]
-  ],
-  "verif": "GinjFo lu en entier ; page Microsoft lue (début, points forts). Corrections (avertissement, Miracast, passkey) : GinjFo. Le conseil d’attendre est une recommandation de prudence, pas une affirmation des sources.",
-  "prevu": "2026-11-27T08:00",
-  "ajoute_le": "2026-11-22"
- },
- {
-  "d": "2026-11-19",
-  "dl": "19 novembre 2026",
   "sc": "France",
   "th": "Sécurité",
   "tag": "Failles PHP",
