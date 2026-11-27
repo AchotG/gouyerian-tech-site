@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-19",
-  "dl": "19 novembre 2026",
-  "sc": "France",
-  "th": "Sécurité",
-  "tag": "Failles PHP",
-  "t": "Impôts, Ameli, Justice : des sites publics partiellement coupés pour installer des correctifs PHP",
-  "s": "Le 19 novembre, plusieurs sites publics (impots.gouv.fr, ameli.fr, ministère de la Justice) ont mis tout ou partie de leurs services en maintenance. L’ANSSI explique que l’application urgente de correctifs pour des failles critiques peut entraîner ces arrêts, et dit n’avoir connaissance d’aucune attaque en cours. Le même jour, PHP a publié les versions 8.2.36, 8.3.37, 8.4.28 et 8.5.13, avec une vingtaine de failles corrigées dans chacune. Le CERT-FR avait déjà constaté en octobre des tentatives d’exploitation de failles PHP sur certains déploiements.",
-  "tip": "Pas d’inquiétude pour vos comptes : ces coupures sont préventives. En revanche, si votre site (WordPress, boutique en ligne, etc.) tourne sous PHP, demandez à votre hébergeur ou webmaster quelle version il utilise et si elle est à jour. Nous pouvons vérifier cela pour votre site professionnel.",
-  "src": [
-   [
-    "Clubic (19 novembre 2026)",
-    "https://www.clubic.com/actualite-640150-panne-massive-impots-assurance-maladie-plusieurs-sites-officiels-inaccessibles-ce-jeudi.html"
-   ],
-   [
-    "CERT-FR, alerte PHP (mise à jour du 27 octobre 2026)",
-    "https://cert.cyber.gouv.fr/alerte/CERTFR-2026-ALE-014/"
-   ]
-  ],
-  "verif": "Clubic lu (sites touchés, citation de l’ANSSI, versions PHP) ; alerte CERT-FR lue (tentatives d’exploitation). Le lien entre coupures et correctifs PHP reste une explication, d’où « peut entraîner ».",
-  "prevu": "2026-11-27T16:00",
-  "ajoute_le": "2026-11-22"
- },
- {
   "d": "2026-11-16",
   "dl": "16 novembre 2026",
   "sc": "Monde",
