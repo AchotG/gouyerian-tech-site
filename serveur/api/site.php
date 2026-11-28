@@ -7,7 +7,7 @@
 declare(strict_types=1);
 require __DIR__ . '/_lib.php';
 
-const SITE_CLES = ['textes', 'images', 'sv', 'shop', 'prix', 'tel', 'news', 'arts'];
+const SITE_CLES = ['textes', 'images', 'sv', 'shop', 'prix', 'tel', 'grid', 'news', 'arts'];
 const MEDIA_TYPES = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
 
 function medias_dir(): string { return prive_dir() . '/medias'; }
@@ -160,6 +160,24 @@ function valider(string $cle, $v) {
         return $o;
       };
       return $nombres($v, 0);
+    case 'grid':  /* modèles et prix par catégorie puis par marque : [modèle, prix 1, prix 2], 0 = sur devis */
+      $o = [];
+      foreach (array_slice($v, 0, 10, true) as $c => $marques) {
+        if (!is_string($c) || is_numeric($c) || !is_array($marques)) continue;
+        $c = plain($c, 40); if ($c === '') continue;
+        foreach (array_slice($marques, 0, 30, true) as $b => $rows) {
+          if (!is_string($b) || is_numeric($b) || !is_array($rows)) continue;
+          $b = plain($b, 60); if ($b === '') continue;
+          $l = [];
+          foreach (array_slice($rows, 0, 300) as $r) {
+            if (!is_array($r) || plain($r[0] ?? '', 80) === '') continue;
+            $l[] = [plain($r[0], 80), (int)round(max(0, min(5000, (float)($r[1] ?? 0)))), (int)round(max(0, min(5000, (float)($r[2] ?? 0))))];
+          }
+          $o[$c][$b] = $l;
+        }
+      }
+      if (!$o) fail('Format des modèles et prix incorrect : rien n’a été enregistré.');
+      return $o;
     case 'tel':  /* prix des écrans et batteries par marque : [modèle, écran, batterie], 0 = sur devis */
       $o = [];
       foreach (array_slice($v, 0, 20, true) as $b => $rows) {

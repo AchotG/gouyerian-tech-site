@@ -295,6 +295,33 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .tk-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
 .tk-h span{font-size:.8rem;color:var(--muted)}
 .tk-list{display:grid;gap:10px}
+.brl{display:grid;gap:10px;margin-bottom:26px}
+.brw{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px 14px;width:100%;min-height:72px;padding:14px 16px 14px 20px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);font:inherit;text-align:left;cursor:pointer;transition:border-color .2s,transform .2s}
+.brw:hover,.brw:focus-visible{border-color:var(--c,var(--acc))}
+.brw:active{transform:scale(.99)}
+.brw>b{font:600 1.12rem/1.2 var(--f-body);min-width:0}
+.brw>span{display:grid;justify-items:end;text-align:right;gap:2px;min-width:0}
+.brw em{font-style:normal;font-weight:600;font-size:.9rem}
+.brw small{font-size:.78rem;color:var(--muted)}
+.brw .brp{color:var(--c,var(--acc));font-family:var(--f-mono)}
+.brw>.i{color:var(--muted);width:18px;height:18px}
+.bc{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0 0 14px;font-size:.88rem;color:var(--muted)}
+.bc button{background:none;border:0;padding:4px 0;color:var(--c,var(--acc));font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.bc [aria-current]{color:var(--fg);font-weight:600}
+.st-h{margin:0 0 16px}.st-h h3{margin:0 0 4px;font-size:1.35rem}.st-h p{margin:0;color:var(--muted)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:18px}
+.mc{display:grid;align-content:start;gap:4px;min-height:74px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);font:inherit;text-align:left;cursor:pointer;transition:border-color .2s}
+.mc:hover,.mc:focus-visible{border-color:var(--c,var(--acc))}
+.mc b{font-weight:600;font-size:.98rem;line-height:1.25}
+.mc small{font:500 .8rem/1.35 var(--f-mono);color:var(--c,var(--acc))}
+.mc-o{border-style:dashed}.mc-o small{color:var(--muted);font-family:var(--f-body)}
+.st-b{margin:4px 0 18px}
+.lnk2{background:none;border:0;padding:6px 0;color:var(--c,var(--acc));font:600 .92rem var(--f-body);cursor:pointer}
+@keyframes stIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+#svc.st-in{animation:stIn .28s ease-out}
+@media (prefers-reduced-motion:reduce){#svc.st-in{animation:none}}
+@media (max-width:520px){.mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.brw{padding-left:16px}.brw>b{font-size:1.02rem}}
+
 .tel-t{margin-top:18px;border:1px solid var(--line);border-radius:14px;padding:4px 16px}
 .tel-t summary{cursor:pointer;font-weight:600;padding:12px 0;display:flex;gap:8px;align-items:center}
 .tel-t .tbl{overflow-x:auto;margin:6px 0 14px}
@@ -3208,71 +3235,142 @@ const PHB={"Apple (iPhone)":"iPhone 13, iPhone 15 Pro, iPhone SE…","Samsung":"
  "HP":"HP Pavilion 15, HP 250 G8…","Dell":"Inspiron 15, Latitude 5520…","Asus":"VivoBook 15, ZenBook 14, ROG Strix…","Acer":"Aspire 5, Swift 3, Nitro 5…","Apple (MacBook, iMac)":"MacBook Air M1, MacBook Pro 13, iMac 24…","MSI":"Katana 15, Modern 14…","Toshiba, Dynabook":"Satellite Pro, Dynabook Tecra…","PC fixe ou sur mesure":"tour de bureau, PC gamer monté sur mesure…",
  "Nintendo (Switch)":"Switch OLED, Switch Lite, Switch 2, Joy-Con…","Sony (PlayStation)":"PS5 Slim, PS5 Pro, PS4, manette DualSense…","Microsoft (Xbox)":"Xbox Series S, Xbox Series X, Xbox One, manette Elite…"};
 const PHX={"Ordinateurs|Lenovo":"IdeaPad 3, ThinkPad T14, Legion 5…","Tablettes|Lenovo":"Tab M10, Tab P11…","Tablettes|Huawei":"MatePad 11, MatePad T10…","Ordinateurs|Samsung":"Galaxy Book 3, Galaxy Book 4…","Tablettes|Microsoft Surface":"Surface Pro 9, Surface Go 3…"};
-/* Prix des écrans et batteries de téléphone par modèle, en euros : [modèle, écran, batterie] ; 0 = sur devis.
-   Variantes séparées par « / ». POUR CHANGER UN PRIX : ce tableau, ou Gestion du site > Prix et services. Autres modèles : sur devis. */
-const TEL={"Apple (iPhone)":[["iPhone 16 Pro",259,79],["iPhone 16",219,79],["iPhone 16e",159,79],["iPhone 15 Pro",219,79],["iPhone 15",159,79],["iPhone 14 Pro",159,79],["iPhone 14",129,79],["iPhone 13 Pro",139,79],["iPhone 13",119,79],["iPhone 12 / 12 Pro",109,79],["iPhone 11 Pro Max",119,79],["iPhone 11 Pro",109,79],["iPhone 11",79,79],["iPhone XS / XS Max",109,79],["iPhone XR",79,79],["iPhone X",79,79],["iPhone SE 2022",69,79],["iPhone SE 2020",69,79],["iPhone 8 / 8 Plus",59,79]],
-"Samsung":[["Galaxy S25",259,79],["Galaxy S24",259,79],["Galaxy S24 FE",209,79],["Galaxy S23",249,79],["Galaxy S23 FE",199,79],["Galaxy S22",239,79],["Galaxy S21",219,79],["Galaxy S20",279,79],["Galaxy S20 FE",159,79],["Galaxy A56",219,79],["Galaxy A55",159,79],["Galaxy A54",139,79],["Galaxy A53",149,79],["Galaxy A52 / A52 5G",139,79],["Galaxy A36",149,79],["Galaxy A26",129,79],["Galaxy A16 / A16 5G",109,79],["Galaxy A05s",89,79]]};
-if(GTS.tel&&typeof GTS.tel==="object")for(const b in GTS.tel)if(Array.isArray(GTS.tel[b]))TEL[b]=GTS.tel[b].filter(r=>Array.isArray(r)&&r[0]).map(r=>[String(r[0]),Math.max(0,+r[1]||0),Math.max(0,+r[2]||0)]);
-const telK=x=>String(x).toLowerCase().replace(/\+/g," plus").replace(/apple|samsung|galaxy|iphone|\(|\)/g,"").replace(/[^a-z0-9]/g,"");
-const telN=n=>{const P=n.split("/").map(x=>x.trim()),h=(P[0].match(/^(?:iPhone|Galaxy)\s+/i)||[""])[0];return P.map((x,i)=>i&&!x.toLowerCase().startsWith(h.toLowerCase())?h+x:x)};
-const telBs=()=>{const q=brand&&brand!=="Autre marque"?brand:"";return q?(TEL[q]&&TEL[q].length?[q]:[]):brand?[]:Object.keys(TEL).filter(b=>TEL[b].length)};
-/* plus petit prix de la grille (1 écran, 2 batterie), pour l’accueil et l’assistant */
-const telMin=i=>{const v=Object.values(TEL).flat().map(r=>r[i]).filter(x=>x>0);return v.length?(Math.min(...v)===Math.max(...v)?"":"dès ")+Math.min(...v)+" €":"sur devis"};
+/* Modèles et prix des réparations, par catégorie puis par marque.
+   cols : prestations dont le prix dépend du modèle (noms exacts de SV).
+   b : marque → liste de modèles, du plus récent au plus ancien : "Modèle" (sur devis) ou ["Modèle", prix col 1, prix col 2] ; 0 = sur devis.
+   Variantes au même prix séparées par « / ». POUR CHANGER : ce tableau, ou Gestion du site > Prix et services. */
+const GRID={
+"Téléphones":{cols:["Remplacement d’écran","Remplacement de batterie"],b:{
+ "Apple (iPhone)":["iPhone 17 Pro Max","iPhone 17 Pro","iPhone 17","iPhone Air","iPhone 16 Pro Max",["iPhone 16 Pro",259,79],"iPhone 16 Plus",["iPhone 16",219,79],["iPhone 16e",159,79],"iPhone 15 Pro Max",["iPhone 15 Pro",219,79],"iPhone 15 Plus",["iPhone 15",159,79],"iPhone 14 Pro Max",["iPhone 14 Pro",159,79],"iPhone 14 Plus",["iPhone 14",129,79],"iPhone 13 Pro Max",["iPhone 13 Pro",139,79],["iPhone 13",119,79],"iPhone 13 mini","iPhone 12 Pro Max",["iPhone 12 / 12 Pro",109,79],"iPhone 12 mini",["iPhone 11 Pro Max",119,79],["iPhone 11 Pro",109,79],["iPhone 11",79,79],["iPhone XS / XS Max",109,79],["iPhone XR",79,79],["iPhone X",79,79],["iPhone SE 2022",69,79],["iPhone SE 2020",69,79],["iPhone 8 / 8 Plus",59,79]],
+ "Samsung":["Galaxy S25 Ultra","Galaxy S25+",["Galaxy S25",259,79],"Galaxy S24 Ultra","Galaxy S24+",["Galaxy S24",259,79],["Galaxy S24 FE",209,79],"Galaxy S23 Ultra","Galaxy S23+",["Galaxy S23",249,79],["Galaxy S23 FE",199,79],"Galaxy S22 Ultra","Galaxy S22+",["Galaxy S22",239,79],"Galaxy S21 Ultra",["Galaxy S21",219,79],"Galaxy S21 FE",["Galaxy S20",279,79],["Galaxy S20 FE",159,79],"Galaxy Z Fold 6","Galaxy Z Fold 5","Galaxy Z Flip 6","Galaxy Z Flip 5",["Galaxy A56",219,79],["Galaxy A55",159,79],["Galaxy A54",139,79],["Galaxy A53",149,79],["Galaxy A52 / A52 5G",139,79],["Galaxy A36",149,79],"Galaxy A35","Galaxy A34",["Galaxy A26",129,79],"Galaxy A25",["Galaxy A16 / A16 5G",109,79],"Galaxy A15","Galaxy A14","Galaxy A13",["Galaxy A05s",89,79]],
+ "Xiaomi, Redmi, Poco":["Xiaomi 14T","Xiaomi 14","Xiaomi 13T","Xiaomi 13","Redmi Note 14 Pro","Redmi Note 14","Redmi Note 13 Pro","Redmi Note 13","Redmi Note 12 Pro","Redmi Note 12","Redmi Note 11","Redmi 14C","Redmi 13C","Redmi 12","Poco X7 Pro","Poco X6 Pro","Poco X6","Poco F6","Poco M6 Pro"],
+ "Huawei":["P60 Pro","P50 Pro","P40 Pro","P40","P40 Lite","P30 Pro","P30","P30 Lite","P20 Pro","P20","P Smart 2021","Nova 11","Nova 10","Nova 9","Mate 20 Pro"],
+ "Honor":["Honor 400","Honor 200 Pro","Honor 200","Honor 90","Honor 70","Magic 6 Pro","Magic 6 Lite","Magic 5 Lite","Honor X8","Honor X7"],
+ "Oppo":["Find X8 Pro","Find X5 Pro","Reno 12","Reno 11","Reno 10","Oppo A98","Oppo A79","Oppo A78","Oppo A58","Oppo A38","Oppo A18"],
+ "OnePlus":["OnePlus 13","OnePlus 12","OnePlus 11","OnePlus 10 Pro","Nord 4","Nord 3","Nord CE 4","Nord CE 3 Lite"],
+ "Google Pixel":["Pixel 10 Pro","Pixel 10","Pixel 9 Pro","Pixel 9","Pixel 9a","Pixel 8 Pro","Pixel 8","Pixel 8a","Pixel 7 Pro","Pixel 7","Pixel 7a","Pixel 6 Pro","Pixel 6","Pixel 6a"],
+ "Motorola":["Edge 50 Pro","Edge 50 Fusion","Edge 40","Razr 50","Moto G85","Moto G84","Moto G54","Moto G34","Moto G24","Moto E14"],
+ "Sony":["Xperia 1 VI","Xperia 1 V","Xperia 10 VI","Xperia 10 V","Xperia 5 V","Xperia 10 IV"],
+ "Realme":["Realme GT 6","Realme 12 Pro","Realme 12","Realme 11 Pro","Realme 11","Realme C67","Realme C55","Realme C53"],
+ "Nokia":["Nokia X30","Nokia X20","Nokia G60","Nokia G42","Nokia G22","Nokia G21","Nokia C32","Nokia C22"],
+ "Wiko":["Wiko T60","Wiko T50","Wiko T10","Wiko Y82","Wiko Y62","Wiko Y52"]}},
+"Tablettes":{cols:["Écran ou vitre tactile","Remplacement de batterie"],b:{
+ "Apple (iPad)":["iPad Pro 13 (M4)","iPad Pro 11 (M4)","iPad Pro 12,9","iPad Pro 11 (2018 à 2022)","iPad Air (M2, M3)","iPad Air 5","iPad Air 4","iPad mini 7","iPad mini 6","iPad 11e génération","iPad 10e génération","iPad 9e génération","iPad 8e génération","iPad 7e génération"],
+ "Samsung Galaxy Tab":["Galaxy Tab S10","Galaxy Tab S9","Galaxy Tab S9 FE","Galaxy Tab S8","Galaxy Tab S7 FE","Galaxy Tab S6 Lite","Galaxy Tab A9+","Galaxy Tab A9","Galaxy Tab A8","Galaxy Tab A7 Lite","Galaxy Tab A7"],
+ "Lenovo":["Tab P12","Tab P11","Tab M11","Tab M10 Plus","Tab M10","Tab M9","Tab M8"],
+ "Huawei":["MatePad 11.5","MatePad 11","MatePad T10s","MatePad T10","MediaPad M5"],
+ "Xiaomi":["Xiaomi Pad 6","Xiaomi Pad 5","Redmi Pad Pro","Redmi Pad SE","Redmi Pad"],
+ "Microsoft Surface":["Surface Pro 11","Surface Pro 9","Surface Pro 8","Surface Pro 7","Surface Go 4","Surface Go 3","Surface Go 2"],
+ "Amazon Fire":["Fire Max 11","Fire HD 10","Fire HD 8","Fire 7"]}},
+"Ordinateurs":{cols:["Écran d’ordinateur portable","Batterie et alimentation"],b:{
+ "HP":["HP Pavilion 15","HP Pavilion 14","HP Pavilion x360","HP Envy 13 / Envy x360","HP 14s / 15s","HP 250 / 255","HP ProBook 450","HP EliteBook 840","HP Victus 15","HP Omen 16","HP Chromebook"],
+ "Dell":["Dell Inspiron 15","Dell Inspiron 14","Dell Vostro 15","Dell Latitude 5000","Dell Latitude 7000","Dell XPS 13","Dell XPS 15","Dell G15","Alienware"],
+ "Lenovo":["IdeaPad 1","IdeaPad 3 / Slim 3","IdeaPad 5 / Slim 5","Yoga","ThinkPad T14","ThinkPad E14 / E15","ThinkPad X1 Carbon","ThinkBook 15","Legion 5","Lenovo LOQ"],
+ "Asus":["VivoBook 15","VivoBook 14","VivoBook Go","ZenBook 14","ZenBook 13","ROG Strix G15","TUF Gaming F15","ExpertBook"],
+ "Acer":["Aspire 3","Aspire 5","Aspire 7","Swift 3 / Swift Go","Nitro 5","Predator Helios","Extensa 15","Acer Chromebook"],
+ "Apple (MacBook, iMac)":["MacBook Air M3","MacBook Air M2","MacBook Air M1","MacBook Pro 14 / 16","MacBook Pro 13 (M1, M2)","MacBook Air Intel","MacBook Pro Intel","iMac 24","iMac 21,5 / 27 (Intel)","Mac mini"],
+ "MSI":["Katana 15","Thin GF63","Cyborg 15","Modern 14 / 15","Prestige","Raider / Stealth"],
+ "Microsoft Surface":["Surface Laptop 5","Surface Laptop 4","Surface Laptop 3","Surface Laptop Go","Surface Book","Surface Pro (avec clavier)"],
+ "Toshiba, Dynabook":["Satellite Pro C50","Satellite L50","Tecra A50","Portégé"],
+ "Samsung":["Galaxy Book 4","Galaxy Book 3","Galaxy Book 2","Galaxy Book Pro"],
+ "PC fixe ou sur mesure":["Tour de bureau","PC gamer","PC tout-en-un","Mini PC"]}},
+"Consoles":{cols:["Port HDMI","Connecteur de charge"],b:{
+ "Nintendo (Switch)":["Switch 2","Switch OLED","Switch","Switch Lite","Joy-Con","Manette Pro"],
+ "Sony (PlayStation)":["PS5 Pro","PS5 Slim","PS5","PS4 Pro","PS4 Slim","PS4","Manette DualSense / Edge","Manette DualShock 4","PlayStation Portal"],
+ "Microsoft (Xbox)":["Xbox Series X","Xbox Series S","Xbox One X","Xbox One S","Xbox One","Manette Xbox / Elite"]}}};
+const gRow=r=>Array.isArray(r)?[String(r[0]),Math.max(0,+r[1]||0),Math.max(0,+r[2]||0)]:[String(r),0,0];
+for(const c in GRID)for(const b in GRID[c].b)GRID[c].b[b]=GRID[c].b[b].map(gRow);
+/* prix modifiés depuis la gestion (clé « grid » ; ancienne clé « tel » = téléphones) */
+if(GTS.tel&&typeof GTS.tel==="object")for(const b in GTS.tel)if(Array.isArray(GTS.tel[b])&&GRID["Téléphones"].b[b]){const R=GTS.tel[b].filter(r=>Array.isArray(r)&&r[0]).map(gRow);GRID["Téléphones"].b[b]=GRID["Téléphones"].b[b].map(r=>R.find(x=>x[0]===r[0])||r).concat(R.filter(x=>!GRID["Téléphones"].b[b].some(r=>r[0]===x[0])))}
+if(GTS.grid&&typeof GTS.grid==="object")for(const c in GTS.grid)if(GRID[c]&&GTS.grid[c]&&typeof GTS.grid[c]==="object")for(const b in GTS.grid[c])if(Array.isArray(GTS.grid[c][b]))GRID[c].b[b]=GTS.grid[c][b].filter(r=>(Array.isArray(r)?r[0]:r)).map(gRow);
+const TEL=GRID["Téléphones"].b;
+const gK=x=>String(x).toLowerCase().replace(/\+/g," plus").replace(/[^a-z0-9]/g,"");
+const gEur=v=>v?v+" €":"Sur devis";
+/* plus petit prix d’une colonne (1 ou 2) pour une catégorie, sur toutes les marques ou une seule */
+function gMin(c,i,b){const G=GRID[c];if(!G)return 0;const v=(b?[G.b[b]||[]]:Object.values(G.b)).flat().map(r=>r[i]).filter(x=>x>0);return v.length?Math.min(...v):0}
+const telMin=i=>{const m=gMin("Téléphones",i);if(!m)return"sur devis";const v=Object.values(TEL).flat().map(r=>r[i]).filter(x=>x>0);return(Math.max(...v)===m?"":"dès ")+m+" €"};
 const telCap=t=>t.charAt(0).toUpperCase()+t.slice(1);
 document.querySelectorAll("[data-telmin]").forEach(e=>{e.textContent=telCap(telMin(+e.dataset.telmin))});
-function telRow(){const k=telK(model);if(!k)return null;for(const b of telBs())for(const r of TEL[b]){const v=telN(r[0]).find(x=>telK(x)===k);if(v)return Object.assign(r.slice(),{nm:v})}return null}
-const TELN=[/^Remplacement d.écran$/,/^Remplacement de batterie$/];
-function telP(i){const B=telBs();if(cat!=="Téléphones"||!B.length)return null;const r=telRow();if(r)return r[i]?r[i]+" €":"Sur devis";if(model.trim())return"Sur devis";const v=B.flatMap(b=>TEL[b].map(x=>x[i])).filter(x=>x>0);return v.length?(Math.min(...v)===Math.max(...v)?"":"Dès ")+Math.min(...v)+" €":null}
-function telHint(){const B=telBs();if(cat!=="Téléphones"||!B.length||!model.trim())return"";const r=telRow();return r?`${esc(r.nm)} : écran ${r[1]?r[1]+" €":"sur devis"}, batterie ${r[2]?r[2]+" €":"sur devis"}, pose comprise.`:"Ce modèle n’est pas dans la grille : écran et batterie sur devis gratuit."}
-function telTab(){const B=telBs();if(cat!=="Téléphones"||!B.length)return"";
-  return `<details class="tel-t"${B.length===1?" open":""}><summary>${svg("card")}Prix des écrans et batteries par modèle (${B.map(b=>esc(b.replace(/\s*\(.*\)/,""))).join(", ")})</summary>${B.map(b=>`<div class="tbl"><table><caption>${esc(b)}</caption><thead><tr><th>Modèle</th><th>Écran</th><th>Batterie</th></tr></thead><tbody>${TEL[b].map(r=>`<tr><td>${esc(r[0])}</td><td>${r[1]?r[1]+" €":"Sur devis"}</td><td>${r[2]?r[2]+" €":"Sur devis"}</td></tr>`).join("")}</tbody></table></div>`).join("")}<p>TVA non applicable, art. 293 B du CGI. Modèle absent de la liste : sur devis gratuit.</p></details>`}
-let telOpen=0;
-const telSh=n=>n.replace(/^(iPhone|Galaxy)\s+/,"");
-/* choix du modèle dans la carte : liste de boutons avec le prix, puis le prix s’affiche */
-function telPick(k){const B=telBs(),r=telRow(),op=telOpen===k,w=k===1?"écran":"batterie";
-  const head=r?`<p class="tpk-sel"><span>${svg("check")} <b>${esc(r.nm)}</b> : ${w} ${r[k]?r[k]+" €, pose comprise":"sur devis"}</span><button type="button" data-tpo="${k}" aria-expanded="${op}">Changer de modèle</button></p>`
-    :`<button type="button" class="btn sm tpk-b" data-tpo="${k}" aria-expanded="${op}">${svg("mobile")}Choisir mon modèle pour voir le prix</button>`;
-  return `<div class="tpk">${head}${op?`<div class="tpk-l">${B.map(b=>`<div><span class="lab2">${b==="Samsung"?"Samsung Galaxy":esc(b.replace(/^Apple \((.*)\)$/,"$1"))}</span><div class="tpk-c">${TEL[b].flatMap(x=>telN(x[0]).map(n=>[n,x[k]])).map(([n,v])=>`<button type="button" data-tm="${esc(n)}" aria-pressed="${!!r&&n===r.nm}">${esc(telSh(n))}<small>${v?v+" €":"sur devis"}</small></button>`).join("")}</div></div>`).join("")}${reqA("Mon modèle n’est pas dans la liste : demander un devis","tpk-x",TEL_REP[k-1],"",1)}</div>`:""}</div>`}
-const TEL_REP=["Remplacement d’écran","Remplacement de batterie"];
-function telKeep(k,fn){const q=()=>document.querySelector(`#svc [data-tpk="${k}"]`),a=q(),y=a?a.getBoundingClientRect().top:0;fn();const b=q();if(a&&b)window.scrollBy(0,b.getBoundingClientRect().top-y)}
-function updTel(){document.querySelectorAll("#svc [data-tp]").forEach(e=>{const v=telP(+e.dataset.tp);if(v)e.textContent=v});const h=$("smodp");if(h)h.innerHTML=telHint()}
+/* ligne du modèle choisi */
+function gModel(){const G=GRID[cat];if(!G||!brand||!model||model==="*")return null;return(G.b[brand]||[]).find(r=>r[0]===model)||null}
+/* nom court et sous-titre d’une marque : « Apple (iPhone) » → iPhone / Apple */
+const bParts=b=>{const m=b.match(/^(.*?)\s*\((.*)\)$/);return m?[m[2],m[1]]:[b,""]};
+const bShort=b=>bParts(b)[0];
+const gSlug=x=>norm(String(x)).replace(/ /g,"-");
+/* nom court d’une colonne de prix */
+const cShort=c=>({"Remplacement d’écran":"Écran","Remplacement de batterie":"Batterie","Écran ou vitre tactile":"Écran","Écran d’ordinateur portable":"Écran","Batterie et alimentation":"Batterie","Port HDMI":"HDMI","Connecteur de charge":"Charge"})[c]||c;
 const phEx=D=>{const e=PHX[cat+"|"+brand]||PHB[brand];return e?"Ex. : "+e:D.ph};
 const CATS=["Tous","Téléphones","Tablettes","Ordinateurs","Consoles","Assistance"],CATL={Assistance:"Assistance et professionnels"},CATI={Assistance:"headset"},LISTC=["Assistance"];
 let cat="Tous",brand="",model="";
-const tk=(s,a)=>`<div class="tk${a?" act":""}"${s.tp?` data-tpk="${s.tp}"`:""}><div class="tk-i"><div class="tk-n">${s.n}</div><p class="tk-d">${s.d}</p>${s.tp?telPick(s.tp):""}</div><span class="tk-t${s.t?"":" empty"}">${s.t?svg("clock")+s.t:"—"}</span><span class="tk-p"${s.tp?` data-tp="${s.tp}"`:""}>${s.p}</span>${a?`<span class="tk-a">${a}</span>`:""}</div>`;
+const tk=(s,a)=>`<div class="tk${a?" act":""}"><div class="tk-i"><div class="tk-n">${s.n}</div><p class="tk-d">${s.d}</p></div><span class="tk-t${s.t?"":" empty"}">${s.t?svg("clock")+s.t:"—"}</span><span class="tk-p">${s.p}</span>${a?`<span class="tk-a">${a}</span>`:""}</div>`;
 /* Lien vers la demande de rappel, pré-rempli avec l’appareil, la marque, le modèle et la réparation */
-function reqDetail(rep,nm){const bn=brand&&brand!=="Autre marque"?brand.replace(/\s*\(.*\)/,"").split(",")[0]:"",m=[bn,nm?"":model.trim()].filter(Boolean).join(" ");return m?(rep?m+" : "+rep:m+" : "):(rep||"")}
+function reqDetail(rep,nm){const bn=brand&&brand!=="Autre marque"?brand.replace(/\s*\(.*\)/,"").split(",")[0]:"",m=[bn,nm||model==="*"?"":model.trim()].filter(Boolean).join(" ");return m?(rep?m+" : "+rep:m+" : "):(rep||"")}
 function reqA(label,cls,rep,need,nm){const dev=DEVS[cat]?DEVS[cat].d:"",det=reqDetail(rep,nm),nd=need||"Réparer ou dépanner";
   const h=PG?"/rendez-vous/?"+new URLSearchParams({app:dev,besoin:nd,detail:det}).toString():"#demande";
   return `<a class="${cls}" href="${h}" data-req="1"${nm?' data-nm="1"':""} data-rep="${esc(rep||"")}" data-need="${esc(nd)}">${label}</a>`}
 function updReq(){document.querySelectorAll("#svc [data-req]").forEach(a=>{const dev=DEVS[cat]?DEVS[cat].d:"",det=reqDetail(a.dataset.rep,a.dataset.nm);if(PG)a.href="/rendez-vous/?"+new URLSearchParams({app:dev,besoin:a.dataset.need,detail:det}).toString()})}
 if(Array.isArray(GTS.sv)&&GTS.sv.length){const O=SV.slice();SV.splice(0,SV.length,...GTS.sv.map(x=>{const o=O.find(y=>y.c===x.c&&y.n===x.n),r=Object.assign({},x);if(o)["bd","bn","bo"].forEach(k=>{if(o[k]&&!r[k])r[k]=o[k]});return r}))}
+/* prestations de la catégorie, adaptées à la marque (bo, bn, bd) et au modèle (prix de GRID) */
+function svList(){const mac=/^Apple/.test(brand)&&cat==="Ordinateurs",bq=brand&&brand!=="Autre marque"?brand:"",G=GRID[cat],r=gModel();
+  return SV.filter(s=>s.c===cat&&!(mac&&s.w)&&!(s.mac&&!mac)&&!(bq&&Array.isArray(s.bo)&&s.bo.length&&!s.bo.includes(bq))).map(s=>{
+    const i=G?G.cols.indexOf(s.n)+1:0;let p=s.p,fx=false;
+    if(i){if(r){p=gEur(r[i]);fx=r[i]>0}else if(!model&&brand!=="Autre marque"){const m=gMin(cat,i,bq||undefined);if(m)p="Dès "+m+" €"}else p="Sur devis"}
+    const o=Object.assign({},s,{p,fx});
+    if(bq&&(s.bd&&s.bd[bq]||s.bn&&s.bn[bq])){o.n=s.bn&&s.bn[bq]||s.n;o.d=s.bd&&s.bd[bq]||s.d}
+    return o})}
+const svCards=L=>`<div class="tk-list">${L.map(s=>tk(s,reqA(s.fx?"Prendre rendez-vous":"Demander un devis",s.fx?"btn sm":"btn sm ghost",s.n,s.need))).join("")}</div>`;
+/* fil d’Ariane des étapes */
+function svBc(){const D=DEVS[cat],it=[`<button type="button" data-go="0">${esc(cat)}</button>`];
+  if(brand)it.push(model?`<button type="button" data-go="1">${esc(brand==="Autre marque"?"Autre marque":bShort(brand))}</button>`:`<span aria-current="page">${esc(brand==="Autre marque"?"Autre marque":bShort(brand))}</span>`);
+  if(model)it.push(`<span aria-current="page">${esc(model==="*"?"Autre modèle":model)}</span>`);
+  return `<nav class="bc" aria-label="Étapes">${it.join(`<span class="bc-s" aria-hidden="true">›</span>`)}</nav>`}
+function gTab(){const G=GRID[cat];if(!G)return"";const B=Object.keys(G.b).filter(b=>G.b[b].some(r=>r[1]||r[2]));if(!B.length)return"";
+  return `<details class="tel-t"><summary>${svg("card")}Tous les prix par modèle (${B.map(b=>esc(bShort(b))).join(", ")})</summary>${B.map(b=>`<div class="tbl"><table><caption>${esc(b)}</caption><thead><tr><th>Modèle</th>${G.cols.map(c=>`<th>${esc(cShort(c))}</th>`).join("")}</tr></thead><tbody>${G.b[b].filter(r=>r[1]||r[2]).map(r=>`<tr><td>${esc(r[0])}</td><td>${gEur(r[1])}</td><td>${gEur(r[2])}</td></tr>`).join("")}</tbody></table></div>`).join("")}<p>Prix pose comprise · TVA non applicable, art. 293 B du CGI. Modèle absent de la liste : sur devis gratuit.</p></details>`}
 function drawSv(){
   if(!$("seg"))return;
   if(cat==="Tous"||!(DEVS[cat]||LISTC.includes(cat)))cat="Téléphones";
+  if(brand&&brand!=="Autre marque"&&!(DEVS[cat]&&DEVS[cat].b.includes(brand))){brand="";model=""}
+  if(model&&model!=="*"&&!((GRID[cat]&&GRID[cat].b[brand])||[]).some(r=>r[0]===model))model="";
   $("seg").innerHTML=CATS.slice(1).map(c=>PG?`<a href="/services/${norm(c)}/" data-cat="${c}"${c===cat&&PG.cat?' aria-current="page"':c===cat?' aria-current="true"':""}>${svg(DEVS[c]?DEVS[c].ic:CATI[c])}${CATL[c]||c}</a>`:`<button type="button" data-c="${c}" data-cat="${c}" aria-pressed="${c===cat}">${svg(DEVS[c]?DEVS[c].ic:CATI[c])}${CATL[c]||c}</button>`).join("");
-  const box=$("svc");box.dataset.cat=cat;
+  const box=$("svc");box.dataset.cat=cat;box.dataset.step=!brand?"1":!model&&brand!=="Autre marque"?"2":"3";
   if(LISTC.includes(cat)){
     const L=SV.filter(s=>s.c===cat),acc=cat==="Accessoires";
     box.innerHTML=`<div class="tk-h"><h3>${CATL[cat]||cat}</h3><span class="mono">${L.length} ${acc?"catégories":"prestations"}</span></div><div class="tk-list">${L.map(s=>tk(s,reqA(acc?"Demander un prix":"Demander un devis","btn sm ghost",s.n,s.need))).join("")}</div>`+(acc?"":other());
     return}
-  const D=DEVS[cat],mac=/^Apple/.test(brand)&&cat==="Ordinateurs";
-  /* selon la marque choisie : prestation masquée si elle ne la concerne pas (bo), nom et description adaptés (bn, bd) */
-  const bq=brand&&brand!=="Autre marque"?brand:"";
-  const L=SV.filter(s=>s.c===cat&&!(mac&&s.w)&&!(s.mac&&!mac)&&!(bq&&Array.isArray(s.bo)&&s.bo.length&&!s.bo.includes(bq))).map(s=>{const i=cat==="Téléphones"?TELN.findIndex(r=>r.test(s.n))+1:0,v=i&&telP(i);return v?Object.assign({},s,{p:v,tp:i}):s}).map(s=>bq&&(s.bd&&s.bd[bq]||s.bn&&s.bn[bq])?Object.assign({},s,{n:s.bn&&s.bn[bq]||s.n,d:s.bd&&s.bd[bq]||s.d}):s);
-  box.innerHTML=`<div class="fbar"><div><span class="lab2">Marque</span><div class="brands" role="group" aria-label="Marque">${["",...D.b].map(b=>`<button type="button" data-b="${esc(b)}" aria-pressed="${b===brand}">${b||"Toutes marques"}</button>`).join("")}<button type="button" data-b="Autre marque" aria-pressed="${brand==="Autre marque"}">Autre marque</button></div></div>
-${cat==="Téléphones"&&telBs().length?"":`<div class="fld"><label for="smod">Modèle <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label><input id="smod" autocomplete="off" placeholder="${phEx(D)}" value="${esc(model)}"></div>`}</div>
-<div class="tk-h"><h3>Réparations ${D.d.toLowerCase()} · ${brand&&brand!=="Autre marque"?brand:"toutes marques"}</h3><span class="mono">${L.length} prestations</span></div>
-<div class="tk-list">${L.map(s=>tk(s,reqA(s.tp&&telRow()&&telRow()[s.tp]?"Prendre rendez-vous":"Demander un devis",s.tp&&telRow()&&telRow()[s.tp]?"btn sm":"btn sm ghost",s.n,s.need))).join("")}</div>`+telTab()+other()}
+  const D=DEVS[cat],G=GRID[cat],dv=D.d.toLowerCase();
+  /* 1 : choisir la marque */
+  if(!brand){
+    box.innerHTML=`<div class="tk-h"><h3>Choisir par marque</h3><span class="mono">puis le modèle</span></div>
+<div class="brl">${D.b.map(b=>{const R=G&&G.b[b]||[],n=R.reduce((t,r)=>t+r[0].split("/").length,0),[t,sub]=bParts(b),m=G?Math.min(...G.cols.map((c,i)=>gMin(cat,i+1,b)||1e9)):1e9;
+  return `<button type="button" class="brw" data-b="${esc(b)}"><b>${esc(t)}</b><span><em>${sub?esc(sub)+" : ":""}${n?n+(b==="PC fixe ou sur mesure"?" types":" modèles"):"tous modèles"}</em>${R.length>1?`<small>${esc(R[R.length-1][0].split(" / ")[0])} à ${esc(R[0][0].split(" / ")[0])}</small>`:""}${m<1e9?`<small class="brp">Dès ${m} €</small>`:""}</span>${svg("next")}</button>`}).join("")}
+<button type="button" class="brw" data-b="Autre marque"><b>Autre marque</b><span><em>ou je ne connais pas le modèle</em><small>Devis gratuit</small></span>${svg("next")}</button></div>
+<div class="tk-h"><h3>Réparations ${dv} courantes</h3><span class="mono">toutes marques</span></div>${svCards(svList())}`+gTab()+other();return}
+  /* 2 : choisir le modèle */
+  if(!model&&brand!=="Autre marque"){const R=G&&G.b[brand]||[],t=bShort(brand);
+    box.innerHTML=svBc()+`<div class="st-h"><h3>Réparation ${esc(t)}</h3><p>Choisissez votre modèle : ses réparations et ses prix s’affichent ensuite.</p></div>
+<div class="mgrid">${R.map(r=>`<button type="button" class="mc" data-m="${esc(r[0])}"><b>${esc(r[0])}</b><small>${G.cols.map((c,i)=>r[i+1]?`${cShort(c)} ${r[i+1]} €`:"").filter(Boolean).join(" · ")||"Prix sur devis"}</small></button>`).join("")}<button type="button" class="mc mc-o" data-m="*"><b>Autre modèle</b><small>ou je ne sais pas</small></button></div>
+<p class="st-b"><button type="button" class="lnk2" data-go="0">← Changer de marque</button></p>`+other();return}
+  /* 3 : réparations et prix du modèle */
+  const L=svList(),nm=brand==="Autre marque"?dv+" (autre marque)":model==="*"?bShort(brand)+" (autre modèle)":model;
+  box.innerHTML=svBc()+`<div class="st-h"><h3>Réparation ${esc(nm)}</h3><p>${gModel()&&L.some(s=>s.fx)?"Prix pièce et pose comprises. Les autres réparations sont sur devis gratuit.":"Devis gratuit, prix annoncé avant les travaux."}</p></div>${svCards(L)}
+<p class="st-b"><button type="button" class="lnk2" data-go="${brand==="Autre marque"?0:1}">← ${brand==="Autre marque"?"Changer de marque":"Changer de modèle"}</button></p>`+other()}
+/* changement d’étape : nouvelle « page » (historique du navigateur, adresse partageable) */
+function svGo(b,m,push=true){brand=b;model=m;drawSv();
+  if(push){const st={svc:[cat,b,m]};let u=location.hash||"";if(PG){const q=new URLSearchParams();if(b)q.set("marque",gSlug(b));if(m)q.set("modele",m==="*"?"autre":gSlug(m));u=location.pathname+(q.toString()?"?"+q:"")}try{history.pushState(st,"",u||location.href)}catch(e){}}
+  const s=$("svc");if(s){s.classList.remove("st-in");void s.offsetWidth;s.classList.add("st-in");const y=s.getBoundingClientRect().top+scrollY-90;if(scrollY>y)scrollTo({top:y,behavior:"smooth"})}}
 function other(){const dev=DEVS[cat]?DEVS[cat].d.toLowerCase():"appareil";
   return `<div class="other"><span class="oic">${svg("tool")}</span><div><h3>Votre réparation n’est pas dans la liste ?</h3><p>Autre panne, autre marque ou ${dev==="appareil"?"autre besoin":"autre type d’"+dev} : décrivez-la en quelques mots, vous serez rappelé avec un devis gratuit.</p></div><div class="row2">${reqA(svg("mail")+"Décrire ma panne","btn","")}<a class="btn ghost" href="${hrefs.tel}">${svg("handset")}Appeler</a></div></div>`}
 function drawBrands(){if(!$("ball"))return;$("ball").innerHTML=Object.keys(DEVS).map(c=>`<div data-cat="${c}"><h3>${svg(DEVS[c].ic)}${c}</h3><ul>${DEVS[c].b.map(b=>`<li>${b}</li>`).join("")}<li>Autres marques sur devis</li></ul></div>`).join("")}
 if($("seg")){{const c=CATS.find(c=>norm(c)===(PG&&PG.cat||QP.get("cat")));if(c)cat=c}
-$("seg").onclick=e=>{const b=e.target.closest("button");if(b){cat=b.dataset.c;brand="";model="";telOpen=0;drawSv()}};
-$("svc").addEventListener("click",e=>{const m=e.target.closest("[data-tm]");if(m){const k=telOpen;model=m.dataset.tm;telOpen=0;telKeep(k,drawSv);const f=document.querySelector(`#svc [data-tpk="${k}"] [data-tpo]`);if(f)f.focus({preventScroll:true});return}
-  const o=e.target.closest("[data-tpo]")||(!e.target.closest("a,button,input,summary,label,.tpk-l")&&e.target.closest("[data-tpk]"));if(o){const k=+(o.dataset.tpo||o.dataset.tpk);telOpen=telOpen===k?0:k;telKeep(k,drawSv);const f=document.querySelector(`#svc [data-tpk="${k}"] [data-tpo]`);if(f)f.focus({preventScroll:true});return}
-  const b=e.target.closest("[data-b]");if(b){brand=b.dataset.b;if(cat==="Téléphones"){model="";telOpen=0}drawSv();const f=document.querySelector(`#svc [data-b="${CSS.escape(brand)}"]`);if(f)f.focus()}});
-$("svc").addEventListener("input",e=>{if(e.target.id==="smod"){model=e.target.value;updReq();updTel()}});
+/* étape demandée dans l’adresse : ?marque=…&modele=… */
+if(PG&&DEVS[cat]){const qb=QP.get("marque"),qm=QP.get("modele"),b=qb&&(qb==="autre-marque"?"Autre marque":DEVS[cat].b.find(x=>gSlug(x)===qb));
+  if(b){brand=b;const R=GRID[cat]&&GRID[cat].b[b]||[];const r=qm==="autre"?["*"]:qm&&R.find(r=>gSlug(r[0])===qm);if(r)model=r[0]}}
+try{history.replaceState(Object.assign({},history.state||{},{svc:[cat,brand,model]}),"")}catch(e){}
+$("seg").onclick=e=>{const b=e.target.closest("button");if(b){cat=b.dataset.c;svGo("","")}};
+$("svc").addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(b){svGo(b.dataset.b,"");return}
+  const m=e.target.closest("[data-m]");if(m){svGo(brand,m.dataset.m);return}
+  const g=e.target.closest("[data-go]");if(g)svGo(g.dataset.go==="0"?"":brand,"")});
+addEventListener("popstate",e=>{const t=e.state&&e.state.svc;if(!t)return;cat=t[0];brand=t[1];model=t[2];drawSv()});
 drawSv();drawBrands()}
 /* Aperçu : un clic sur « Demander un devis » pré-remplit le formulaire de rappel */
 document.addEventListener("click",e=>{const a=e.target.closest("[data-req]");if(!a||PG)return;
@@ -4710,7 +4808,7 @@ document.addEventListener("click",e=>{const a=e.target.closest("[data-back]");if
   b.onclick=()=>{scrollTo({top:0,behavior:RM?"auto":"smooth"});const h=document.querySelector(".view:not([hidden]) h1");if(h){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}}})();
 route();fixLinks();gtAds();
 /* Contenu du site : relu sur le serveur ; s'il a changé depuis cette version, la page se recharge une fois (si le visiteur n'a encore rien fait) */
-window.GT_DATA={SV,SHOP,PRIX,TEL,ARTS,NEWS,CATS,BCATS,NTH,DEVS,IC:Object.keys(IC),IMGV:window.GT_IMGV||{},GTS};
+window.GT_DATA={SV,SHOP,PRIX,TEL,GRID,ARTS,NEWS,CATS,BCATS,NTH,DEVS,IC:Object.keys(IC),IMGV:window.GT_IMGV||{},GTS};
 (()=>{if(GT_EDIT||window.GT_PRERENDER||!/^https?:$/.test(location.protocol))return;let act=false;["pointerdown","keydown","scroll"].forEach(e=>addEventListener(e,()=>{act=true},{once:true,passive:true}));
   fetch("/api/site.php?c=1",{cache:"no-cache"}).then(r=>r.ok&&/json/.test(r.headers.get("content-type")||"")?r.json():null).then(j=>{if(!j||typeof j.t!=="number")return;
     let ok=false;try{localStorage.setItem("gt-site",JSON.stringify(j));ok=true}catch(e){}
