@@ -1849,7 +1849,7 @@ svg.art{display:block;width:100%;height:auto;--art-t:var(--muted);--art-bg:var(-
   <div><h2 id="cookieh">Un site adapté à votre commune ?</h2><p id="cookiep">Avec votre accord, votre commune est mémorisée sur votre appareil pendant 6 mois : distance, déplacement et livraison s’affichent pour chez vous, et les formulaires se pré-remplissent. Rien n’est transmis sans votre demande. <a href="#legal" data-ckinfo="1">En savoir plus</a></p></div>
   <div class="ck-act"><button type="button" class="btn sm ghost" id="ckno">Refuser</button><button type="button" class="btn sm" id="ckyes">Accepter</button></div>
 </div>
-<main id="main" tabindex="-1">
+<main id="main">
 
 <!-- ACCUEIL -->
 <div class="view" id="v-home">
@@ -4670,7 +4670,7 @@ function route(){
     if(h==="404"){const m=location.pathname.match(/^\/infos-pratiques\/([^/]+)\/?$/),m2=location.pathname.match(/^\/actualites\/([^/]+)\/?$/);
       if(m&&$("v-article"))ap=ARTS.find(a=>a.s===m[1])||null;else if(m2&&$("v-actu"))np=NEWS.find(n=>n.id===m2[1])||null;
       if(ap||np){h=ap?"article":"actu";const z=$("v-404");if(z)z.hidden=true;document.title=(ap||np).t+" · Gouyerian Tech"}}}
-  else{h0=decodeURIComponent(location.hash.slice(1))||"home";if(h0==="main"){const m=$("main");if(m)m.focus();return}h=h0;if(ALIAS[h])[h,anc]=ALIAS[h];
+  else{h0=decodeURIComponent(location.hash.slice(1))||"home";if(h0==="main"){const m=$("main");if(m){m.tabIndex=-1;m.focus()}return}h=h0;if(ALIAS[h])[h,anc]=ALIAS[h];
     cp0=CPG.find(p=>p.s===h)||null;ap=cp0?null:ARTS.find(a=>a.s===h)||null;np=h.startsWith("actu-")?NEWS.find(n=>"actu-"+n.id===h)||null:null;
     if(cp0)h="commune";else if(ap)h="article";else if(np)h="actu";else if(!VIEWS.includes(h)||h==="commune"||h==="article"||h==="actu")h=h.startsWith("actu-")?"actus":"home";
     document.title=cp0?ctitle(cp0):ap?ap.t+" · Gouyerian Tech":np?np.t+" · Gouyerian Tech":TITLE[h]}
