@@ -238,7 +238,7 @@ add("/", "home", VIEW["home"], "Réparation informatique près de Cognac · Gouy
 faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
     {"@type": "Question", "name": f["q"], "acceptedAnswer": {"@type": "Answer", "text": f["a"]}} for f in DATA["faq"]]}
 add("/services/", "services", VIEW["services"], "Services et tarifs de réparation · Gouyerian Tech",
-    "Nettoyage de virus 30 €, réinstallation de Windows 50 €, récupération de données 80 €. Écrans et batteries sur devis gratuit, toutes marques, près de Cognac.",
+    "Nettoyage de virus 30 €, réinstallation de Windows 50 €, récupération de données 80 €. Prix des écrans et batteries iPhone et Galaxy affichés, autres sur devis, près de Cognac.",
     [HOME, ("Services et tarifs", "/services/")], prio="0.9")
 for key, c in CATP.items():
     svc = [s for s in DATA["sv"] if s["c"] == c["cat"]]

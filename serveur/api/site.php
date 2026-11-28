@@ -7,7 +7,7 @@
 declare(strict_types=1);
 require __DIR__ . '/_lib.php';
 
-const SITE_CLES = ['textes', 'images', 'sv', 'shop', 'prix', 'news', 'arts'];
+const SITE_CLES = ['textes', 'images', 'sv', 'shop', 'prix', 'tel', 'news', 'arts'];
 const MEDIA_TYPES = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
 
 function medias_dir(): string { return prive_dir() . '/medias'; }
@@ -160,6 +160,19 @@ function valider(string $cle, $v) {
         return $o;
       };
       return $nombres($v, 0);
+    case 'tel':  /* prix des écrans et batteries par marque : [modèle, écran, batterie], 0 = sur devis */
+      $o = [];
+      foreach (array_slice($v, 0, 20, true) as $b => $rows) {
+        if (!is_string($b) || is_numeric($b)) continue;
+        $b = plain($b, 60); if ($b === '' || !is_array($rows)) continue;
+        $l = [];
+        foreach (array_slice($rows, 0, 200) as $r) {
+          if (!is_array($r) || plain($r[0] ?? '', 80) === '') continue;
+          $l[] = [plain($r[0], 80), (int)round(max(0, min(5000, (float)($r[1] ?? 0)))), (int)round(max(0, min(5000, (float)($r[2] ?? 0))))];
+        }
+        $o[$b] = $l;
+      }
+      return $o ?: null;
     case 'news':
       $o = ['add' => [], 'edit' => [], 'hide' => []];
       foreach (array_slice($v['add'] ?? [], 0, 400) as $n) { $x = actu($n, true); if ($x) $o['add'][] = $x; }
