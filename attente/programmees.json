@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-18",
-  "dl": "18 novembre 2026",
-  "sc": "Monde",
-  "th": "Sécurité",
-  "tag": "Alerte CERT-FR",
-  "t": "Serveurs web NGINX : deux failles critiques, mise à jour ou désactivation de HTTP/2",
-  "s": "Le CERT-FR a publié le 18 novembre une alerte sur deux failles critiques de NGINX (CVE-2026-123633 et CVE-2026-123007) qui permettent à un attaquant non authentifié d’exécuter du code à distance via HTTP/2. Il a connaissance d’une preuve de concept publique pour la seconde. Les versions corrigées sont NGINX 1.30.7 et 1.31.9 ; en attendant, il recommande de désactiver HTTP/2. NGINX fait tourner une grande partie des sites web : cela concerne surtout les entreprises qui gèrent leur propre serveur ou en font gérer un.",
-  "tip": "Si votre site ou votre outil métier tourne sur un serveur que vous gérez (VPS, serveur loué), demandez à votre prestataire ou hébergeur s’il utilise NGINX et si la mise à jour est faite. Un site chez un hébergeur mutualisé est en général géré par ce dernier. Nous pouvons faire le point avec vous sur vos serveurs et votre site.",
-  "src": [
-   [
-    "CERT-FR, alerte CERTFR-2026-ALE-017 (18 novembre 2026)",
-    "https://cert.cyber.gouv.fr/alerte/CERTFR-2026-ALE-017/"
-   ],
-   [
-    "Wiz Research (18 novembre 2026)",
-    "https://www.wiz.io/blog/nginx-http2-rce-vulnerabilities"
-   ]
-  ],
-  "verif": "Alerte CERT-FR et billet Wiz lus, concordants (CVE, versions corrigées, HTTP/2). Public surtout professionnel : pas marquée urgente pour le grand public.",
-  "prevu": "2026-11-28T16:00",
-  "ajoute_le": "2026-11-22"
- },
- {
   "d": "2026-11-16",
   "dl": "16 novembre 2026",
   "sc": "France",
