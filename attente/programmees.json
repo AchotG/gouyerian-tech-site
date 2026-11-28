@@ -1,28 +1,5 @@
 [
  {
-  "d": "2026-11-16",
-  "dl": "16 novembre 2026",
-  "sc": "Monde",
-  "th": "Smartphones",
-  "tag": "iOS 27.3",
-  "t": "iOS 27.3 en bêta 2 : nouvelle app Santé, Safari à onglets verticaux, Siri plus capable",
-  "s": "Apple a publié le 16 novembre la deuxième bêta développeurs d’iOS 27.3, après la première du 3 novembre et la bêta publique du 5. Cette version apporte une app Santé refaite, des onglets verticaux et un mode sombre adaptatif dans Safari, de nouvelles compétences pour Siri et un mode En veille personnalisable sur d’autres iPhone. La version finale est attendue vers le 14 décembre 2026 selon iPhon.fr, qui parle d’une estimation. Une bêta reste réservée aux curieux : bugs et pertes de données sont possibles.",
-  "tip": "Si vous n’êtes pas développeur, attendez la version finale plutôt que d’installer la bêta sur votre iPhone principal. Si vous l’avez déjà installée et que le téléphone rame ou plante, venez nous voir : Gouyerian Tech peut sauvegarder vos données puis revenir à une version stable d’iOS.",
-  "src": [
-   [
-    "9to5Mac (16 novembre 2026)",
-    "https://9to5mac.com/2026/11/16/apple-releases-ios-27-3-beta-2-for-iphone/"
-   ],
-   [
-    "iPhon.fr (20 novembre 2026)",
-    "https://www.iphon.fr/post/ios-27-3-quelles-nouveautes"
-   ]
-  ],
-  "verif": "Deux pages lues, concordantes sur le calendrier des bêtas et les nouveautés. Date de sortie finale : simple estimation d’iPhon.fr.",
-  "prevu": "2026-11-28T08:00",
-  "ajoute_le": "2026-11-22"
- },
- {
   "d": "2026-11-18",
   "dl": "18 novembre 2026",
   "sc": "Monde",
