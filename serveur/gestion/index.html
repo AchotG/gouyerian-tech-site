@@ -149,6 +149,7 @@ a{color:var(--acc)}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--elev)}
 .tabs button{min-height:46px;border:0;border-radius:10px;background:transparent;color:var(--fg);font:600 .98rem system-ui,sans-serif;cursor:pointer}
 .tabs button[aria-pressed="true"]{background:var(--acc);color:var(--on-acc)}
+.tabs .tabl{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:10px;border:1px dashed var(--acc);color:var(--acc);font:600 .98rem system-ui,sans-serif;text-decoration:none}
 .cnt{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-left:4px;border-radius:999px;background:var(--bad);color:#fff;font-size:.78rem}
 .cnt:empty{display:none}
 .tabs button[aria-pressed="true"] .cnt{background:#fff;color:var(--acc)}
@@ -183,7 +184,7 @@ a{color:var(--acc)}
   </form>
 
   <!-- Onglets -->
-  <nav class="tabs" id="tabs" hidden><button type="button" data-t="dem" aria-pressed="true">Demandes <span class="cnt" id="ndem"></span></button><button type="button" data-t="rep" aria-pressed="false">Réparations <span class="cnt" id="nrep"></span></button><button type="button" data-t="msg" aria-pressed="false">💬 Messages <span class="cnt" id="nmsg"></span></button><button type="button" data-t="pay" aria-pressed="false">💳 Paiements</button></nav>
+  <nav class="tabs" id="tabs" hidden><button type="button" data-t="dem" aria-pressed="true">Demandes <span class="cnt" id="ndem"></span></button><button type="button" data-t="rep" aria-pressed="false">Réparations <span class="cnt" id="nrep"></span></button><button type="button" data-t="msg" aria-pressed="false">💬 Messages <span class="cnt" id="nmsg"></span></button><button type="button" data-t="pay" aria-pressed="false">💳 Paiements</button><a class="tabl" href="/gestion/site.html">🌐 Gestion du site</a></nav>
 
   <!-- Demandes à traiter -->
   <section id="vdem" hidden>

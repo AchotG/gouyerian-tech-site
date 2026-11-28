@@ -26,28 +26,10 @@ $action = txt($d['action'] ?? '', 30);
 $COOKIE = 'gtadm';
 $JOURS = 30;
 
-function sessions_table(): void {
-  $pdo = db();
-  $sqlite = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
-  $pdo->exec('CREATE TABLE IF NOT EXISTS gt_sessions (jeton CHAR(64) NOT NULL PRIMARY KEY, expire DATETIME NOT NULL)'
-    . ($sqlite ? '' : ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'));
-}
-
 function set_cookie(string $name, string $val, int $exp): void {
   setcookie($name, $val, [
     'expires' => $exp, 'path' => '/api/', 'secure' => empty(cfg()['dev']), 'httponly' => true, 'samesite' => 'Strict',
   ]);
-}
-
-function connecte(string $cookie): bool {
-  $j = $_COOKIE[$cookie] ?? '';
-  if (!preg_match('/^[a-f0-9]{64}$/', $j)) return false;
-  sessions_table();
-  $pdo = db();
-  $pdo->prepare('DELETE FROM gt_sessions WHERE expire < ?')->execute([now()]);
-  $s = $pdo->prepare('SELECT 1 FROM gt_sessions WHERE jeton = ?');
-  $s->execute([hash('sha256', $j)]);
-  return (bool)$s->fetchColumn();
 }
 
 function fiche(int $id): array {

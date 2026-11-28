@@ -2644,6 +2644,23 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
 <script>
 const $=id=>document.getElementById(id);
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+/* ---------- Contenu modifié depuis la gestion (/gestion/site.html) ----------
+   GT_SITE : contenu intégré à chaque publication ; « gt-site » (stockage du navigateur) : version plus récente relue sur le serveur.
+   Textes : clé = vue | balise | empreinte du texte d’origine ; images : « ill:nom » (illustrations) ou « src:/chemin » (autres images). */
+const GTS=(()=>{let a=window.GT_SITE,b=null;try{b=JSON.parse(localStorage.getItem("gt-site")||"null")}catch(e){}if(!a||typeof a!=="object")a={t:0};return b&&typeof b==="object"&&(+b.t||0)>(+a.t||0)?b:a})();
+const IMO=Object.assign({},GTS.images||{});
+const GT_EDIT=(()=>{try{return new URLSearchParams(location.search).has("gtedit")&&window.parent!==window&&parent.location.pathname.startsWith("/gestion")}catch(e){return false}})();
+const GT_BLOCK="h1,h2,h3,h4,h5,p,li,summary,figcaption,blockquote,td,th,dt,dd,legend,caption,label",GT_INLINE="a,button,.btn,small,.eyebrow,b,strong,span,em";
+const gtH=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
+window.GT_KEY=el=>{const v=el.closest(".view");return (v?v.id:"commun")+"|"+el.tagName.toLowerCase()+"|"+gtH(String(el.textContent).replace(/[\s\u00a0\u202f]+/g," ").trim())};
+/* texte d'un bloc qui contient une icône, un champ ou un lien mis en forme : seuls les mots changent (« clé#t » : morceaux de texte séparés par ␞) */
+window.GT_TN=el=>{const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.nodeValue.trim()&&!n.parentElement.closest("svg,script,style")?1:3}),o=[];let n;while((n=w.nextNode()))o.push(n);return o};
+(()=>{const T=GTS.textes;
+  if(T&&typeof T==="object"&&Object.keys(T).length)document.querySelectorAll(GT_BLOCK+","+GT_INLINE).forEach(el=>{if(!el.isConnected||!el.textContent.trim())return;const k=el.dataset.gto||GT_KEY(el);
+    if(T[k]!=null){el.innerHTML=T[k];el.dataset.gto=k}
+    else if(T[k+"#t"]!=null){const d=document.createElement("textarea");d.innerHTML=T[k+"#t"];const sg=d.value.split("\u241e"),tn=GT_TN(el);if(tn.length===sg.length){tn.forEach((n,i)=>{const m=n.nodeValue.match(/^(\s*)[\s\S]*?(\s*)$/);n.nodeValue=m[1]+sg[i].trim()+m[2]});el.dataset.gto=k}}});
+  document.querySelectorAll("img[src]").forEach(im=>{let p;try{p=new URL(im.getAttribute("src"),location.href).pathname}catch(e){return}const o=IMO["src:"+p];if(o){im.src=o;im.removeAttribute("srcset");im.dataset.gtsrc=p}});
+  if(GT_EDIT){window.GT_START=new WeakMap();document.querySelectorAll("body *").forEach(e=>GT_START.set(e,e.textContent))}})();
 /* Mode : aperçu (adresses en #) ou site en ligne (vraies adresses, page décrite par window.GT_PAGE) */
 /* ---------- Emplacements d'annonces Google AdSense ----------
    Chaque emplacement reste invisible tant que son numéro de bloc (data-ad-slot, créé dans AdSense > Annonces > Par bloc d'annonces)
@@ -2857,6 +2874,11 @@ const ARTS=[
 <h2>5. Un message d’erreur s’affiche ?</h2><p>« Aucun périphérique de démarrage », « Disque introuvable » ou une boucle de réparation automatique évoquent un souci de <b>disque</b> ou de <b>système</b>. Notez le message exact, ou prenez-le en photo.</p>
 <h2>Ce qu’il vaut mieux éviter</h2><ul><li>éteindre et rallumer en boucle un ordinateur qui claque ou rame : cela peut aggraver un disque défaillant ;</li><li>réinstaller Windows « au hasard » : vous risquez de perdre vos fichiers ;</li><li>ouvrir l’appareil sans savoir : les composants sont fragiles.</li></ul>
 <h2>Apportez-le avec ce que vous avez remarqué</h2><p>Le <b>devis est gratuit</b> et nous vous disons honnêtement ce qui est en cause. Si le disque est atteint, nous pouvons tenter de <b>sauvegarder vos données</b> avant toute intervention, selon l’état du support.</p>`}];
+const ILLA={};/* article modifié : autre illustration du site (ill) ou photo envoyée (ph) */
+(()=>{ARTS.forEach(a=>{a._o=a.s});const A=GTS.arts;if(!A||typeof A!=="object")return;const ed=A.edit||{},hd=A.hide||[];
+  for(let i=ARTS.length-1;i>=0;i--){const a=ARTS[i];if(hd.includes(a.s)){ARTS.splice(i,1);continue}if(ed[a.s])Object.assign(a,ed[a.s])}
+  (A.add||[]).map((a,i)=>Object.assign({src:[],svc:["Demander un devis gratuit","services","Ordinateurs"],_a:i},a)).filter(a=>a.s&&!ARTS.some(x=>x.s===a.s)).sort((x,y)=>String(x.date).localeCompare(String(y.date))).forEach(a=>ARTS.unshift(a))})();
+ARTS.forEach(a=>{if(a.ph)IMO["ill:"+a.s]=a.ph;else if(a.ill&&a.ill!==a.s)ILLA[a.s]=a.ill});
 const ART_SLUGS=ARTS.map(a=>a.s);
 /* Actualités : résumés vérifiés à leur source. Date de mise à jour de la page : */
 /* Mise à jour automatique : une tâche programmée ajoute les nouvelles actualités toutes les 5 h (alertes urgentes : vérification toutes les heures).
@@ -2980,10 +3002,15 @@ const isUrg=n=>!!n.urg&&Date.now()-new Date(pubOf(n)).getTime()<3*864e5;
 NEWS.sort((a,b)=>(isUrg(b)-isUrg(a))||pubOf(b).localeCompare(pubOf(a))||b.d.localeCompare(a.d));
 /* Chaque actualité a sa page : #actu-<adresse> dans l’aperçu, /actualites/<adresse>/ sur le site */
 const slugify=t=>{let o="";for(const w of norm(t).split(" ")){if(o&&(o+"-"+w).length>64)break;o+=(o?"-":"")+w}return o};
-NEWS.forEach(n=>{n.id=slugify(n.t)});
+NEWS.forEach(n=>{n.id=slugify(n.t);n._o=n.id});
+(()=>{const N=GTS.news;if(!N||typeof N!=="object")return;const ed=N.edit||{},hd=N.hide||[];
+  for(let i=NEWS.length-1;i>=0;i--){const n=NEWS[i];if(hd.includes(n._o)){NEWS.splice(i,1);continue}if(ed[n._o])Object.assign(n,ed[n._o])}
+  (N.add||[]).forEach((n,i)=>{if(n&&n.t)NEWS.push(Object.assign({src:[],tip:"",_a:i},n))});
+  NEWS.sort((a,b)=>(isUrg(b)-isUrg(a))||pubOf(b).localeCompare(pubOf(a))||b.d.localeCompare(a.d));NEWS.forEach(n=>{n.id=slugify(n.t)})})();
+NEWS.forEach(n=>{if(n.ph)IMO["ill:nph-"+n.id]=n.ph});
 /* IMGV : empreinte de chaque image (ajoutée par build.py), pour que les navigateurs prennent tout de suite une illustration redessinée */
 const imgv=f=>{const v=(window.GT_IMGV||{})[f];return v?"?v="+v:""};
-const picHTML=(n,alt,sizes,eager)=>`<img src="${ASSETS}img/${n}-640.webp${imgv(n+"-640.webp")}" srcset="${ASSETS}img/${n}-640.webp${imgv(n+"-640.webp")} 640w, ${ASSETS}img/${n}-1280.webp${imgv(n+"-1280.webp")} 1280w" sizes="${sizes}" width="1280" height="720" alt="${alt||""}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async">`;
+const picHTML=(n,alt,sizes,eager)=>{n=ILLA[n]||n;const o=IMO["ill:"+n];return o?`<img src="${o}" width="1280" height="720" alt="${alt||""}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async" data-ill="${n}" style="object-fit:cover">`:`<img data-ill="${n}" src="${ASSETS}img/${n}-640.webp${imgv(n+"-640.webp")}" srcset="${ASSETS}img/${n}-640.webp${imgv(n+"-640.webp")} 640w, ${ASSETS}img/${n}-1280.webp${imgv(n+"-1280.webp")} 1280w" sizes="${sizes}" width="1280" height="720" alt="${alt||""}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async">`};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const C={tel:"06 05 79 48 94",telI:"+33605794894",mail:"contact@gouyerian-tech.fr",fsmail:"gouyerian.tech@gmail.com",adr:"1 route de Segonzac, 16130 Saint-Fort-sur-le-Né"};
 const hrefs={tel:"tel:"+C.telI,mail:"mailto:"+C.mail,map:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("Gouyerian Tech, "+C.adr)+"&query_place_id=ChIJY1Q5ZwBhAEgRGG3fYcH4qpk"};
@@ -3167,6 +3194,7 @@ function reqA(label,cls,rep,need){const dev=DEVS[cat]?DEVS[cat].d:"",det=reqDeta
   const h=PG?"/rendez-vous/?"+new URLSearchParams({app:dev,besoin:nd,detail:det}).toString():"#demande";
   return `<a class="${cls}" href="${h}" data-req="1" data-rep="${esc(rep||"")}" data-need="${esc(nd)}">${label}</a>`}
 function updReq(){document.querySelectorAll("#svc [data-req]").forEach(a=>{const dev=DEVS[cat]?DEVS[cat].d:"",det=reqDetail(a.dataset.rep);if(PG)a.href="/rendez-vous/?"+new URLSearchParams({app:dev,besoin:a.dataset.need,detail:det}).toString()})}
+if(Array.isArray(GTS.sv)&&GTS.sv.length)SV.splice(0,SV.length,...GTS.sv.map(x=>Object.assign({},x)));
 function drawSv(){
   if(!$("seg"))return;
   if(cat==="Tous"||!(DEVS[cat]||LISTC.includes(cat)))cat="Téléphones";
@@ -3211,7 +3239,7 @@ function drawShop(){
   if(!$("shop"))return;
   $("bseg").innerHTML=BCATS.map(c=>`<button type="button" data-bc="${c}" aria-pressed="${c===bcat}">${BCATL[c]||c}</button>`).join("");
   drawCfg();
-  $("shop").innerHTML=SHOP.map((it,i)=>[it,i]).filter(([it])=>bcat==="Tout"||it.c===bcat).map(([it,i])=>`<article class="prod">${(a=>a?`<div class="prod-art">${a}</div>`:`<span class="pic">${svg(it.ic)}</span>`)(ART.shop(it.ic,it.n))}<span class="eyebrow">${BCATL[it.c]||it.c}</span><h3>${it.n}</h3><p>${it.d}</p><div class="pfoot"><span class="pp">${it.p||"Prix sur demande"}</span>${it.need?`<a class="btn sm ghost" href="${shopHref(it)}" data-shopneed="${it.need}">Demander une estimation</a>`:`<button type="button" class="btn sm ghost" data-add="${i}">${svg("bag")}Ajouter au panier</button>`}</div></article>`).join("");
+  $("shop").innerHTML=SHOP.map((it,i)=>[it,i]).filter(([it])=>bcat==="Tout"||it.c===bcat).map(([it,i])=>`<article class="prod">${it.ph?`<div class="prod-art"><img src="${it.ph}" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block"></div>`:(a=>a?`<div class="prod-art">${a}</div>`:`<span class="pic">${svg(it.ic)}</span>`)(ART.shop(it.ic,it.n))}<span class="eyebrow">${BCATL[it.c]||it.c}</span><h3>${it.n}</h3><p>${it.d}</p><div class="pfoot"><span class="pp">${it.p||"Prix sur demande"}</span>${it.need?`<a class="btn sm ghost" href="${shopHref(it)}" data-shopneed="${it.need}">Demander une estimation</a>`:`<button type="button" class="btn sm ghost" data-add="${i}">${svg("bag")}Ajouter au panier</button>`}</div></article>`).join("");
 }
 if($("bseg")){{const b=BCATS.find(c=>norm(c)===QP.get("b"));if(b)bcat=b}
 $("bseg").onclick=e=>{const b=e.target.closest("button");if(b){bcat=b.dataset.bc;drawShop()}};}
@@ -3230,6 +3258,8 @@ const PRIX={
   graveur:{usb:25,usbc:30,bluray:80}};
 /* Déplacement et livraison à domicile : gratuits jusqu’à LIV.max km, sur devis au-delà. */
 const LIV={max:40};
+if(Array.isArray(GTS.shop)&&GTS.shop.length)SHOP.splice(0,SHOP.length,...GTS.shop.map(x=>Object.assign({},x)));
+(function gtPrix(t,o){if(!o||typeof o!=="object")return;for(const k in o)if(k in t){if(typeof t[k]==="number"&&typeof o[k]==="number")t[k]=o[k];else if(t[k]&&typeof t[k]==="object")gtPrix(t[k],o[k])}})(PRIX,GTS.prix);
 /* Conditions qui s’appliquent à une distance : frais, seuil de livraison offerte, ou sur devis */
 function livCond(km){return km>LIV.max?{far:true,k:"far"}:{fee:0,k:"free"}}
 const livTxt=()=>`Livraison gratuite jusqu’à ${LIV.max} km autour de Saint-Fort-sur-le-Né, sans minimum d’achat.`;
@@ -4409,7 +4439,7 @@ const NIMG={Sécurité:"pro-virus",Smartphones:"cat-telephones",Ordinateurs:"cat
 const NSVC={Sécurité:["Nettoyage de virus et sécurisation","Ordinateurs"],Smartphones:["Réparation de téléphone","Téléphones"],Ordinateurs:["Réparation et dépannage d’ordinateur","Ordinateurs"],IA:["Assistance et conseil","Assistance"],Internet:["Box, Wi-Fi et assistance à domicile","Assistance"],Jeux:["Box, Wi-Fi et assistance à domicile","Assistance"]};
 const newsCard=n=>`<a class="hub-c" href="${link("#actu-"+n.id)}"><span class="hn-m">${isUrg(n)?'<span class="urg">Alerte</span>':""}<time datetime="${pubOf(n)}">${dlong(pubDay(n))}</time><span class="nw-tag">${THL(n.th)}</span></span><h3>${nb(n.t)}</h3><p>${nb(n.s)}</p><span class="lnk">Lire l’actualité ${svg("arrow")}</span></a>`;
 function renderNews(n){
-  const img=n.tag==="Arnaques"?"arnaques-en-ligne":NIMG[n.th]||"cat-ordinateurs",[sl,sc]=NSVC[n.th]||NSVC.Ordinateurs;
+  const img=n.ph?"nph-"+n.id:n.tag==="Arnaques"?"arnaques-en-ligne":NIMG[n.th]||"cat-ordinateurs",[sl,sc]=NSVC[n.th]||NSVC.Ordinateurs;
   $("nHead").innerHTML=`<div class="ph-top">${backTo("#actus","Actualités")}<span class="crumb"><a href="${link("#home")}">Accueil</a> / <a href="${link("#actus")}">Actualités</a> / ${THL(n.th)}</span></div>${isUrg(n)?'<span class="urg big">Alerte en cours</span>':""}<span class="eyebrow">${n.sc} · ${n.tag}</span><h1>${nb(n.t)}</h1><span class="art-meta">Publié le ${pubLabel(n)} · Résumé rédigé par Gouyerian Tech</span>`;
   $("nBody").innerHTML=`<p class="nw-when">${svg("cal")}<span><b>Date des faits</b>${n.dl}</span></p><p class="lead-p">${nb(n.s)}</p>${n.tip?`<div class="nw-tip big">${svg("check")}<span><b>Le conseil de Gouyerian Tech</b>${n.tip}</span></div>`:""}${adBox("actu")}<figure class="art-fig">${picHTML(img,"","(max-width:900px) 100vw, 760px")}<figcaption>Illustration non contractuelle</figcaption></figure><div class="art-src"><h2>Source${n.src.length>1?"s":""}</h2><ul>${n.src.map(([l,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${l}</a></li>`).join("")}</ul><p class="news-note" style="margin:0">Résumé rédigé par Gouyerian Tech à partir de ${n.src.length>1?"ces articles":"cet article"}, vérifié à la source. Cliquez pour lire l’article d’origine.</p></div>`;
   $("nSide").innerHTML=`<div class="acard art-cta"><span class="eyebrow">Besoin d’aide ?</span><h3>${nb(sl)}</h3><p>Devis gratuit, à l’atelier de Saint-Fort-sur-le-Né ou chez vous.</p><a class="btn" href="${PG?"/services/"+norm(sc)+"/":"#services"}" data-cat="${sc}">Voir le service</a><a class="btn ghost" href="${link("#demande")}">Demander un rappel</a><span class="num">06 05 79 48 94</span></div>`;
@@ -4581,7 +4611,10 @@ const ctitle=p=>"Dépannage informatique à "+p.n+" · Gouyerian Tech";
 function route(){
   let h0,h,anc=null,cp0=null;
   let ap=null,np=null;
-  if(PG){h0=h=PG.view;if(h==="commune")cp0=CPG.find(p=>p.s===PG.slug)||null;if(h==="article")ap=ARTS.find(a=>a.s===PG.slug)||null;if(h==="actu")np=NEWS.find(n=>n.id===PG.slug)||null}
+  if(PG){h0=h=PG.view;if(h==="commune")cp0=CPG.find(p=>p.s===PG.slug)||null;if(h==="article")ap=ARTS.find(a=>a.s===PG.slug)||null;if(h==="actu")np=NEWS.find(n=>n.id===PG.slug)||null;
+    if(h==="404"){const m=location.pathname.match(/^\/infos-pratiques\/([^/]+)\/?$/),m2=location.pathname.match(/^\/actualites\/([^/]+)\/?$/);
+      if(m&&$("v-article"))ap=ARTS.find(a=>a.s===m[1])||null;else if(m2&&$("v-actu"))np=NEWS.find(n=>n.id===m2[1])||null;
+      if(ap||np){h=ap?"article":"actu";const z=$("v-404");if(z)z.hidden=true;document.title=(ap||np).t+" · Gouyerian Tech"}}}
   else{h0=decodeURIComponent(location.hash.slice(1))||"home";h=h0;if(ALIAS[h])[h,anc]=ALIAS[h];
     cp0=CPG.find(p=>p.s===h)||null;ap=cp0?null:ARTS.find(a=>a.s===h)||null;np=h.startsWith("actu-")?NEWS.find(n=>"actu-"+n.id===h)||null:null;
     if(cp0)h="commune";else if(ap)h="article";else if(np)h="actu";else if(!VIEWS.includes(h)||h==="commune"||h==="article"||h==="actu")h=h.startsWith("actu-")?"actus":"home";
@@ -4621,6 +4654,12 @@ document.addEventListener("click",e=>{const a=e.target.closest("[data-back]");if
   addEventListener("scroll",f,{passive:true});document.addEventListener("click",()=>setTimeout(f,0));f();
   b.onclick=()=>{scrollTo({top:0,behavior:RM?"auto":"smooth"});const h=document.querySelector(".view:not([hidden]) h1");if(h){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}}})();
 route();fixLinks();gtAds();
+/* Contenu du site : relu sur le serveur ; s'il a changé depuis cette version, la page se recharge une fois (si le visiteur n'a encore rien fait) */
+window.GT_DATA={SV,SHOP,PRIX,ARTS,NEWS,CATS,BCATS,NTH,DEVS,IC:Object.keys(IC),IMGV:window.GT_IMGV||{},GTS};
+(()=>{if(GT_EDIT||window.GT_PRERENDER||!/^https?:$/.test(location.protocol))return;let act=false;["pointerdown","keydown","scroll"].forEach(e=>addEventListener(e,()=>{act=true},{once:true,passive:true}));
+  fetch("/api/site.php?c=1",{cache:"no-cache"}).then(r=>r.ok&&/json/.test(r.headers.get("content-type")||"")?r.json():null).then(j=>{if(!j||typeof j.t!=="number")return;
+    let ok=false;try{localStorage.setItem("gt-site",JSON.stringify(j));ok=true}catch(e){}
+    if(ok&&j.t!==(+GTS.t||0)&&!act&&performance.now()<5000){try{if(sessionStorage.getItem("gt-site-r")==String(j.t))return;sessionStorage.setItem("gt-site-r",String(j.t))}catch(e){return}location.reload()}}).catch(()=>{})})();
 
 /* Assistant automatique */
 const BOT={

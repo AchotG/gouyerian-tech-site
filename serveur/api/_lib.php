@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 11;
+const SCHEMA_VERSION = 12;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -214,6 +214,8 @@ function schema(PDO $pdo): void {
   ajouter_colonne($pdo, 'gt_reparations', 'travaux', 'TEXT NULL');
   /* v11 : photos de l'état de l'appareil prises au dépôt (JSON, fichiers dans /prive/pj, jamais montrées au client) */
   ajouter_colonne($pdo, 'gt_reparations', 'photos', 'TEXT NULL');
+  /* v12 : contenu du site modifiable depuis la gestion (prix, actualités, articles, textes, photos) */
+  $pdo->exec('CREATE TABLE IF NOT EXISTS gt_site (cle VARCHAR(40) NOT NULL PRIMARY KEY, valeur MEDIUMTEXT NOT NULL, maj_le DATETIME NOT NULL)' . $opt);
   /* v7 : les conversations des demandes devenues réparations rejoignent la conversation de la réparation */
   foreach ($pdo->query('SELECT id, reparation_id FROM gt_demandes WHERE reparation_id IS NOT NULL AND reparation_id > 0')->fetchAll() as $x) {
     $pdo->prepare('UPDATE gt_messages SET reparation_id = ?, demande_id = 0 WHERE reparation_id = 0 AND demande_id = ?')->execute([(int)$x['reparation_id'], (int)$x['id']]);
@@ -952,4 +954,23 @@ function historique(int $id): array {
   $s = db()->prepare('SELECT etape, note, le, mail FROM gt_historique WHERE reparation_id = ? ORDER BY le, id');
   $s->execute([$id]);
   return $s->fetchAll();
+}
+
+/* Session de l'atelier (page de gestion) : partagée par gestion.php et site.php */
+function sessions_table(): void {
+  $pdo = db();
+  $sqlite = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
+  $pdo->exec('CREATE TABLE IF NOT EXISTS gt_sessions (jeton CHAR(64) NOT NULL PRIMARY KEY, expire DATETIME NOT NULL)'
+    . ($sqlite ? '' : ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'));
+}
+
+function connecte(string $cookie): bool {
+  $j = $_COOKIE[$cookie] ?? '';
+  if (!preg_match('/^[a-f0-9]{64}$/', $j)) return false;
+  sessions_table();
+  $pdo = db();
+  $pdo->prepare('DELETE FROM gt_sessions WHERE expire < ?')->execute([now()]);
+  $s = $pdo->prepare('SELECT 1 FROM gt_sessions WHERE jeton = ?');
+  $s->execute([hash('sha256', $j)]);
+  return (bool)$s->fetchColumn();
 }

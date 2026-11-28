@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b1530">
+<title>Gestion du site · Gouyerian Tech</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{--bg:#f4f7fc;--surface:#fff;--sunk:#e9eff8;--fg:#0b1426;--muted:#4f5b6e;--line:#d9e1ec;--acc:#2563eb;--acc-h:#1d4ed8;--on-acc:#fff;
+  --ok:#17734a;--ok-bg:#e1f1e8;--warn:#8f5c0d;--warn-bg:#f5ead4;--bad:#b42318;--bad-bg:#fde8e7;--elev:0 1px 2px rgba(17,38,84,.05),0 8px 22px -14px rgba(17,38,84,.22);color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0c0e;--surface:#131518;--sunk:#1b1e22;--fg:#eff1f3;--muted:#9aa1a9;--line:#2a2e34;--acc:#60a5fa;--acc-h:#93c5fd;--on-acc:#06101f;
+  --ok:#5bd08f;--ok-bg:#11281b;--warn:#e3ae58;--warn-bg:#2a2112;--bad:#f97066;--bad-bg:#2b1211;--elev:none;color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,#0a1530,#11306b 58%,#0b5068);color:#f4f7ff;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.top-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.top b{font-size:1.02rem;letter-spacing:.02em}.top small{display:block;opacity:.75;font-size:.78rem}.top .sp{flex:1}
+.wrap{max-width:1100px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 60px max(16px,env(safe-area-inset-left,0px));display:grid;gap:14px}
+h1{font-size:1.3rem;margin:0}h2{font-size:1.08rem;margin:0}h3{font-size:1rem;margin:0}p{margin:0}
+.muted{color:var(--muted)}
+.wrap>*,.view>*,.edbar>*{min-width:0}#lpage{min-width:0;max-width:100%}#app{display:grid;gap:14px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--elev);display:grid;gap:12px;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--acc);background:var(--acc);color:var(--on-acc);font:600 .95rem system-ui,sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--acc-h);border-color:var(--acc-h)}
+.btn.g{background:var(--surface);color:var(--fg);border-color:var(--line)}.btn.g:hover{border-color:var(--acc);color:var(--acc)}
+.btn.w{background:transparent;color:#f4f7ff;border-color:rgba(244,247,255,.35);min-height:38px;padding:0 12px;font-size:.86rem}
+.btn.bad{background:var(--bad-bg);color:var(--bad);border-color:transparent}
+.btn.sm{min-height:36px;padding:0 12px;font-size:.84rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}}
+label{display:grid;gap:6px;font-weight:600;font-size:.9rem;min-width:0}
+label small{font-weight:400;color:var(--muted)}
+input,textarea,select{width:100%;min-height:44px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit}
+textarea{min-height:80px;resize:vertical}
+input:focus,textarea:focus,select:focus,.rich:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
+.chk{display:flex;gap:10px;align-items:center;font-weight:500}.chk input{width:22px;height:22px;min-height:0;margin:0;flex:none;accent-color:var(--acc)}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--elev)}
+.tabs button{flex:none;min-height:44px;padding:0 14px;border:0;border-radius:10px;background:transparent;color:var(--fg);font:600 .93rem system-ui,sans-serif;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--acc);color:var(--on-acc)}
+.msg{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:12px 14px;border-radius:12px;font-weight:600}
+.msg.ok{background:var(--ok-bg);color:var(--ok)}.msg.err{background:var(--bad-bg);color:var(--bad)}
+.msg .fx{border:0;background:none;color:inherit;font-size:1.3rem;line-height:1;cursor:pointer}
+.list{display:grid;gap:8px}
+.it{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;text-align:left;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);font:inherit;cursor:pointer}
+.it:hover{border-color:var(--acc)}.it b{overflow-wrap:anywhere}.it small{color:var(--muted);grid-column:1/-1;overflow-wrap:anywhere}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.74rem;font-weight:700;background:var(--sunk);color:var(--muted)}
+.tag.a{background:var(--ok-bg);color:var(--ok)}.tag.m{background:var(--warn-bg);color:var(--warn)}
+.sv{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.sv .bar{display:flex;gap:6px;justify-content:flex-end}
+.ib{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:1rem;cursor:pointer}
+.ib:hover{border-color:var(--acc)}
+.rich{min-height:260px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow-wrap:anywhere}
+.rich h2{font-size:1.15rem;margin:14px 0 6px}.rich h3{font-size:1rem;margin:12px 0 6px}.rich p{margin:0 0 10px}.rich ul,.rich ol{margin:0 0 10px;padding-left:22px}
+.tb{display:flex;gap:6px;flex-wrap:wrap}
+.tb button{min-height:36px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:600 .85rem system-ui,sans-serif;cursor:pointer}
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.pic{display:grid;gap:6px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.pic img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:var(--sunk)}
+.pic small{color:var(--muted);overflow-wrap:anywhere}
+.edbar{display:grid;gap:8px;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--elev)}
+.edframe{width:100%;height:calc(100dvh - 150px);min-height:460px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{min-height:38px;padding:0 14px;border:0;background:var(--surface);color:var(--fg);font:600 .86rem system-ui,sans-serif;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--acc);color:var(--on-acc)}
+.hint{padding:10px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-weight:600}
+.prix{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.prix label{grid-template-columns:minmax(0,1fr) 96px;align-items:center;font-weight:500}
+.prix input{text-align:right}
+details.grp{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}details.grp>summary{cursor:pointer;font-weight:700}details.grp[open]>summary{margin-bottom:10px}
+.thumb{width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--sunk)}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in"><div><b>Gouyerian Tech</b><small>Gestion du site</small></div><span class="sp"></span>
+  <a class="btn w" href="/" target="_blank" rel="noopener">Voir le site</a><a class="btn w" href="/gestion/">← Réparations</a></div></header>
+
+<main class="wrap">
+  <div id="flash" role="status" aria-live="polite"></div>
+  <div class="card" id="vlogin" hidden><h1>Connexion nécessaire</h1><p class="muted">Connectez-vous d’abord sur la page de gestion des réparations, puis revenez ici.</p><a class="btn" href="/gestion/">Se connecter</a></div>
+  <div id="vload" class="card"><p class="muted">Chargement du contenu du site…</p></div>
+
+  <div id="app" hidden>
+    <nav class="tabs" id="tabs">
+      <button type="button" data-v="live" aria-pressed="true">✏️ Modifier en direct</button>
+      <button type="button" data-v="sv" aria-pressed="false">💶 Prix et services</button>
+      <button type="button" data-v="shop" aria-pressed="false">🛒 Boutique</button>
+      <button type="button" data-v="news" aria-pressed="false">📰 Actualités</button>
+      <button type="button" data-v="arts" aria-pressed="false">📝 Articles</button>
+      <button type="button" data-v="pics" aria-pressed="false">🖼️ Photos</button>
+      <button type="button" data-v="hist" aria-pressed="false">↩️ Modifications</button>
+    </nav>
+
+    <!-- Modifier en direct -->
+    <section id="v-live" class="view" style="display:grid;gap:10px">
+      <div class="edbar">
+        <div class="row">
+          <select id="lpage" style="width:auto;flex:1 1 200px"></select>
+          <span class="seg" role="group" aria-label="Mode"><button type="button" id="mEdit" aria-pressed="true">✏️ Modifier</button><button type="button" id="mNav" aria-pressed="false">🔗 Naviguer</button></span>
+          <button class="btn" id="lsave" type="button" disabled>Enregistrer</button><button class="btn g" id="lcancel" type="button" hidden>Annuler</button>
+        </div>
+        <div class="row" id="lsel" hidden>
+          <span class="muted" id="lseln"></span><span class="sp" style="flex:1"></span>
+          <div class="tb"><button type="button" data-x="bold"><b>G</b> Gras</button><button type="button" data-x="italic"><i>I</i> Italique</button><button type="button" data-x="link">🔗 Lien</button><button type="button" data-x="clear">Sans mise en forme</button><button type="button" data-x="orig" id="lorig">↩️ Texte d’origine</button></div>
+        </div>
+        <p class="muted" id="lhelp" style="font-size:.88rem">Touchez un texte pour le modifier, ou une image pour la remplacer. Puis « Enregistrer » : c’est en ligne tout de suite.</p>
+        <div class="hint" id="lhint" hidden></div>
+      </div>
+      <iframe id="fed" class="edframe" title="Le site en mode modification"></iframe>
+      <input type="file" id="limg" accept="image/*" hidden>
+    </section>
+
+    <!-- Prix et services -->
+    <section id="v-sv" class="view" hidden>
+      <div class="card"><div class="row"><h1 style="flex:1">Prix et services</h1><button class="btn" id="svsave" type="button">Enregistrer</button></div>
+        <p class="muted">Les prestations de la page « Services et tarifs ». Le prix peut être un montant (« 49 € », « À partir de 79 € ») ou « Sur devis ».</p>
+        <div id="svlist" style="display:grid;gap:14px"></div>
+        <div class="row"><button class="btn g sm" id="svreset" type="button">Revenir aux prestations d’origine</button></div></div>
+    </section>
+
+    <!-- Boutique -->
+    <section id="v-shop" class="view" hidden>
+      <div class="card"><div class="row"><h1 style="flex:1">Boutique</h1><button class="btn" id="shsave" type="button">Enregistrer</button></div>
+        <p class="muted">Les articles de la page « Boutique » (photo facultative), puis les prix des accessoires à composer.</p>
+        <div id="shlist" style="display:grid;gap:10px"></div>
+        <div class="row"><button class="btn g sm" id="shadd" type="button">+ Ajouter un article</button><button class="btn g sm" id="shreset" type="button">Revenir à la boutique d’origine</button></div></div>
+      <div class="card"><div class="row"><h2 style="flex:1">Prix des accessoires à composer (€)</h2><button class="btn" id="pxsave" type="button">Enregistrer les prix</button></div>
+        <div id="pxlist" style="display:grid;gap:10px"></div>
+        <div class="row"><button class="btn g sm" id="pxreset" type="button">Revenir aux prix d’origine</button></div></div>
+    </section>
+
+    <!-- Actualités -->
+    <section id="v-news" class="view" hidden>
+      <div class="card" id="nlistc"><div class="row"><h1 style="flex:1">Actualités</h1><button class="btn" id="nnew" type="button">+ Nouvelle actualité</button></div>
+        <input id="nq" type="search" placeholder="Rechercher une actualité…">
+        <div class="list" id="nlist"></div></div>
+      <div class="card" id="nform" hidden>
+        <div class="row"><button class="btn g sm" id="nback" type="button">← Liste</button><h2 id="ntitle" style="flex:1"></h2></div>
+        <label>Titre<input id="n-t" maxlength="220"></label>
+        <label>Résumé<textarea id="n-s" maxlength="1500" style="min-height:120px"></textarea></label>
+        <label>Le conseil de Gouyerian Tech <small>(facultatif)</small><textarea id="n-tip" maxlength="600"></textarea></label>
+        <div class="grid3"><label>Date des faits<input id="n-d" type="date"></label>
+          <label>France ou Monde<select id="n-sc"><option>France</option><option>Monde</option></select></label>
+          <label>Thème<select id="n-th"><option>Sécurité</option><option>Smartphones</option><option>Ordinateurs</option><option value="IA">Intelligence artificielle</option><option value="Internet">Internet et télécoms</option><option value="Jeux">Jeux vidéo</option></select></label></div>
+        <div class="grid2"><label>Étiquette <small>(1 à 3 mots)</small><input id="n-tag" maxlength="40" placeholder="Ex. : Fuite de données"></label>
+          <label class="chk" style="align-self:end"><input type="checkbox" id="n-urg"><span>Alerte urgente (en tête pendant 3 jours)</span></label></div>
+        <label>Sources <small>(une par ligne : nom de la source | adresse https://…)</small><textarea id="n-src" placeholder="Le Monde (28 novembre 2026) | https://www.lemonde.fr/…"></textarea></label>
+        <div><b style="font-size:.9rem">Photo <small class="muted">(facultative, sinon l’illustration du thème)</small></b>
+          <div class="row" style="margin-top:6px"><img id="n-phi" class="thumb" alt="" hidden><label class="btn g sm" style="display:inline-flex;cursor:pointer">Choisir une photo<input type="file" id="n-ph" accept="image/*" hidden></label><button class="btn g sm" id="n-phx" type="button" hidden>Retirer la photo</button></div></div>
+        <div class="row"><button class="btn" id="nsave" type="button">Enregistrer</button><a class="btn g" id="nview" target="_blank" rel="noopener" hidden>Voir sur le site</a><span style="flex:1"></span><button class="btn g sm" id="nreset" type="button" hidden>Rétablir l’original</button><button class="btn bad sm" id="ndel" type="button"></button></div>
+      </div>
+    </section>
+
+    <!-- Articles -->
+    <section id="v-arts" class="view" hidden>
+      <div class="card" id="alistc"><div class="row"><h1 style="flex:1">Articles (infos pratiques)</h1><button class="btn" id="anew" type="button">+ Nouvel article</button></div>
+        <div class="list" id="alist"></div></div>
+      <div class="card" id="aform" hidden>
+        <div class="row"><button class="btn g sm" id="aback" type="button">← Liste</button><h2 id="atitle" style="flex:1"></h2></div>
+        <label>Titre<input id="a-t" maxlength="160"></label>
+        <label>Résumé <small>(affiché sous le titre et sur Google, 160 caractères conseillés)</small><textarea id="a-d" maxlength="300"></textarea></label>
+        <div class="grid2"><label>Catégorie<input id="a-cat" list="a-cats" maxlength="40"></label><datalist id="a-cats"></datalist>
+          <label>Bouton « Besoin d’aide ? »<select id="a-svc"></select></label></div>
+        <div style="display:grid;gap:6px"><b style="font-size:.9rem">Texte de l’article</b>
+          <div class="tb" id="atb"><button type="button" data-c="h2">Intertitre</button><button type="button" data-c="p">Paragraphe</button><button type="button" data-c="bold"><b>G</b></button><button type="button" data-c="italic"><i>I</i></button><button type="button" data-c="ul">• Liste</button><button type="button" data-c="ol">1. Liste</button><button type="button" data-c="link">🔗 Lien</button><button type="button" data-c="clear">Sans mise en forme</button></div>
+          <div id="a-b" class="rich" contenteditable="true"></div></div>
+        <label>Sources <small>(facultatif, une par ligne : nom | https://…)</small><textarea id="a-src"></textarea></label>
+        <div style="display:grid;gap:6px"><b style="font-size:.9rem">Image</b>
+          <div class="row"><img id="a-phi" class="thumb" alt=""><div style="display:grid;gap:8px;flex:1 1 220px"><label>Illustration du site<select id="a-ill"></select></label>
+            <div class="row"><label class="btn g sm" style="display:inline-flex;cursor:pointer">Ou une photo à vous<input type="file" id="a-ph" accept="image/*" hidden></label><button class="btn g sm" id="a-phx" type="button" hidden>Retirer la photo</button></div></div></div></div>
+        <div class="row"><button class="btn" id="asave" type="button">Enregistrer</button><a class="btn g" id="aview" target="_blank" rel="noopener" hidden>Voir sur le site</a><span style="flex:1"></span><button class="btn g sm" id="areset" type="button" hidden>Rétablir l’original</button><button class="btn bad sm" id="adel" type="button"></button></div>
+      </div>
+    </section>
+
+    <!-- Photos -->
+    <section id="v-pics" class="view" hidden>
+      <div class="card"><h1>Photos et illustrations</h1><p class="muted">Remplacez une illustration du site par votre photo (elle change partout où elle apparaît). Pour une image précise d’une page, utilisez aussi « Modifier en direct ».</p>
+        <div class="pics" id="plist"></div></div>
+      <input type="file" id="pfile" accept="image/*" hidden>
+    </section>
+
+    <!-- Modifications -->
+    <section id="v-hist" class="view" hidden>
+      <div class="card"><h1>Modifications en ligne</h1><p class="muted">Tout ce qui a été changé depuis cette page. « Rétablir » remet la version d’origine du site.</p>
+        <div class="list" id="hlist"></div>
+        <div class="row"><button class="btn bad sm" id="hall" type="button">Tout rétablir (textes et photos)</button></div></div>
+    </section>
+  </div>
+  <iframe id="fdata" title="Données du site" hidden></iframe>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+const norm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+const slugify=t=>{let o="";for(const w of norm(t).split(" ")){if(!w)continue;if(o&&(o+"-"+w).length>64)break;o+=(o?"-":"")+w}return o};
+const MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const dlong=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d||"");return m?(+m[3])+" "+MOIS[+m[2]-1]+" "+m[1]:""};
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const nowLocal=()=>{const d=new Date();return today()+"T"+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+
+let CONT={t:0},D=null,VUE="live";
+
+function flash(t,ok=true){$("flash").innerHTML=t?`<div class="msg ${ok?"ok":"err"}" role="${ok?"status":"alert"}"><span>${ok?"✓":"⚠️"} ${esc(t)}</span><button type="button" class="fx" aria-label="Fermer">×</button></div>`:"";if(t&&ok)setTimeout(()=>{if($("flash").textContent.includes(t))flash("")},6000)}
+$("flash").addEventListener("click",e=>{if(e.target.closest(".fx"))flash("")});
+
+async function api(action,data={}){
+  let r,j;
+  try{r=await fetch("/api/site.php",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","X-GT":"1"},body:JSON.stringify({action,...data})})}
+  catch(e){throw new Error("Pas de connexion à Internet.")}
+  try{j=await r.json()}catch(e){throw new Error("Le serveur ne répond pas correctement (erreur "+r.status+").")}
+  if(r.status===401){$("vlogin").hidden=false;$("app").hidden=true;$("vload").hidden=true;throw new Error(j.erreur||"Connexion nécessaire.")}
+  if(!j.ok)throw new Error(j.erreur||"Erreur.");
+  return j;
+}
+async function reduire(file){
+  try{if(!/^image\/(jpeg|png|webp)$/.test(file.type))return file;
+    const bm=await createImageBitmap(file),k=Math.min(1,1920/Math.max(bm.width,bm.height));
+    if(k===1&&file.size<700000){bm.close&&bm.close();return file}
+    const c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext("2d").drawImage(bm,0,0,c.width,c.height);bm.close&&bm.close();
+    const b=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));return b&&b.size<file.size?new File([b],"photo.jpg",{type:"image/jpeg"}):file}catch(e){return file}}
+async function envoyerPhoto(file){
+  const y=await reduire(file),fd=new FormData();fd.append("data",JSON.stringify({action:"media"}));fd.append("f",y,y.name||"photo.jpg");
+  let r,j;try{r=await fetch("/api/site.php",{method:"POST",credentials:"same-origin",headers:{"X-GT":"1"},body:fd})}catch(e){throw new Error("Pas de connexion à Internet.")}
+  try{j=await r.json()}catch(e){throw new Error("Envoi de la photo impossible (erreur "+r.status+").")}
+  if(!j.ok)throw new Error(j.erreur||"Envoi de la photo impossible.");return j.url}
+
+/* Le contenu enregistré est gardé dans le navigateur : le site (et l'aperçu ci-dessous) l'affichent tout de suite */
+function garder(){try{localStorage.setItem("gt-site",JSON.stringify(CONT))}catch(e){}}
+function donnees(){return new Promise((res,rej)=>{const f=$("fdata");let n=0;
+  f.onload=()=>{const t=setInterval(()=>{n++;let w=null;try{w=f.contentWindow.GT_DATA}catch(e){}if(w){clearInterval(t);D=clone(w);res()}else if(n>60){clearInterval(t);rej(new Error("Le site ne s’est pas chargé."))}},100)};
+  f.src="/?gtedit=1&_="+Date.now()})}
+async function poser(cle,valeur,msg){const j=await api("poser",{cle,valeur});CONT=j.contenu;garder();await donnees();flash(msg||"Enregistré : c’est en ligne.");return j}
+
+/* ---------- Onglets ---------- */
+function vue(v){VUE=v;document.querySelectorAll(".view").forEach(s=>s.hidden=s.id!=="v-"+v);$("tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===v)));
+  ({sv:drawSv,shop:drawShop,news:drawNewsList,arts:drawArtList,pics:drawPics,hist:drawHist})[v]?.()}
+$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(VUE==="live"&&Object.keys(LCH).length&&!confirm("Des modifications ne sont pas enregistrées. Les abandonner ?"))return;if(VUE==="live"&&b.dataset.v!=="live")lReset();vue(b.dataset.v)};
+addEventListener("beforeunload",e=>{if(Object.keys(LCH).length){e.preventDefault();e.returnValue=""}});
+
+/* ================= Modifier en direct ================= */
+const PAGES=[["/","Accueil"],["/services/","Services et tarifs"],["/boutique/","Boutique"],["/professionnels/","Professionnels"],["/rendez-vous/","Rendez-vous"],["/infos-pratiques/","Infos pratiques"],["/actualites/","Actualités"],["/faq/","Questions fréquentes"],["/contact/","Contact et atelier"],["/zone-intervention/","Zone d’intervention"],["/communes/","Communes"],["/a-propos/","À propos"],["/cgv/","Conditions générales de vente"],["/mentions-legales/","Mentions légales"]];
+let LCH={},LMODE="edit",LCUR=null,LPATH="/";
+const ZONES=[["#svc,#seg,#ball","Prix et services","sv"],["#shop,#bseg,#cfg,#cfgw,.cfg","Boutique","shop"],["#news,#nseg,#hnl,#nt,#nHead,#nBody,#nSide,#nMore,#hubMini,#consNews","Actualités","news"],["#arts,#homeArts,#aHead,#aBody,#aSide,#aMore","Articles","arts"]];
+function lPages(){$("lpage").innerHTML=PAGES.map(([p,l])=>`<option value="${p}">${l}</option>`).join("")+(D?D.ARTS.map(a=>`<option value="/infos-pratiques/${a.s}/">Article · ${esc(a.t)}</option>`).join(""):"")+`<option value="">Autre page (adresse)…</option>`}
+function lLoad(path){LPATH=path;lReset();$("fed").src=path+(path.includes("?")?"&":"?")+"gtedit=1"}
+function lReset(){LCH={};LCUR=null;$("lsel").hidden=true;$("lhint").hidden=true;lCount()}
+function lCount(){const n=Object.keys(LCH).length;$("lsave").disabled=!n;$("lsave").textContent=n?`Enregistrer (${n})`:"Enregistrer";$("lcancel").hidden=!n}
+$("lpage").onchange=()=>{let p=$("lpage").value;if(!p){p=prompt("Adresse de la page (ex. : /communes/cognac/) :","/")||"";try{p=new URL(p,location.origin).pathname}catch(e){p=""}}if(p){if(Object.keys(LCH).length&&!confirm("Des modifications ne sont pas enregistrées. Les abandonner ?"))return;lLoad(p)}};
+$("mEdit").onclick=()=>{LMODE="edit";$("mEdit").setAttribute("aria-pressed","true");$("mNav").setAttribute("aria-pressed","false");$("lhelp").textContent="Touchez un texte pour le modifier, ou une image pour la remplacer. Puis « Enregistrer » : c’est en ligne tout de suite."};
+$("mNav").onclick=()=>{LMODE="nav";$("mNav").setAttribute("aria-pressed","true");$("mEdit").setAttribute("aria-pressed","false");if(LCUR)LCUR.blur();$("lhelp").textContent="Mode navigation : les liens et boutons fonctionnent. Repassez en « Modifier » pour changer un texte."};
+$("lcancel").onclick=()=>lLoad(LPATH);
+function lHint(t,btn){const h=$("lhint");if(!t){h.hidden=true;return}h.hidden=false;h.innerHTML=esc(t)+(btn?` <button class="btn sm" type="button" id="lgo">${esc(btn[0])}</button>`:"");if(btn)$("lgo").onclick=btn[1]}
+
+$("fed").addEventListener("load",()=>{
+  const w=$("fed").contentWindow;let doc;try{doc=w.document}catch(e){return}
+  try{const p=w.location.pathname;LPATH=p;const o=[...$("lpage").options].find(x=>x.value===p);$("lpage").value=o?p:""}catch(e){}
+  const st=doc.createElement("style");
+  st.textContent=`.gted-h{outline:2px dashed #2563eb!important;outline-offset:2px;cursor:text}img.gted-h{cursor:copy}[data-gted]{outline:2px solid #f59e0b!important;outline-offset:2px;background:rgba(245,158,11,.10)!important}
+  .gted-done{outline:2px solid #16a34a!important;outline-offset:2px}#cookie,.gt-ad,.bot,#bot,#botb,.chatb,#insth{display:none!important}`;
+  doc.head.appendChild(st);
+  const pick=t=>{if(!t||!t.closest)return null;const im=t.closest("img");if(im)return im;return t.closest(w.GT_BLOCK||"h1,h2,h3,h4,h5,p,li,summary,figcaption,blockquote,td,th,dt,dd,legend,caption,label")||t.closest("a,button,.btn,small,.eyebrow,b,strong,span,em")};
+  let hov=null;
+  doc.addEventListener("mouseover",e=>{if(LMODE!=="edit")return;const el=pick(e.target);if(hov&&hov!==el)hov.classList.remove("gted-h");hov=el;if(el&&!el.dataset.gted)el.classList.add("gted-h")},true);
+  doc.addEventListener("click",e=>{
+    const a=e.target.closest&&e.target.closest("a[href]");
+    if(LMODE==="nav"){if(a){const u=new URL(a.getAttribute("href"),w.location.href);if(u.origin===location.origin&&!u.pathname.startsWith("/api/")&&!u.pathname.startsWith("/gestion")&&a.target!=="_blank"){e.preventDefault();lLoad(u.pathname+u.search.replace(/[?&]gtedit=1/,""))}}return}
+    if(LCUR&&LCUR.contains(e.target)){if(a)e.preventDefault();return}
+    e.preventDefault();e.stopPropagation();
+    const el=pick(e.target);if(!el)return;
+    if(el.tagName==="IMG"){lImage(el,w);return}
+    lText(el,w,doc)},true);
+  doc.addEventListener("submit",e=>{e.preventDefault();e.stopPropagation()},true);
+  doc.addEventListener("keydown",e=>{if(!LCUR)return;if(e.key==="Escape"){LCUR.blur()}if(e.key==="Enter"&&!e.shiftKey&&!/^(LI|P|BLOCKQUOTE|DD|TD)$/.test(LCUR.tagName)){e.preventDefault();LCUR.blur()}},true);
+  doc.addEventListener("paste",e=>{if(!LCUR)return;e.preventDefault();const t=(e.clipboardData||w.clipboardData).getData("text/plain");doc.execCommand("insertText",false,t)},true);
+});
+function zoneDe(el){for(const [sel,l,v] of ZONES)if(el.closest(sel))return [l,v];return null}
+const SIMPLE=new Set(["B","STRONG","I","EM","U","A","BR","SMALL","SPAN","SUP","SUB","MARK"]);
+/* bloc « simple » (texte, gras, liens sans mise en forme) : modifié en entier ; sinon seulement ses mots (icônes, champs et styles gardés) */
+const estSimple=el=>[...el.querySelectorAll("*")].every(x=>SIMPLE.has(x.tagName)&&[...x.attributes].every(a=>x.tagName==="A"&&/^(href|target|rel)$/.test(a.name)));
+const squelette=el=>[...el.querySelectorAll("*")].map(x=>x.tagName).join(",");
+function lText(el,w,doc){
+  const stat=w.GT_START&&w.GT_START.has(el)&&w.GT_START.get(el)===el.textContent;
+  if(!el.dataset.gtk&&!stat){const z=zoneDe(el);
+    if(z){const art=LPATH.match(/^\/infos-pratiques\/([^/]+)\/$/);lHint(`Ce texte vient de l’onglet « ${z[0]} » : modifiez-le là-bas.`,[`Ouvrir « ${z[0]} »`,()=>{vue(z[1]);if(z[1]==="arts"&&art)ouvrirArt(art[1])}])}
+    else lHint("Ce texte est calculé automatiquement par le site (horaires du jour, distances, compteurs…) : il ne se modifie pas ici. Demandez à Claude s’il faut le changer.");
+    return}
+  lHint("");
+  if(LCUR&&LCUR!==el)LCUR.blur();
+  if(!el.dataset.gtk)el.dataset.gtk=el.dataset.gto||w.GT_KEY(el);
+  if(!el.dataset.gt0){el.dataset.gt0=el.innerHTML;el.dataset.gtm=estSimple(el)?"h":"t";el.dataset.gts=squelette(el);el.dataset.gtn=w.GT_TN(el).length}
+  el.classList.remove("gted-h");el.dataset.gted="1";el.contentEditable="true";LCUR=el;el.focus();
+  $("lsel").hidden=false;$("lseln").textContent="Texte sélectionné ("+({h1:"titre",h2:"titre",h3:"sous-titre",p:"paragraphe",li:"ligne de liste",a:"lien ou bouton",button:"bouton"}[el.tagName.toLowerCase()]||el.tagName.toLowerCase())+")";
+  $("lorig").hidden=!el.dataset.gto&&!(el.dataset.gtk in (CONT.textes||{}))&&!((el.dataset.gtk+"#t") in (CONT.textes||{}));
+  document.querySelectorAll('#lsel [data-x]:not([data-x="orig"])').forEach(b=>b.hidden=el.dataset.gtm==="t");
+  if(el.dataset.gtm==="t")lHint("Ce texte contient une icône ou une mise en forme : modifiez seulement les mots, sans effacer l’icône.");
+  el.onblur=()=>{el.contentEditable="false";delete el.dataset.gted;if(LCUR===el)LCUR=null;
+    if(el.innerHTML===el.dataset.gt0){lCount();return}
+    if(el.dataset.gtm==="h"){LCH["t:"+el.dataset.gtk]=el.innerHTML;delete LCH["t:"+el.dataset.gtk+"#t"]}
+    else{const tn=w.GT_TN(el);if(squelette(el)!==el.dataset.gts||tn.length!==+el.dataset.gtn){el.innerHTML=el.dataset.gt0;lHint("Modification annulée : gardez l’icône et la mise en forme, changez seulement les mots (sans vider complètement une partie).");lCount();return}
+      LCH["t:"+el.dataset.gtk+"#t"]=tn.map(n=>n.nodeValue).join("\u241e");delete LCH["t:"+el.dataset.gtk]}
+    el.classList.add("gted-done");lCount()};
+}
+async function lImage(im,w){
+  const key=im.dataset.ill?"ill:"+im.dataset.ill:"src:"+(im.dataset.gtsrc||new URL(im.getAttribute("src"),w.location.href).pathname);
+  if(/^src:\/api\/site\.php/.test(key)){lHint("Cette photo a été ajoutée depuis la gestion : changez-la dans l’onglet qui l’a ajoutée (Articles, Actualités ou Boutique).");return}
+  lHint("");const f=$("limg");f.value="";
+  f.onchange=async()=>{const file=f.files[0];if(!file)return;try{flash("Envoi de la photo…");const url=await envoyerPhoto(file);im.removeAttribute("srcset");im.src=url;im.style.objectFit="cover";im.classList.add("gted-done");LCH["i:"+key]=url;lCount();flash("Photo prête : pensez à « Enregistrer ».")}catch(err){flash(err.message,false)}};
+  f.click()}
+document.querySelector("#lsel .tb").onclick=e=>{const b=e.target.closest("button");if(!b||!LCUR)return;const doc=$("fed").contentWindow.document,x=b.dataset.x;
+  if(x==="orig"){const k=LCUR.dataset.gtk,el=LCUR;el.innerHTML=el.dataset.gt0;el.blur();LCH["t:"+k]="";LCH["t:"+k+"#t"]="";el.classList.add("gted-done");lCount();flash("Le texte d’origine reviendra après « Enregistrer ».");return}
+  LCUR.focus();
+  if(x==="bold"||x==="italic")doc.execCommand(x);
+  else if(x==="clear")doc.execCommand("removeFormat");
+  else if(x==="link"){const u=prompt("Adresse du lien (https://…, /contact/ ou tel:…) :","https://");if(u)doc.execCommand("createLink",false,u.trim())}};
+document.querySelector("#lsel .tb").addEventListener("mousedown",e=>e.preventDefault());
+$("lsave").onclick=async()=>{if(LCUR)LCUR.blur();const tx={},im={};for(const [k,v] of Object.entries(LCH)){if(k.startsWith("t:"))tx[k.slice(2)]=v;else im[k.slice(2)]=v}
+  const b=$("lsave");b.disabled=true;
+  try{let j;if(Object.keys(tx).length)j=await api("textes",{changes:tx});if(Object.keys(im).length)j=await api("images",{changes:im});CONT=j.contenu;garder();LCH={};flash("Enregistré : c’est en ligne.");lLoad(LPATH);donnees().catch(()=>{})}
+  catch(err){flash(err.message,false);b.disabled=false}};
+
+/* ================= Prix et services ================= */
+let SVE=[];
+function drawSv(){SVE=clone(D.SV);svDraw()}
+function svDraw(){const cats=[...new Set(SVE.map(s=>s.c))];
+  $("svlist").innerHTML=cats.map(c=>`<details class="grp" open><summary>${esc(c)} <span class="tag">${SVE.filter(s=>s.c===c).length}</span></summary><div style="display:grid;gap:10px">${SVE.map((s,i)=>[s,i]).filter(([s])=>s.c===c).map(([s,i])=>`<div class="sv" data-i="${i}">
+    <div class="grid2"><label>Prestation<input data-f="n" value="${esc(s.n)}"></label><div class="grid2"><label>Prix<input data-f="p" value="${esc(s.p||"")}" placeholder="Sur devis"></label><label>Délai<input data-f="t" value="${esc(s.t||"")}" placeholder="facultatif"></label></div></div>
+    <label>Description<textarea data-f="d" style="min-height:60px">${esc(s.d||"")}</textarea></label>
+    <div class="bar"><button type="button" class="ib" data-a="up" title="Monter">↑</button><button type="button" class="ib" data-a="dn" title="Descendre">↓</button><button type="button" class="ib" data-a="del" title="Supprimer">🗑</button></div></div>`).join("")}
+    <button class="btn g sm" type="button" data-add="${esc(c)}">+ Ajouter une prestation « ${esc(c)} »</button></div></details>`).join("")}
+$("svlist").addEventListener("input",e=>{const r=e.target.closest(".sv"),f=e.target.dataset.f;if(r&&f){const s=SVE[+r.dataset.i];s[f]=e.target.value;if(f==="t"&&!e.target.value)delete s.t}});
+$("svlist").addEventListener("click",e=>{const a=e.target.closest("[data-add]");if(a){const c=a.dataset.add,last=SVE.map(s=>s.c).lastIndexOf(c);SVE.splice(last+1,0,{c,n:"Nouvelle prestation",d:"",p:"Sur devis"});svDraw();return}
+  const b=e.target.closest("[data-a]");if(!b)return;const i=+b.closest(".sv").dataset.i,s=SVE[i];
+  if(b.dataset.a==="del"){if(!confirm("Supprimer « "+s.n+" » ?"))return;SVE.splice(i,1)}
+  else{const L=SVE.map((x,j)=>[x,j]).filter(([x])=>x.c===s.c).map(([,j])=>j),k=L.indexOf(i),t=b.dataset.a==="up"?L[k-1]:L[k+1];if(t==null)return;[SVE[i],SVE[t]]=[SVE[t],SVE[i]]}
+  svDraw()});
+$("svsave").onclick=async()=>{if(SVE.some(s=>!s.n.trim()))return flash("Chaque prestation doit avoir un nom.",false);try{await poser("sv",SVE);drawSv()}catch(err){flash(err.message,false)}};
+$("svreset").onclick=async()=>{if(!confirm("Revenir aux prestations et prix d’origine du site ?"))return;try{await poser("sv",null,"Prestations d’origine rétablies.");drawSv()}catch(err){flash(err.message,false)}};
+
+/* ================= Boutique ================= */
+let SHE=[];
+const NEEDS=["Acheter un appareil","Acheter un accessoire","Vendre mon appareil"];
+function drawShop(){SHE=clone(D.SHOP);shDraw();pxDraw()}
+function shDraw(){const cats=D.BCATS.filter(c=>c!=="Tout"),ics=D.IC.slice().sort(),devs=["","Téléphone","Tablette","Ordinateur","Console"],needs=[...new Set([...NEEDS,...SHE.map(s=>s.need).filter(Boolean)])];
+  $("shlist").innerHTML=SHE.map((s,i)=>`<div class="sv" data-i="${i}">
+    <div class="grid2"><label>Article<input data-f="n" value="${esc(s.n)}"></label><div class="grid2"><label>Rayon<select data-f="c">${cats.map(c=>`<option${c===s.c?" selected":""}>${esc(c)}</option>`).join("")}</select></label><label>Prix<input data-f="p" value="${esc(s.p||"")}" placeholder="Prix sur demande"></label></div></div>
+    <label>Description<textarea data-f="d" style="min-height:60px">${esc(s.d||"")}</textarea></label>
+    <div class="grid3"><label>Bouton<select data-f="need"><option value="">Aucun</option>${needs.map(n=>`<option${n===s.need?" selected":""}>${esc(n)}</option>`).join("")}</select></label><label>Appareil concerné<select data-f="dev">${devs.map(d=>`<option value="${d}"${d===(s.dev||"")?" selected":""}>${d||"—"}</option>`).join("")}</select></label><label>Icône (sans photo)<select data-f="ic">${ics.map(c=>`<option${c===s.ic?" selected":""}>${c}</option>`).join("")}</select></label></div>
+    <div class="row">${s.ph?`<img src="${esc(s.ph)}" alt="" class="thumb" style="max-width:160px">`:""}<label class="btn g sm" style="display:inline-flex;cursor:pointer">${s.ph?"Changer la photo":"Ajouter une photo"}<input type="file" accept="image/*" data-ph hidden></label>${s.ph?`<button type="button" class="btn g sm" data-a="phx">Retirer la photo</button>`:""}<span style="flex:1"></span><button type="button" class="ib" data-a="up">↑</button><button type="button" class="ib" data-a="dn">↓</button><button type="button" class="ib" data-a="del">🗑</button></div></div>`).join("")}
+$("shlist").addEventListener("input",e=>{const r=e.target.closest(".sv"),f=e.target.dataset.f;if(r&&f){const s=SHE[+r.dataset.i];if(e.target.value)s[f]=e.target.value;else delete s[f]}});
+$("shlist").addEventListener("change",async e=>{if(!e.target.matches("[data-ph]"))return;const i=+e.target.closest(".sv").dataset.i,file=e.target.files[0];if(!file)return;try{flash("Envoi de la photo…");SHE[i].ph=await envoyerPhoto(file);shDraw();flash("Photo prête : pensez à « Enregistrer ».")}catch(err){flash(err.message,false)}});
+$("shlist").addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b)return;const i=+b.closest(".sv").dataset.i;
+  if(b.dataset.a==="phx")delete SHE[i].ph;else if(b.dataset.a==="del"){if(!confirm("Supprimer « "+SHE[i].n+" » de la boutique ?"))return;SHE.splice(i,1)}
+  else{const t=b.dataset.a==="up"?i-1:i+1;if(t<0||t>=SHE.length)return;[SHE[i],SHE[t]]=[SHE[t],SHE[i]]}shDraw()});
+$("shadd").onclick=()=>{SHE.push({c:D.BCATS[1]||"Appareils",n:"Nouvel article",d:"",ic:"bag",need:"Acheter un accessoire"});shDraw();$("shlist").lastElementChild.scrollIntoView({behavior:"smooth",block:"center"})};
+$("shsave").onclick=async()=>{try{await poser("shop",SHE);drawShop()}catch(err){flash(err.message,false)}};
+$("shreset").onclick=async()=>{if(!confirm("Revenir à la boutique d’origine ?"))return;try{await poser("shop",null,"Boutique d’origine rétablie.");drawShop()}catch(err){flash(err.message,false)}};
+const PL={chargeur:"Chargeurs",apple:"iPhone (Lightning)",android:"Android",cable:"Câble seul",prise:"Prise seule",kit:"Câble + prise",usb:"USB-A",typec:"USB-C",adaptateur:"Adaptateurs",hub4:"Hub 4 ports",hub7:"Hub 7 ports",cjack:"USB-C vers jack",cusb:"USB-C vers USB",chdmi:"USB-C vers HDMI",ceth:"USB-C vers Ethernet",ljack:"Lightning vers jack",lusb:"Lightning vers USB",tv:"Câbles télé",hdmi:"HDMI",antenne:"Antenne",batterie:"Batteries externes",w10:"10 W",w20:"20 W",w65:"65 W",cle:"Clés USB",capacite:"Capacité",connecteur:"Supplément connecteur",double:"Double (USB + USB-C)",microsd:"Cartes micro SD",graveur:"Graveurs",bluray:"Blu-ray"};
+const UNIT={tv:" m",batterie:" mAh",cle:" Go",microsd:" Go"};
+function pxLab(path){return path.slice(1).map(k=>PL[k]||(/^[\d.]+$/.test(k)?k.replace(".",",")+(UNIT[path[0]]||""):k)).join(" · ")||PL[path[0]]||path[0]}
+let PXE={};
+function pxDraw(){PXE=clone(D.PRIX);const leaves=(o,p,out)=>{for(const k in o){const q=[...p,k];if(typeof o[k]==="number")out.push(q);else leaves(o[k],q,out)}return out};
+  $("pxlist").innerHTML=Object.keys(PXE).map(top=>`<details class="grp"><summary>${esc(PL[top]||top)}</summary><div class="prix">${leaves(PXE[top],[top],[]).map(p=>`<label>${esc(pxLab(p))}<input type="number" min="0" step="0.5" inputmode="decimal" data-p="${esc(JSON.stringify(p))}" value="${p.reduce((o,k)=>o[k],PXE)}"></label>`).join("")}</div></details>`).join("")}
+$("pxlist").addEventListener("input",e=>{const p=e.target.dataset.p;if(!p)return;const P=JSON.parse(p),o=P.slice(0,-1).reduce((o,k)=>o[k],PXE),v=parseFloat(String(e.target.value).replace(",","."));if(!isNaN(v))o[P[P.length-1]]=v});
+$("pxsave").onclick=async()=>{try{await poser("prix",PXE,"Prix des accessoires enregistrés.");pxDraw()}catch(err){flash(err.message,false)}};
+$("pxreset").onclick=async()=>{if(!confirm("Revenir aux prix d’origine des accessoires ?"))return;try{await poser("prix",null,"Prix d’origine rétablis.");pxDraw()}catch(err){flash(err.message,false)}};
+
+/* ================= Actualités ================= */
+const NP=()=>{const N=clone(CONT.news||{});N.add=Array.isArray(N.add)?N.add:[];N.edit=N.edit&&!Array.isArray(N.edit)?N.edit:{};N.hide=Array.isArray(N.hide)?N.hide:[];return N};
+let NCUR=null,NPH="";
+function drawNewsList(){$("nform").hidden=true;$("nlistc").hidden=false;const q=norm($("nq").value||""),N=NP();
+  const L=D.NEWS.filter(n=>!q||norm(n.t+" "+n.tag).includes(q));
+  const cach=N.hide.length?`<div class="it" style="cursor:default"><b>${N.hide.length} actualité${N.hide.length>1?"s":""} masquée${N.hide.length>1?"s":""}</b><button class="btn g sm" type="button" id="nunhide">Tout réafficher</button></div>`:"";
+  $("nlist").innerHTML=cach+L.slice(0,q?200:60).map(n=>`<button type="button" class="it" data-k="${n._a!=null?"a"+n._a:"o"+esc(n._o)}"><b>${esc(n.t)}</b>${n._a!=null?'<span class="tag a">ajoutée</span>':N.edit[n._o]?'<span class="tag m">modifiée</span>':"<span></span>"}<small>${esc(dlong(n.d))} · ${esc(n.sc)} · ${esc(n.tag)}</small></button>`).join("")+(L.length>60&&!q?`<p class="muted">… ${L.length-60} plus anciennes : utilisez la recherche.</p>`:"");
+  if($("nunhide"))$("nunhide").onclick=async()=>{const N=NP();N.hide=[];try{await poser("news",N,"Actualités réaffichées.");drawNewsList()}catch(err){flash(err.message,false)}}}
+$("nq").oninput=drawNewsList;
+$("nlist").onclick=e=>{const b=e.target.closest(".it[data-k]");if(!b)return;const k=b.dataset.k;const n=k[0]==="a"?D.NEWS.find(x=>x._a===+k.slice(1)):D.NEWS.find(x=>x._o===k.slice(1));if(n)nOpen(n)};
+$("nnew").onclick=()=>nOpen(null);$("nback").onclick=drawNewsList;
+const srcTxt=L=>(L||[]).map(([l,u])=>l+" | "+u).join("\n");
+const srcParse=t=>t.split("\n").map(l=>l.split("|").map(x=>x.trim())).filter(x=>x.length>=2&&/^https?:\/\//.test(x[x.length-1])).map(x=>[x.slice(0,-1).join(" | "),x[x.length-1]]);
+function nOpen(n){NCUR=n;$("nlistc").hidden=true;$("nform").hidden=false;scrollTo(0,0);const N=NP();
+  $("ntitle").textContent=n?"Modifier l’actualité":"Nouvelle actualité";
+  $("n-t").value=n?n.t:"";$("n-s").value=n?n.s:"";$("n-tip").value=n?n.tip||"":"";$("n-d").value=n?n.d:today();$("n-sc").value=n?n.sc:"France";$("n-th").value=n?n.th:"Ordinateurs";$("n-tag").value=n?n.tag:"";$("n-urg").checked=!!(n&&n.urg);$("n-src").value=n?srcTxt(n.src):"";
+  NPH=n&&n.ph||"";nPh();
+  $("ndel").textContent=n?(n._a!=null?"Supprimer":"Masquer du site"):"";$("ndel").hidden=!n;
+  $("nreset").hidden=!(n&&n._a==null&&N.edit[n._o]);
+  $("nview").hidden=!n;if(n)$("nview").href="/actualites/"+n.id+"/"}
+function nPh(){$("n-phi").hidden=!NPH;if(NPH)$("n-phi").src=NPH;$("n-phx").hidden=!NPH}
+$("n-ph").onchange=async()=>{const f=$("n-ph").files[0];if(!f)return;try{flash("Envoi de la photo…");NPH=await envoyerPhoto(f);nPh();flash("Photo prête : pensez à « Enregistrer ».")}catch(err){flash(err.message,false)}};
+$("n-phx").onclick=()=>{NPH="";nPh()};
+$("nsave").onclick=async()=>{const v={t:$("n-t").value.trim(),s:$("n-s").value.trim(),tip:$("n-tip").value.trim(),d:$("n-d").value||today(),sc:$("n-sc").value,th:$("n-th").value,tag:$("n-tag").value.trim()||"Actualité",urg:$("n-urg").checked?1:0,src:srcParse($("n-src").value),ph:NPH};
+  v.dl=dlong(v.d);if(!v.t||!v.s)return flash("Indiquez au moins un titre et un résumé.",false);
+  const N=NP();
+  if(!NCUR){v.pub=nowLocal();N.add.push(v)}
+  else if(NCUR._a!=null)N.add[NCUR._a]=Object.assign(N.add[NCUR._a]||{},v);
+  else N.edit[NCUR._o]=v;
+  try{await poser("news",N);drawNewsList()}catch(err){flash(err.message,false)}};
+$("ndel").onclick=async()=>{if(!NCUR)return;const N=NP();
+  if(NCUR._a!=null){if(!confirm("Supprimer définitivement cette actualité ?"))return;N.add.splice(NCUR._a,1)}
+  else{if(!confirm("Masquer cette actualité du site ?"))return;N.hide.push(NCUR._o)}
+  try{await poser("news",N,"C’est fait.");drawNewsList()}catch(err){flash(err.message,false)}};
+$("nreset").onclick=async()=>{const N=NP();delete N.edit[NCUR._o];try{await poser("news",N,"Actualité d’origine rétablie.");drawNewsList()}catch(err){flash(err.message,false)}};
+
+/* ================= Articles ================= */
+const AP=()=>{const A=clone(CONT.arts||{});A.add=Array.isArray(A.add)?A.add:[];A.edit=A.edit&&!Array.isArray(A.edit)?A.edit:{};A.hide=Array.isArray(A.hide)?A.hide:[];return A};
+let ACUR=null,APH="";
+const SVCS=[["services","Téléphones","Réparation de téléphone"],["services","Tablettes","Réparation de tablette"],["services","Ordinateurs","Réparation et dépannage d’ordinateur"],["services","Consoles","Réparation de console"],["services","Assistance","Assistance à domicile et à distance"],["boutique","Appareils","Voir les appareils de la boutique"],["boutique","Chargeurs et câbles","Voir les chargeurs et câbles"],["boutique","Protection","Voir les coques et protections"]];
+function ills(){return [...new Set(Object.keys(D.IMGV).filter(f=>f.endsWith("-1280.webp")).map(f=>f.replace(/-1280\.webp$/,"")))].sort()}
+function drawArtList(){$("aform").hidden=true;$("alistc").hidden=false;const A=AP();
+  const cach=A.hide.length?`<div class="it" style="cursor:default"><b>${A.hide.length} article${A.hide.length>1?"s":""} masqué${A.hide.length>1?"s":""}</b><button class="btn g sm" type="button" id="aunhide">Tout réafficher</button></div>`:"";
+  $("alist").innerHTML=cach+D.ARTS.map(a=>`<button type="button" class="it" data-s="${esc(a.s)}"><b>${esc(a.t)}</b>${a._a!=null?'<span class="tag a">ajouté</span>':A.edit[a.s]?'<span class="tag m">modifié</span>':"<span></span>"}<small>${esc(a.cat)} · ${esc(dlong(a.date))}</small></button>`).join("");
+  if($("aunhide"))$("aunhide").onclick=async()=>{const A=AP();A.hide=[];try{await poser("arts",A,"Articles réaffichés.");drawArtList()}catch(err){flash(err.message,false)}}}
+$("alist").onclick=e=>{const b=e.target.closest(".it[data-s]");if(b)ouvrirArt(b.dataset.s)};
+function ouvrirArt(s){const a=D.ARTS.find(x=>x.s===s);if(a)aOpen(a)}
+$("anew").onclick=()=>aOpen(null);$("aback").onclick=drawArtList;
+function aOpen(a){ACUR=a;$("alistc").hidden=true;$("aform").hidden=false;scrollTo(0,0);const A=AP();
+  $("atitle").textContent=a?"Modifier l’article":"Nouvel article";
+  $("a-cats").innerHTML=[...new Set(D.ARTS.map(x=>x.cat))].map(c=>`<option value="${esc(c)}">`).join("");
+  $("a-svc").innerHTML=SVCS.map(([k,c,l],i)=>`<option value="${i}">${esc(l)}</option>`).join("");
+  $("a-ill").innerHTML=ills().map(n=>`<option>${n}</option>`).join("");
+  $("a-t").value=a?a.t:"";$("a-d").value=a?a.d:"";$("a-cat").value=a?a.cat:"Conseils";$("a-b").innerHTML=a?a.b:"<p>Votre texte…</p>";$("a-src").value=a?srcTxt(a.src):"";
+  const si=a?SVCS.findIndex(([k,c])=>k===a.svc[1]&&c===a.svc[2]):2;$("a-svc").value=String(si<0?2:si);
+  $("a-ill").value=a?(a.ill||(ills().includes(a.s)?a.s:"ordinateur-lent")):"ordinateur-lent";APH=a&&a.ph||"";aPh();
+  $("adel").textContent=a?(a._a!=null?"Supprimer":"Masquer du site"):"";$("adel").hidden=!a;
+  $("areset").hidden=!(a&&a._a==null&&A.edit[a.s]);
+  $("aview").hidden=!a;if(a)$("aview").href="/infos-pratiques/"+a.s+"/"}
+function aPh(){$("a-phi").src=APH||"/assets/img/"+$("a-ill").value+"-640.webp"+(D.IMGV[$("a-ill").value+"-640.webp"]?"?v="+D.IMGV[$("a-ill").value+"-640.webp"]:"");$("a-phx").hidden=!APH;$("a-ill").disabled=!!APH}
+$("a-ill").onchange=aPh;
+$("a-ph").onchange=async()=>{const f=$("a-ph").files[0];if(!f)return;try{flash("Envoi de la photo…");APH=await envoyerPhoto(f);aPh();flash("Photo prête : pensez à « Enregistrer ».")}catch(err){flash(err.message,false)}};
+$("a-phx").onclick=()=>{APH="";aPh()};
+document.execCommand("defaultParagraphSeparator",false,"p");
+$("atb").addEventListener("mousedown",e=>e.preventDefault());
+$("atb").onclick=e=>{const b=e.target.closest("button");if(!b)return;const c=b.dataset.c;$("a-b").focus();
+  if(c==="h2"||c==="p")document.execCommand("formatBlock",false,c);else if(c==="ul")document.execCommand("insertUnorderedList");else if(c==="ol")document.execCommand("insertOrderedList");
+  else if(c==="link"){const u=prompt("Adresse du lien (https://…) :","https://");if(u)document.execCommand("createLink",false,u.trim())}else if(c==="clear")document.execCommand("removeFormat");else document.execCommand(c)};
+$("a-b").addEventListener("paste",e=>{e.preventDefault();document.execCommand("insertText",false,(e.clipboardData||window.clipboardData).getData("text/plain"))});
+$("asave").onclick=async()=>{const t=$("a-t").value.trim(),b=$("a-b").innerHTML.trim(),words=$("a-b").innerText.trim().split(/\s+/).length;
+  if(!t||$("a-b").innerText.trim().length<20)return flash("Indiquez un titre et un texte d’au moins quelques lignes.",false);
+  const [k,c,l]=SVCS[+$("a-svc").value];
+  const v={t,d:$("a-d").value.trim(),cat:$("a-cat").value.trim()||"Conseils",b,src:srcParse($("a-src").value),svc:[l,k,c],min:Math.max(1,Math.round(words/200)),ph:APH,ill:APH?"":$("a-ill").value};
+  const A=AP();
+  if(!ACUR){let s=slugify(t)||"article",i=2;const pris=new Set(D.ARTS.map(x=>x.s));while(pris.has(s))s=slugify(t)+"-"+i++;
+    Object.assign(v,{s,date:today(),dl:dlong(today()),ic:"shield"});A.add.push(v)}
+  else if(ACUR._a!=null)A.add[ACUR._a]=Object.assign(A.add[ACUR._a]||{},v);
+  else A.edit[ACUR.s]=v;
+  try{await poser("arts",A,"Article enregistré : il est en ligne.");drawArtList()}catch(err){flash(err.message,false)}};
+$("adel").onclick=async()=>{if(!ACUR)return;const A=AP();
+  if(ACUR._a!=null){if(!confirm("Supprimer définitivement cet article ?"))return;A.add.splice(ACUR._a,1)}
+  else{if(!confirm("Masquer cet article du site ?"))return;A.hide.push(ACUR.s)}
+  try{await poser("arts",A,"C’est fait.");drawArtList()}catch(err){flash(err.message,false)}};
+$("areset").onclick=async()=>{const A=AP();delete A.edit[ACUR.s];try{await poser("arts",A,"Article d’origine rétabli.");drawArtList()}catch(err){flash(err.message,false)}};
+
+/* ================= Photos ================= */
+let PCUR=null;
+function drawPics(){const I=CONT.images||{};
+  $("plist").innerHTML=ills().filter(n=>!n.startsWith("og-")).map(n=>{const o=I["ill:"+n];return `<div class="pic"><img src="${esc(o||"/assets/img/"+n+"-640.webp")}" alt="" loading="lazy"><small>${esc(n)}${o?" · <b>remplacée</b>":""}</small><div class="row"><button class="btn g sm" type="button" data-r="${esc(n)}">Remplacer</button>${o?`<button class="btn g sm" type="button" data-o="${esc(n)}">Rétablir</button>`:""}</div></div>`}).join("")}
+$("plist").onclick=async e=>{const r=e.target.closest("[data-r]"),o=e.target.closest("[data-o]");
+  if(r){PCUR=r.dataset.r;$("pfile").value="";$("pfile").click()}
+  if(o){try{const j=await api("images",{changes:{["ill:"+o.dataset.o]:""}});CONT=j.contenu;garder();flash("Illustration d’origine rétablie.");drawPics()}catch(err){flash(err.message,false)}}};
+$("pfile").onchange=async()=>{const f=$("pfile").files[0];if(!f||!PCUR)return;try{flash("Envoi de la photo…");const url=await envoyerPhoto(f);const j=await api("images",{changes:{["ill:"+PCUR]:url}});CONT=j.contenu;garder();flash("Photo remplacée : c’est en ligne.");drawPics()}catch(err){flash(err.message,false)}};
+
+/* ================= Modifications ================= */
+const VUES={"v-home":"Accueil","v-services":"Services","v-boutique":"Boutique","v-pro":"Professionnels","v-demande":"Rendez-vous","v-conseils":"Infos pratiques","v-actus":"Actualités","v-faq":"FAQ","v-contact":"Contact","v-zone":"Zone","v-secteurs":"Communes","v-apropos":"À propos","v-cgv":"CGV","v-legal":"Mentions légales",commun:"Toutes les pages (menu, pied de page)"};
+function drawHist(){const T=CONT.textes||{},I=CONT.images||{},N=NP(),A=AP(),L=[];
+  for(const [k,h] of Object.entries(T)){const v=k.split("|")[0];L.push(`<div class="it" style="cursor:default"><b>${esc(String(h).replace(/<[^>]+>/g,"").replace(/\u241e/g," ").replace(/&amp;/g,"&").slice(0,140))}</b><button class="btn g sm" type="button" data-t="${esc(k)}">Rétablir</button><small>Texte · ${esc(VUES[v]||v.replace(/^v-/,""))}</small></div>`)}
+  for(const [k,u] of Object.entries(I))L.push(`<div class="it" style="cursor:default"><span class="row"><img src="${esc(u)}" alt="" style="width:64px;height:40px;object-fit:cover;border-radius:6px"><b>${esc(k.replace(/^ill:/,"Illustration ").replace(/^src:/,"Image "))}</b></span><button class="btn g sm" type="button" data-i="${esc(k)}">Rétablir</button></div>`);
+  const parts=[["sv","Prix et services modifiés"],["shop","Boutique modifiée"],["prix","Prix des accessoires modifiés"]].filter(([k])=>CONT[k]).map(([k,l])=>`<div class="it" style="cursor:default"><b>${l}</b><button class="btn g sm" type="button" data-p="${k}">Rétablir l’original</button></div>`);
+  const nb=[N.add.length&&N.add.length+" actualité(s) ajoutée(s)",Object.keys(N.edit).length&&Object.keys(N.edit).length+" modifiée(s)",N.hide.length&&N.hide.length+" masquée(s)",A.add.length&&A.add.length+" article(s) ajouté(s)",Object.keys(A.edit).length&&Object.keys(A.edit).length+" modifié(s)",A.hide.length&&A.hide.length+" masqué(s)"].filter(Boolean);
+  $("hlist").innerHTML=(parts.join("")+(nb.length?`<div class="it" style="cursor:default"><b>Actualités et articles : ${esc(nb.join(", "))}</b><small>Gérez-les dans leurs onglets.</small></div>`:"")+L.join(""))||`<p class="muted">Aucune modification pour l’instant.</p>`}
+$("hlist").onclick=async e=>{const t=e.target.closest("[data-t]"),i=e.target.closest("[data-i]"),p=e.target.closest("[data-p]");
+  try{let j;if(t)j=await api("textes",{changes:{[t.dataset.t]:""}});else if(i)j=await api("images",{changes:{[i.dataset.i]:""}});else if(p){await poser(p.dataset.p,null,"Version d’origine rétablie.");drawHist();return}else return;
+    CONT=j.contenu;garder();flash("Version d’origine rétablie.");drawHist()}catch(err){flash(err.message,false)}};
+let HALL=0;
+$("hall").onclick=async()=>{if(!HALL){HALL=1;$("hall").textContent="Confirmer : tout rétablir ?";setTimeout(()=>{HALL=0;$("hall").textContent="Tout rétablir (textes et photos)"},5000);return}
+  try{await api("poser",{cle:"textes",valeur:null});await poser("images",null,"Textes et photos d’origine rétablis.");HALL=0;$("hall").textContent="Tout rétablir (textes et photos)";drawHist()}catch(err){flash(err.message,false)}};
+
+/* ================= Démarrage ================= */
+(async()=>{try{const j=await api("tout");CONT=j.contenu;garder();await donnees();
+  $("vload").hidden=true;$("app").hidden=false;lPages();
+  const v=(location.hash.slice(1)||"live");vue(["live","sv","shop","news","arts","pics","hist"].includes(v)?v:"live");lLoad("/")}
+  catch(err){$("vload").hidden=true;if($("vlogin").hidden)flash(err.message,false)}})();
+</script>
+</body>
+</html>

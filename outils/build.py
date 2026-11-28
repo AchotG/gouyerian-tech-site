@@ -25,6 +25,29 @@ src = SRC.read_text(encoding="utf-8")
 # ---------- 1. Extraction ----------
 css = src[src.index("<style>") + 7: src.index("</style>")]
 js = src[src.rindex("<script>") + 8: src.rindex("</script>")]
+
+
+# Contenu modifié par l'atelier depuis la gestion (/gestion/site.html) : prix, boutique, actualités, articles, textes, photos.
+# Lu sur le site en ligne (ou dans le fichier GT_SITE_JSON pour les essais) et intégré aux pages ; sans réponse, le site le relit lui-même à chaque visite.
+def contenu_site():
+    try:
+        f = os.environ.get("GT_SITE_JSON")
+        if f:
+            d = json.loads(pathlib.Path(f).read_text(encoding="utf-8"))
+        else:
+            import urllib.request
+            req = urllib.request.Request(SITE + "/api/site.php?c=1", headers={"User-Agent": "gouyerian-tech-build"})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                d = json.loads(r.read().decode("utf-8"))
+        return d if isinstance(d, dict) else {}
+    except Exception as e:
+        print("contenu modifié depuis la gestion : non lu (" + str(e)[:120] + ")")
+        return {}
+
+
+GT_SITE = contenu_site()
+print("contenu modifié depuis la gestion :", ", ".join(k for k in GT_SITE if k != "t") or "aucun")
+js = "window.GT_SITE=" + json.dumps(GT_SITE, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/") + ";\n" + js
 body = src[src.index('<a class="skip"'): src.rindex("<script>")].rstrip()
 body = body.replace('src="assets/', 'src="/assets/')
 
@@ -122,7 +145,7 @@ def site_data():
         d = pg.evaluate("""()=>({cpg:CPG.map(p=>({n:p.n,s:p.s,cp:p.cp,km:p.km,dir:dirOf(p),dept:dept(p)})),zone:ZONE.length,
           faq:[...document.querySelectorAll('#v-faq details')].map(x=>({q:x.querySelector('summary').textContent.trim(),a:x.querySelector('p').textContent.trim()})),
           sv:SV.map(s=>({c:s.c,n:s.n,p:s.p})),
-          arts:ARTS.map(a=>({s:a.s,t:a.t,d:a.d,cat:a.cat,date:a.date,min:a.min})),news:NEWS.length,nl:NEWS.map(n=>({id:n.id,t:n.t,s:n.s,d:n.d,pub:pubOf(n),th:THL(n.th),src:n.src.map(x=>x[1])}))})""")
+          arts:ARTS.map(a=>({s:a.s,t:a.t,d:a.d,cat:a.cat,date:a.date,min:a.min,ph:a.ph||"",ill:a.ill||"",ga:a._a!=null})),news:NEWS.length,nl:NEWS.map(n=>({id:n.id,t:n.t,s:n.s,d:n.d,pub:pubOf(n),th:THL(n.th),src:n.src.map(x=>x[1])}))})""")
         b.close()
     shutil.rmtree(tmp)
     return d
@@ -153,6 +176,9 @@ def iv(name):
 
 
 def add(path, view, markup, title, desc, crumbs, ld=None, pg=None, prio="0.7", index=True, extra_head="", lastmod=TODAY, og=None, imgs=()):
+    if any(pd["path"] == path for pd in PAGES):  # deux actualités ou articles au même titre : seule la première a sa page
+        print("page en double ignorée :", path)
+        return
     PAGES.append(dict(path=path, view=view, markup=markup, title=title, desc=desc, crumbs=crumbs, ld=ld or [], pg=pg or {"view": view}, prio=prio, index=index, extra_head=extra_head, lastmod=lastmod, og=og, imgs=imgs))
 
 
@@ -249,18 +275,28 @@ add("/infos-pratiques/", "conseils", VIEW["conseils"], "Infos pratiques en infor
         {"@type": "ListItem", "position": i + 1, "url": f"{SITE}/infos-pratiques/{a['s']}/", "name": a["t"]} for i, a in enumerate(DATA["arts"])]}],
     prio="0.8")
 for a in DATA["arts"]:
-    manque = [f for f in (f"{a['s']}-640.webp", f"{a['s']}-1280.webp", f"og-{a['s']}.jpg") if f not in IMGV]
-    if manque:
+    ill = a["ill"] if a["ill"] and f"{a['ill']}-1280.webp" in IMGV else a["s"]
+    manque = [f for f in (f"{ill}-640.webp", f"{ill}-1280.webp") if f not in IMGV]
+    if a["ph"]:  # article avec une photo envoyée depuis la gestion
+        img1, og1 = a["ph"], a["ph"]
+    elif not manque:
+        img1 = f"/assets/img/{ill}-1280.webp" + iv(f"{ill}-1280.webp")
+        og1 = f"/assets/img/og-{ill}.jpg" + iv(f"og-{ill}.jpg") if f"og-{ill}.jpg" in IMGV else img1
+    if manque and not a["ph"] and a["ga"]:  # ajouté depuis la gestion sans image valable : image par défaut, la publication continue
+        img1 = og1 = "/assets/og-image.jpg"
+    elif manque and not a["ph"]:
         raise SystemExit(f"Illustration manquante pour l’info pratique « {a['s']} » : {', '.join(manque)} (ajouter S['{a['s']}'] dans outils/gen_illus.py puis : python outils/gen_illus.py {a['s']})")
     path = f"/infos-pratiques/{a['s']}/"
     t = a["t"] + " · Gouyerian Tech"
-    add(path, "article", VIEW["article"], t if len(t) <= 65 else a["t"], a["d"],
+    t = t if len(t) <= 65 else a["t"] if len(a["t"]) <= 70 else a["t"][:68].rsplit(" ", 1)[0] + "…"
+    dsc = a["d"] if len(a["d"]) <= 170 else a["d"][:168].rsplit(" ", 1)[0] + "…"
+    add(path, "article", VIEW["article"], t, dsc or a["t"],
         [HOME, ("Infos pratiques", "/infos-pratiques/"), (a["t"], path)],
         ld=[{"@context": "https://schema.org", "@type": "Article", "headline": a["t"], "description": a["d"], "inLanguage": "fr-FR",
              "datePublished": a["date"], "dateModified": a["date"], "articleSection": a["cat"], "timeRequired": f"PT{a['min']}M",
-             "image": [SITE + f"/assets/img/og-{a['s']}.jpg" + iv(f"og-{a['s']}.jpg"), SITE + f"/assets/img/{a['s']}-1280.webp" + iv(f"{a['s']}-1280.webp")], "mainEntityOfPage": SITE + path,
+             "image": [SITE + og1, SITE + img1], "mainEntityOfPage": SITE + path,
              "author": {"@type": "Organization", "name": "Gouyerian Tech", "url": SITE + "/"}, "publisher": {"@id": ORG_ID}}],
-        pg={"view": "article", "slug": a["s"]}, prio="0.7", lastmod=a["date"], og=f"/assets/img/og-{a['s']}.jpg" + iv(f"og-{a['s']}.jpg"), imgs=(f"/assets/img/{a['s']}-1280.webp",))
+        pg={"view": "article", "slug": a["s"]}, prio="0.7", lastmod=a["date"], og=og1, imgs=(img1.split("?")[0] if img1.startswith("/assets/") else img1,))
 add("/actualites/", "actus", VIEW["actus"], "Actualités tech France et monde · Gouyerian Tech",
     f"{DATA['news']} actualités tech résumées simplement : smartphones, ordinateurs, IA, Internet, sécurité, jeux vidéo. Un conseil pratique et le lien vers chaque source.",
     [HOME, ("Actualités", "/actualites/")], prio="0.7")
@@ -348,7 +384,7 @@ add("/cgv/", "cgv", VIEW["cgv"], "Conditions générales de vente · Gouyerian T
     "Conditions générales de vente de Gouyerian Tech (EI, TVA non applicable) : devis, prix, commandes, livraison, paiement, garanties, rétractation et médiation.",
     [HOME, ("Conditions générales de vente", "/cgv/")], prio="0.3")
 add("/hors-ligne/", "off", VOFF, "Hors connexion · Gouyerian Tech", "Vous êtes hors connexion.", [HOME], index=False)
-add("/404.html", "404", V404, "Page introuvable · Gouyerian Tech", "Cette page n’existe pas ou a été déplacée.", [HOME], index=False)
+add("/404.html", "404", V404 + "\n" + "\n".join(re.sub(r'(<div class="view" id="v-[\w-]+")>', r"\1 hidden>", VIEW[v], count=1) for v in ("article", "actu")), "Page introuvable · Gouyerian Tech", "Cette page n’existe pas ou a été déplacée.", [HOME], index=False)
 
 IMGS = {"/": [f"/assets/img/cat-{k}-1280.webp" for k in ("telephones", "tablettes", "ordinateurs", "consoles", "assistance")],
         "/professionnels/": [f"/assets/img/pro-{k}-1280.webp" for k in ("virus", "reseau", "depannage")]}
@@ -491,6 +527,7 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     ctx = b.new_context(service_workers="block", viewport={"width": 1366, "height": 900}, locale="fr-FR", timezone_id="Europe/Paris")
     ctx.route("**/*", serve)
+    ctx.add_init_script("window.GT_PRERENDER=1")  # pas de relecture du contenu sur le serveur pendant la génération
     errs = []
     for pd in PAGES:
         pg = ctx.new_page()
