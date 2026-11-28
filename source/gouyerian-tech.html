@@ -304,7 +304,19 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .tel-t th{background:var(--sunk);font-weight:600}
 .tel-t td+td,.tel-t th+th{text-align:right;font-family:var(--f-mono);white-space:nowrap}
 .tel-t p{font-size:.8rem;color:var(--muted);margin:0 0 12px}
-#smodp{margin:6px 0 0;font-size:.85rem;color:var(--muted);min-height:1.2em}
+[data-tpk]{cursor:pointer}
+.tpk{margin-top:12px;cursor:auto}
+.tpk-b{display:inline-flex;gap:8px;align-items:center}
+.tpk-l{margin-top:12px;display:grid;gap:12px}
+.tpk-c{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tpk-c button{display:inline-flex;flex-direction:column;align-items:flex-start;min-width:86px;padding:7px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:inherit;font:500 .9rem/1.25 var(--f-body,inherit);cursor:pointer;text-align:left}
+.tpk-c small{font-family:var(--f-mono);font-size:.8rem;color:var(--acc);margin-top:2px}
+.tpk-c button[aria-pressed=true]{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.tpk-c button:hover{border-color:var(--acc)}
+.tpk-sel{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.tpk-sel .i{color:var(--acc);vertical-align:-3px}
+.tpk-sel button{background:none;border:0;padding:6px 0;color:var(--acc);font:inherit;text-decoration:underline;cursor:pointer}
+.tpk-x{font-size:.88rem;color:var(--acc);text-decoration:underline;justify-self:start;padding:4px 0}
 .tk{display:grid;grid-template-columns:minmax(0,1fr) 140px 130px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;transition:border-color .2s}
 .tk:hover{border-color:var(--fg)}
 .tk>*{padding:18px 20px}
@@ -3217,17 +3229,26 @@ function telP(i){const B=telBs();if(cat!=="Téléphones"||!B.length)return null;
 function telHint(){const B=telBs();if(cat!=="Téléphones"||!B.length||!model.trim())return"";const r=telRow();return r?`${esc(r.nm)} : écran ${r[1]?r[1]+" €":"sur devis"}, batterie ${r[2]?r[2]+" €":"sur devis"}, pose comprise.`:"Ce modèle n’est pas dans la grille : écran et batterie sur devis gratuit."}
 function telTab(){const B=telBs();if(cat!=="Téléphones"||!B.length)return"";
   return `<details class="tel-t"${B.length===1?" open":""}><summary>${svg("card")}Prix des écrans et batteries par modèle (${B.map(b=>esc(b.replace(/\s*\(.*\)/,""))).join(", ")})</summary>${B.map(b=>`<div class="tbl"><table><caption>${esc(b)}</caption><thead><tr><th>Modèle</th><th>Écran</th><th>Batterie</th></tr></thead><tbody>${TEL[b].map(r=>`<tr><td>${esc(r[0])}</td><td>${r[1]?r[1]+" €":"Sur devis"}</td><td>${r[2]?r[2]+" €":"Sur devis"}</td></tr>`).join("")}</tbody></table></div>`).join("")}<p>TVA non applicable, art. 293 B du CGI. Modèle absent de la liste : sur devis gratuit.</p></details>`}
+let telOpen=0;
+const telSh=n=>n.replace(/^(iPhone|Galaxy)\s+/,"");
+/* choix du modèle dans la carte : liste de boutons avec le prix, puis le prix s’affiche */
+function telPick(k){const B=telBs(),r=telRow(),op=telOpen===k,w=k===1?"écran":"batterie";
+  const head=r?`<p class="tpk-sel"><span>${svg("check")} <b>${esc(r.nm)}</b> : ${w} ${r[k]?r[k]+" €, pose comprise":"sur devis"}</span><button type="button" data-tpo="${k}" aria-expanded="${op}">Changer de modèle</button></p>`
+    :`<button type="button" class="btn sm tpk-b" data-tpo="${k}" aria-expanded="${op}">${svg("mobile")}Choisir mon modèle pour voir le prix</button>`;
+  return `<div class="tpk">${head}${op?`<div class="tpk-l">${B.map(b=>`<div><span class="lab2">${b==="Samsung"?"Samsung Galaxy":esc(b.replace(/^Apple \((.*)\)$/,"$1"))}</span><div class="tpk-c">${TEL[b].flatMap(x=>telN(x[0]).map(n=>[n,x[k]])).map(([n,v])=>`<button type="button" data-tm="${esc(n)}" aria-pressed="${!!r&&n===r.nm}">${esc(telSh(n))}<small>${v?v+" €":"sur devis"}</small></button>`).join("")}</div></div>`).join("")}${reqA("Mon modèle n’est pas dans la liste : demander un devis","tpk-x",TEL_REP[k-1],"",1)}</div>`:""}</div>`}
+const TEL_REP=["Remplacement d’écran","Remplacement de batterie"];
+function telKeep(k,fn){const q=()=>document.querySelector(`#svc [data-tpk="${k}"]`),a=q(),y=a?a.getBoundingClientRect().top:0;fn();const b=q();if(a&&b)window.scrollBy(0,b.getBoundingClientRect().top-y)}
 function updTel(){document.querySelectorAll("#svc [data-tp]").forEach(e=>{const v=telP(+e.dataset.tp);if(v)e.textContent=v});const h=$("smodp");if(h)h.innerHTML=telHint()}
 const phEx=D=>{const e=PHX[cat+"|"+brand]||PHB[brand];return e?"Ex. : "+e:D.ph};
 const CATS=["Tous","Téléphones","Tablettes","Ordinateurs","Consoles","Assistance"],CATL={Assistance:"Assistance et professionnels"},CATI={Assistance:"headset"},LISTC=["Assistance"];
 let cat="Tous",brand="",model="";
-const tk=(s,a)=>`<div class="tk${a?" act":""}"><div class="tk-i"><div class="tk-n">${s.n}</div><p class="tk-d">${s.d}</p></div><span class="tk-t${s.t?"":" empty"}">${s.t?svg("clock")+s.t:"—"}</span><span class="tk-p"${s.tp?` data-tp="${s.tp}"`:""}>${s.p}</span>${a?`<span class="tk-a">${a}</span>`:""}</div>`;
+const tk=(s,a)=>`<div class="tk${a?" act":""}"${s.tp?` data-tpk="${s.tp}"`:""}><div class="tk-i"><div class="tk-n">${s.n}</div><p class="tk-d">${s.d}</p>${s.tp?telPick(s.tp):""}</div><span class="tk-t${s.t?"":" empty"}">${s.t?svg("clock")+s.t:"—"}</span><span class="tk-p"${s.tp?` data-tp="${s.tp}"`:""}>${s.p}</span>${a?`<span class="tk-a">${a}</span>`:""}</div>`;
 /* Lien vers la demande de rappel, pré-rempli avec l’appareil, la marque, le modèle et la réparation */
-function reqDetail(rep){const bn=brand&&brand!=="Autre marque"?brand.replace(/\s*\(.*\)/,"").split(",")[0]:"",m=[bn,model.trim()].filter(Boolean).join(" ");return m?(rep?m+" : "+rep:m+" : "):(rep||"")}
-function reqA(label,cls,rep,need){const dev=DEVS[cat]?DEVS[cat].d:"",det=reqDetail(rep),nd=need||"Réparer ou dépanner";
+function reqDetail(rep,nm){const bn=brand&&brand!=="Autre marque"?brand.replace(/\s*\(.*\)/,"").split(",")[0]:"",m=[bn,nm?"":model.trim()].filter(Boolean).join(" ");return m?(rep?m+" : "+rep:m+" : "):(rep||"")}
+function reqA(label,cls,rep,need,nm){const dev=DEVS[cat]?DEVS[cat].d:"",det=reqDetail(rep,nm),nd=need||"Réparer ou dépanner";
   const h=PG?"/rendez-vous/?"+new URLSearchParams({app:dev,besoin:nd,detail:det}).toString():"#demande";
-  return `<a class="${cls}" href="${h}" data-req="1" data-rep="${esc(rep||"")}" data-need="${esc(nd)}">${label}</a>`}
-function updReq(){document.querySelectorAll("#svc [data-req]").forEach(a=>{const dev=DEVS[cat]?DEVS[cat].d:"",det=reqDetail(a.dataset.rep);if(PG)a.href="/rendez-vous/?"+new URLSearchParams({app:dev,besoin:a.dataset.need,detail:det}).toString()})}
+  return `<a class="${cls}" href="${h}" data-req="1"${nm?' data-nm="1"':""} data-rep="${esc(rep||"")}" data-need="${esc(nd)}">${label}</a>`}
+function updReq(){document.querySelectorAll("#svc [data-req]").forEach(a=>{const dev=DEVS[cat]?DEVS[cat].d:"",det=reqDetail(a.dataset.rep,a.dataset.nm);if(PG)a.href="/rendez-vous/?"+new URLSearchParams({app:dev,besoin:a.dataset.need,detail:det}).toString()})}
 if(Array.isArray(GTS.sv)&&GTS.sv.length){const O=SV.slice();SV.splice(0,SV.length,...GTS.sv.map(x=>{const o=O.find(y=>y.c===x.c&&y.n===x.n),r=Object.assign({},x);if(o)["bd","bn","bo"].forEach(k=>{if(o[k]&&!r[k])r[k]=o[k]});return r}))}
 function drawSv(){
   if(!$("seg"))return;
@@ -3243,20 +3264,22 @@ function drawSv(){
   const bq=brand&&brand!=="Autre marque"?brand:"";
   const L=SV.filter(s=>s.c===cat&&!(mac&&s.w)&&!(s.mac&&!mac)&&!(bq&&Array.isArray(s.bo)&&s.bo.length&&!s.bo.includes(bq))).map(s=>{const i=cat==="Téléphones"?TELN.findIndex(r=>r.test(s.n))+1:0,v=i&&telP(i);return v?Object.assign({},s,{p:v,tp:i}):s}).map(s=>bq&&(s.bd&&s.bd[bq]||s.bn&&s.bn[bq])?Object.assign({},s,{n:s.bn&&s.bn[bq]||s.n,d:s.bd&&s.bd[bq]||s.d}):s);
   box.innerHTML=`<div class="fbar"><div><span class="lab2">Marque</span><div class="brands" role="group" aria-label="Marque">${["",...D.b].map(b=>`<button type="button" data-b="${esc(b)}" aria-pressed="${b===brand}">${b||"Toutes marques"}</button>`).join("")}<button type="button" data-b="Autre marque" aria-pressed="${brand==="Autre marque"}">Autre marque</button></div></div>
-<div class="fld"><label for="smod">Modèle <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label><input id="smod" autocomplete="off" placeholder="${phEx(D)}" value="${esc(model)}"${cat==="Téléphones"&&telBs().length?' list="smodl"':""}>${cat==="Téléphones"&&telBs().length?`<datalist id="smodl">${telBs().flatMap(b=>TEL[b].flatMap(r=>telN(r[0]))).map(m=>`<option value="${esc(m)}">`).join("")}</datalist><p class="hint" id="smodp" aria-live="polite">${telHint()}</p>`:""}</div></div>
+${cat==="Téléphones"&&telBs().length?"":`<div class="fld"><label for="smod">Modèle <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label><input id="smod" autocomplete="off" placeholder="${phEx(D)}" value="${esc(model)}"></div>`}</div>
 <div class="tk-h"><h3>Réparations ${D.d.toLowerCase()} · ${brand&&brand!=="Autre marque"?brand:"toutes marques"}</h3><span class="mono">${L.length} prestations</span></div>
-<div class="tk-list">${L.map(s=>tk(s,reqA("Demander un devis","btn sm ghost",s.n,s.need))).join("")}</div>`+telTab()+other()}
+<div class="tk-list">${L.map(s=>tk(s,reqA(s.tp&&telRow()&&telRow()[s.tp]?"Prendre rendez-vous":"Demander un devis",s.tp&&telRow()&&telRow()[s.tp]?"btn sm":"btn sm ghost",s.n,s.need))).join("")}</div>`+telTab()+other()}
 function other(){const dev=DEVS[cat]?DEVS[cat].d.toLowerCase():"appareil";
   return `<div class="other"><span class="oic">${svg("tool")}</span><div><h3>Votre réparation n’est pas dans la liste ?</h3><p>Autre panne, autre marque ou ${dev==="appareil"?"autre besoin":"autre type d’"+dev} : décrivez-la en quelques mots, vous serez rappelé avec un devis gratuit.</p></div><div class="row2">${reqA(svg("mail")+"Décrire ma panne","btn","")}<a class="btn ghost" href="${hrefs.tel}">${svg("handset")}Appeler</a></div></div>`}
 function drawBrands(){if(!$("ball"))return;$("ball").innerHTML=Object.keys(DEVS).map(c=>`<div data-cat="${c}"><h3>${svg(DEVS[c].ic)}${c}</h3><ul>${DEVS[c].b.map(b=>`<li>${b}</li>`).join("")}<li>Autres marques sur devis</li></ul></div>`).join("")}
 if($("seg")){{const c=CATS.find(c=>norm(c)===(PG&&PG.cat||QP.get("cat")));if(c)cat=c}
-$("seg").onclick=e=>{const b=e.target.closest("button");if(b){cat=b.dataset.c;brand="";drawSv()}};
-$("svc").addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(b){brand=b.dataset.b;drawSv();const f=document.querySelector(`#svc [data-b="${CSS.escape(brand)}"]`);if(f)f.focus()}});
+$("seg").onclick=e=>{const b=e.target.closest("button");if(b){cat=b.dataset.c;brand="";model="";telOpen=0;drawSv()}};
+$("svc").addEventListener("click",e=>{const m=e.target.closest("[data-tm]");if(m){const k=telOpen;model=m.dataset.tm;telOpen=0;telKeep(k,drawSv);const f=document.querySelector(`#svc [data-tpk="${k}"] [data-tpo]`);if(f)f.focus({preventScroll:true});return}
+  const o=e.target.closest("[data-tpo]")||(!e.target.closest("a,button,input,summary,label,.tpk-l")&&e.target.closest("[data-tpk]"));if(o){const k=+(o.dataset.tpo||o.dataset.tpk);telOpen=telOpen===k?0:k;telKeep(k,drawSv);const f=document.querySelector(`#svc [data-tpk="${k}"] [data-tpo]`);if(f)f.focus({preventScroll:true});return}
+  const b=e.target.closest("[data-b]");if(b){brand=b.dataset.b;if(cat==="Téléphones"){model="";telOpen=0}drawSv();const f=document.querySelector(`#svc [data-b="${CSS.escape(brand)}"]`);if(f)f.focus()}});
 $("svc").addEventListener("input",e=>{if(e.target.id==="smod"){model=e.target.value;updReq();updTel()}});
 drawSv();drawBrands()}
 /* Aperçu : un clic sur « Demander un devis » pré-remplit le formulaire de rappel */
 document.addEventListener("click",e=>{const a=e.target.closest("[data-req]");if(!a||PG)return;
-  const dev=DEVS[cat]?DEVS[cat].d:"";S.d=dev;S.n=a.dataset.need;S.p=reqDetail(a.dataset.rep);st=dev?1:0;if($("wiz"))drawW()});
+  const dev=DEVS[cat]?DEVS[cat].d:"";S.d=dev;S.n=a.dataset.need;S.p=reqDetail(a.dataset.rep,a.dataset.nm);st=dev?1:0;if($("wiz"))drawW()});
 
 /* Boutique : vente d’appareils et d’accessoires */
 const SHOP=[
