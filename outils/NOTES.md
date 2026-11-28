@@ -211,3 +211,7 @@ Une seule recherche Claude par semaine (dimanche) qui écrit `attente/programmee
   Tous utilisent le bloc display responsive « Gouyerian Tech - contenu » (data-ad-slot 1679181548), renseigné dans `GT_ADS.slots` (source/gouyerian-tech.html). Le cadre « Publicité » n'apparaît que si Google place réellement une annonce (data-ad-status=filled) : aucun trou vide avant la validation du site.
 - Les annonces automatiques de Google fonctionnent sans ces numéros (réglage dans AdSense > Annonces > Par site).
 - Message de consentement RGPD publié dans AdSense (Confidentialité et messages), avec bouton « Refuser ».
+
+## 28 novembre 2026 : contenu AdSense, prix sans prévenir, photos
+- AdSense a refusé le site pour « contenu à faible valeur informative » : ajout de 10 guides (ARTS, dates du 28/11) avec illustrations (gen_illus.py) et d'une page « À propos » (/a-propos/, sans photo de l'atelier). Redemande d'examen à faire par Achot dans AdSense.
+- Gestion : réglage du prix « Enregistrer sans prévenir » (pas d'e-mail ni d'historique, le suivi client affiche quand même le prix à jour) ; photos de l'état de l'appareil à la création (colonne `photos`, schéma v11, accès admin seulement `?rpj=`).

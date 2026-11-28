@@ -340,6 +340,10 @@ add("/suivi/", "suivi", VIEW["suivi"], "Suivre ma réparation · Gouyerian Tech"
 add("/mentions-legales/", "legal", VIEW["legal"], "Mentions légales et confidentialité · Gouyerian Tech",
     "Éditeur, hébergement, protection des données personnelles et crédits du site Gouyerian Tech, réparateur informatique à Saint-Fort-sur-le-Né.",
     [HOME, ("Mentions légales", "/mentions-legales/")], prio="0.3")
+add("/a-propos/", "apropos", VIEW["apropos"], "À propos de Gouyerian Tech · Atelier près de Cognac",
+    "Gouyerian Tech, atelier indépendant de réparation informatique à Saint-Fort-sur-le-Né : devis gratuit, prix annoncé avant d’intervenir, garantie et suivi en ligne.",
+    [HOME, ("À propos", "/a-propos/")],
+    ld=[{"@context": "https://schema.org", "@type": "AboutPage", "name": "À propos de Gouyerian Tech", "url": SITE + "/a-propos/", "inLanguage": "fr-FR", "mainEntity": {"@id": ORG_ID}}], prio="0.6")
 add("/cgv/", "cgv", VIEW["cgv"], "Conditions générales de vente · Gouyerian Tech",
     "Conditions générales de vente de Gouyerian Tech (EI, TVA non applicable) : devis, prix, commandes, livraison, paiement, garanties, rétractation et médiation.",
     [HOME, ("Conditions générales de vente", "/cgv/")], prio="0.3")

@@ -7,10 +7,10 @@ require __DIR__ . '/_lib.php';
 $GLOBALS['GT_DIAG'] = true;
 
 /* Pièce jointe d'une demande (?pj=) ou d'un message (?mpj=) : lien direct (GET) ouvert depuis la page de gestion, réservé à l'atelier connecté */
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['pj']) || isset($_GET['mpj']))) {
-  $msg = isset($_GET['mpj']);
-  if (!preg_match('/^(\d+)-(\d+)$/', (string)($msg ? $_GET['mpj'] : $_GET['pj']), $m) || !connecte('gtadm')) { http_response_code(403); exit('Accès refusé.'); }
-  $s = db()->prepare($msg ? 'SELECT pj FROM gt_messages WHERE id = ?' : 'SELECT pj FROM gt_demandes WHERE id = ?');
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['pj']) || isset($_GET['mpj']) || isset($_GET['rpj']))) {
+  $msg = isset($_GET['mpj']); $rep = isset($_GET['rpj']);  /* rpj = photo de l'état de l'appareil d'une réparation */
+  if (!preg_match('/^(\d+)-(\d+)$/', (string)($rep ? $_GET['rpj'] : ($msg ? $_GET['mpj'] : $_GET['pj'])), $m) || !connecte('gtadm')) { http_response_code(403); exit('Accès refusé.'); }
+  $s = db()->prepare($rep ? 'SELECT photos FROM gt_reparations WHERE id = ?' : ($msg ? 'SELECT pj FROM gt_messages WHERE id = ?' : 'SELECT pj FROM gt_demandes WHERE id = ?'));
   $s->execute([(int)$m[1]]);
   $f = (json_decode((string)$s->fetchColumn(), true) ?: [])[(int)$m[2]] ?? null;
   $path = $f ? prive_dir() . '/pj/' . basename($f['fichier']) : '';
@@ -72,6 +72,15 @@ function adresse_reparation(int $id): string {
   return adresse_de(json_decode((string)$s->fetchColumn(), true) ?: []);
 }
 
+/* Photos de l'état de l'appareil (réservées à l'atelier) */
+function photos_de(array $r): array { return json_decode((string)($r['photos'] ?? ''), true) ?: []; }
+function ajouter_photos(int $id, array $nouvelles): void {
+  if (!$nouvelles) return;
+  $s = db()->prepare('SELECT photos FROM gt_reparations WHERE id = ?'); $s->execute([$id]);
+  $tout = array_slice(array_merge(json_decode((string)$s->fetchColumn(), true) ?: [], $nouvelles), 0, 20);
+  db()->prepare('UPDATE gt_reparations SET photos = ?, maj_le = maj_le WHERE id = ?')->execute([json_encode($tout, JSON_UNESCAPED_UNICODE), $id]);
+}
+
 function vue(array $r, bool $complet = false): array {
   $v = [
     'id' => (int)$r['id'], 'numero' => $r['numero'], 'nom' => $r['nom'], 'telephone' => $r['telephone'], 'email' => $r['email'],
@@ -82,6 +91,7 @@ function vue(array $r, bool $complet = false): array {
   ];
   if ($complet) {
     $v += ['code' => $r['code'], 'panne' => (string)$r['panne'], 'travaux' => travaux_de($r), 'adresse' => adresse_reparation((int)$r['id']), 'note_interne' => (string)$r['note_interne'], 'lien' => lien_suivi($r),
+      'photos' => array_map(fn($f, $i) => ['i' => $i, 'nom' => $f['nom'], 'type' => $f['type'], 'taille' => (int)($f['taille'] ?? 0), 'url' => '/api/gestion.php?rpj=' . $r['id'] . '-' . $i], photos_de($r), array_keys(photos_de($r))),
       'messages' => messages((int)$r['id'], 'atelier'),
       'paiements' => paiements_de('reparation_id', (int)$r['id']),
       'historique' => array_map(fn($h) => $h + ['libelle' => lib_histo($h['etape'])], historique((int)$r['id']))];
@@ -428,6 +438,7 @@ switch ($action) {
 
   case 'creer':
     $f = champs($d);
+    $photos = recevoir_pj(12, true);  /* photos de l'état de l'appareil, prises au dépôt */
     $mois = date('ym');
     $s = $pdo->prepare('SELECT COUNT(*) FROM gt_reparations WHERE numero LIKE ?');
     $s->execute(["GT-$mois-%"]);
@@ -445,6 +456,7 @@ switch ($action) {
       }
     }
     if (!$id) fail('Impossible de créer le numéro de suivi, réessayez.', 500);
+    ajouter_photos($id, $photos);
     $r = fiche($id);
     if (!empty($d['demande_id'])) {  /* réparation créée depuis une demande : la demande est rattachée et traitée */
       $pdo->prepare("UPDATE gt_demandes SET reparation_id = ?, statut = 'traitee', maj_le = ? WHERE id = ?")->execute([$id, now(), (int)$d['demande_id']]);
@@ -523,6 +535,23 @@ switch ($action) {
       . "\n" . implode("\n", array_map(fn($x) => '• ' . $x['l'] . ' : ' . euros($x['p']), $tr['lignes'])) . ($etape === '' && $note !== '' ? "\n\n" . $note : ''), now(), $mail ? 1 : 0]);
     if ($etape !== '') $h->execute([$r['id'], $etape, $note, now(), $mail ? 1 : 0]);
     out(['ok' => true, 'fiche' => vue(fiche((int)$r['id']), true), 'mail' => $mail]);
+
+  /* Ajouter ou retirer des photos de l'état de l'appareil (jamais visibles par le client, aucun e-mail) */
+  case 'photos_ajouter':
+    $r = fiche((int)($d['id'] ?? 0));
+    $nouv = recevoir_pj(12, true);
+    if (!$nouv) fail('Aucune photo reçue.');
+    ajouter_photos((int)$r['id'], $nouv);
+    out(['ok' => true, 'fiche' => vue(fiche((int)$r['id']), true)]);
+
+  case 'photo_retirer':
+    $r = fiche((int)($d['id'] ?? 0));
+    $ph = photos_de($r); $i = (int)($d['i'] ?? -1);
+    if (!isset($ph[$i])) fail('Photo introuvable.');
+    $p = prive_dir() . '/pj/' . basename($ph[$i]['fichier'] ?? ''); if (is_file($p)) @unlink($p);
+    array_splice($ph, $i, 1);
+    $pdo->prepare('UPDATE gt_reparations SET photos = ? WHERE id = ?')->execute([json_encode($ph, JSON_UNESCAPED_UNICODE), $r['id']]);
+    out(['ok' => true, 'fiche' => vue(fiche((int)$r['id']), true)]);
 
   case 'modifier':
     $r = fiche((int)($d['id'] ?? 0));

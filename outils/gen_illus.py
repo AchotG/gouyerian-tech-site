@@ -423,6 +423,40 @@ CONTROLE_JS = """(m) => {
 }"""
 
 
+
+# ---------------------------------------------------------------- guides pratiques (28 novembre 2026)
+S["ecran-casse-reparer-ou-remplacer"] = frame(
+    phone(520, 360, 230, 440, -5, screen="#14306a", extra=f'<path d="M470 250l40 46 -22 30 44 36 -10 40M510 296l52 -14M532 362l-40 22" stroke="{INK}" stroke-width="4" stroke-opacity=".9"/>')
+    + wrench(900, 280, 1.5) + badge(930, 490, "3-4 j", 78, GR, sub="réparation") + sparkles([(250, 200), (1100, 180)]), 560, 340)
+S["virus-sur-ordinateur-que-faire"] = frame(
+    laptop(430, 340, 500, warning(430, 300, .8)) + arrow(700, 330, 820, 330, CY)
+    + shield(960, 330, 1.2) + f'<path d="M920 330l30 30 56 -64" stroke="#071226" stroke-width="12"/>' + sparkles([(250, 180), (1100, 520)]), 640, 340)
+S["avant-de-reinstaller-windows"] = frame(
+    laptop(340, 340, 440) + usbkey(840, 230, 1.5, -12) + cloud(900, 470, .9, "url(#ac)")
+    + f'<path d="M580 300C650 270 700 250 740 240" stroke="{CY}" stroke-width="6" stroke-dasharray="6 16"/><path d="M580 380C680 430 760 450 810 460" stroke="{CY}" stroke-width="6" stroke-dasharray="6 16"/>', 640, 350)
+S["recuperer-ses-donnees"] = frame(
+    usbkey(400, 340, 1.8, -18) + magnifier(780, 310, 100) + check(1020, 500, 48)
+    + f'<path d="M740 300h80M740 330h56" stroke="{CY}" stroke-width="6"/>' + sparkles([(240, 180), (1050, 200)]), 620, 340)
+S["wifi-lent-ou-qui-coupe"] = frame(
+    router(480, 470, 380) + wifi(480, 280, 130) + phone(930, 360, 180, 360, 8, screen="#14306a", extra=wifi(930, 380, 60))
+    + f'<path d="M640 250C720 220 780 230 830 260" stroke="{CY}" stroke-width="5" stroke-dasharray="6 16"/>' + cross(1060, 190, 36), 660, 340)
+S["choisir-un-ordinateur-portable"] = frame(
+    laptop(430, 340, 520, f'<path d="M300 260h180M300 300h140M300 340h160" stroke-width="5" stroke-opacity=".5"/>')
+    + badge(930, 240, "16 Go", 84, CY, "#071226", sub="mémoire") + badge(1010, 470, "SSD", 72, GR, "#062a1c") + check(790, 470, 40), 640, 350)
+S["mots-de-passe-et-double-authentification"] = frame(
+    padlock(440, 340, 1.7) + phone(900, 360, 210, 400, 6, screen="#14306a", extra=label(900, 340, "• • • • • •", 38, CY) + check(900, 450, 40))
+    + arrow(640, 330, 760, 330, CY), 640, 350)
+S["ordinateur-qui-chauffe"] = frame(
+    laptop(450, 350, 500, f'<path d="M300 280h180M300 320h120" stroke-width="5" stroke-opacity=".5"/>')
+    + thermometer(900, 300, 1.25, .9) + snowflake(1040, 480, 58) + sparkles([(250, 170)], AM), 640, 350)
+S["telephone-qui-ne-charge-plus"] = frame(
+    phone(470, 360, 220, 430, -4, screen="#14306a", extra=battery(470, 330, 130, 60, .1, RD) + bolt(470, 440, .55, AM))
+    + bolt(850, 270, 1.7) + magnifier(900, 480, 62) + cross(1060, 220, 34), 650, 340)
+S["ordinateur-ne-demarre-pas"] = frame(
+    monitor(500, 330, 520, 320, f'<circle cx="500" cy="330" r="48"/><path d="M500 270v50" stroke-width="9"/>')
+    + cross(900, 200, 46) + wrench(950, 440, 1.4) + sparkles([(240, 190)]), 600, 340)
+
+
 def render(only=(), check_only=False):
     """only : noms à dessiner (ex. python outils/gen_illus.py mon-article) ; vide = toutes les illustrations.
     Contrôle chaque dessin (débordements, textes qui se chevauchent ou trop petits, dessin trop petit ou décentré)

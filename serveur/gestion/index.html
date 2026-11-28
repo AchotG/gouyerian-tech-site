@@ -153,6 +153,7 @@ a{color:var(--acc)}
 .cnt:empty{display:none}
 .tabs button[aria-pressed="true"] .cnt{background:#fff;color:var(--acc)}
 .tag.nouvelle{background:var(--bad-bg);color:var(--bad)}.tag.en_cours{background:var(--warn-bg);color:var(--warn)}.tag.traitee,.tag.archivee{background:var(--ok-bg);color:var(--ok)}
+.phs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px}.phs:empty{display:none}.phs figure{margin:0;position:relative}.phs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--sunk);display:block}.phs button{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:1rem;line-height:1;cursor:pointer}
 .pjs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 .pjs a{display:grid;gap:6px;text-decoration:none;color:var(--fg);font-size:.82rem;overflow-wrap:anywhere}
 .pjs img,.pjs video{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--sunk)}
@@ -294,6 +295,9 @@ a{color:var(--acc)}
     </div>
     <label><span>Garantie après réparation <small>(en mois, 0 = pas de garantie)</small></span><span class="row" style="flex-wrap:nowrap"><input id="f-gar" type="number" min="0" max="120" step="1" value="0" inputmode="numeric" style="max-width:110px"><span class="row" id="f-garq"><button class="btn g" type="button" data-g="3">3</button><button class="btn g" type="button" data-g="6">6</button><button class="btn g" type="button" data-g="12">12</button><button class="btn g" type="button" data-g="24">24</button></span></span></label>
     <label><span>Note interne <small>(jamais montrée au client)</small></span><textarea id="f-int" maxlength="2000"></textarea></label>
+    <div id="f-ph-w"><span style="font-weight:600">📷 Photos de l’état de l’appareil <small class="muted">(rayures, fissures, boutons… jamais montrées au client)</small></span>
+      <div class="row" style="margin-top:6px"><label class="btn g" style="cursor:pointer">Prendre ou choisir des photos<input type="file" id="f-ph" accept="image/*" multiple hidden></label></div>
+      <div class="phs" id="f-ph-sel"></div></div>
     <div class="row"><button class="btn" type="submit" id="fsave">Créer la réparation</button><button class="btn g" type="button" id="fcancel">Annuler</button></div>
   </form>
 
@@ -313,10 +317,16 @@ a{color:var(--acc)}
       <button class="btn g" type="button" id="tvadd">+ Ajouter une réparation ou une pièce</button>
       <div class="tvtot"><span>Total</span><b id="tvtot">0 €</b><small id="tvold"></small></div>
       <div class="tvm" role="radiogroup" aria-label="Que faire du changement ?">
-        <label><input type="radio" name="tvm" value="interne" checked><span><b>Enregistrer seulement</b><small>Rien n’est envoyé au client (prix pas encore sûr, correction…)</small></span></label>
-        <label><input type="radio" name="tvm" value="informer"><span><b>Informer le client</b><small>Le nouveau prix et le détail apparaissent dans son suivi</small></span></label>
+        <label><input type="radio" name="tvm" value="interne" checked><span><b>Enregistrer sans prévenir</b><small>Aucun e-mail ni message : le client verra quand même le prix à jour s’il ouvre son suivi</small></span></label>
+        <label><input type="radio" name="tvm" value="informer"><span><b>Prévenir le client du changement</b><small>Le nouveau prix est signalé dans l’historique de son suivi, avec un e-mail possible</small></span></label>
         <label><input type="radio" name="tvm" value="accord"><span><b>Demander son accord</b><small>Il doit accepter le nouveau devis en ligne avant la suite des travaux</small></span></label>
       </div>
+    </div>
+    <div class="card" style="margin-top:14px" id="fphc">
+      <h2>📷 Photos de l’état de l’appareil</h2>
+      <p class="muted" style="margin:0 0 8px;font-size:.85rem">Prises au dépôt. Réservées à l’atelier : le client ne les voit pas.</p>
+      <div class="phs" id="fph"></div>
+      <div class="row" style="margin-top:8px"><label class="btn g" style="cursor:pointer">+ Ajouter des photos<input type="file" id="fph-add" accept="image/*" multiple hidden></label></div>
     </div>
     <div class="card" style="margin-top:14px">
       <h2>Changer l’étape</h2>
@@ -408,9 +418,26 @@ function formulaire(f){
   EDIT=f||null;DEMSRC=null;AVIS_TOUCHE=false;$("ftitle").textContent=f?"Modifier "+f.numero:"Nouvelle réparation";$("fsave").textContent=f?"Enregistrer":"Créer la réparation";
   $("f-nom").value=f?.nom||"";$("f-tel").value=f?.telephone||"";$("f-mail").value=f?.email||"";$("f-avis").checked=!!f?.avis_email;
   $("f-app").value=f?.appareil||"";$("f-gar").value=String(f?.garantie_mois||0);$("f-panne").value=f?.panne||"";$("f-prix").value=f?.prix||"";$("f-int").value=f?.note_interne||"";$("f-note").value="";$("f-note-l").hidden=!!f;
-  show("form");$("f-nom").focus();
+  FPH=[];drawFph();$("f-ph-w").hidden=!!f;show("form");$("f-nom").focus();
 }
 $("bnew").onclick=()=>formulaire(null);
+/* Photos : réduites sur l'appareil (1600 px, JPEG) avant l'envoi, pour que 5 à 10 photos passent vite même en 4G */
+let FPH=[];
+async function reduire(file){
+  try{if(!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size<400000)return file;
+    const bm=await createImageBitmap(file),k=Math.min(1,1600/Math.max(bm.width,bm.height)),c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);
+    c.getContext("2d").drawImage(bm,0,0,c.width,c.height);bm.close&&bm.close();
+    const b=await new Promise(r=>c.toBlob(r,"image/jpeg",.82));return b&&b.size<file.size?new File([b],file.name.replace(/\.\w+$/,"")+".jpg",{type:"image/jpeg"}):file}
+  catch(e){return file}}
+async function envoyerPhotos(action,data,files){
+  const fd=new FormData();fd.append("data",JSON.stringify({action,...data}));
+  for(const x of files){const y=await reduire(x);fd.append("f[]",y,y.name)}
+  let r,j;try{r=await fetch("/api/gestion.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"X-GT":"1"}})}catch(e){throw new Error("Pas de connexion à Internet.")}
+  try{j=await r.json()}catch(e){throw new Error("Le serveur ne répond pas correctement (erreur "+r.status+").")}
+  if(r.status===401){show("login");throw new Error("Connexion nécessaire.")}if(!j.ok)throw new Error(j.erreur||"Erreur.");return j}
+function drawFph(){$("f-ph-sel").innerHTML=FPH.map((x,k)=>`<figure><img src="${URL.createObjectURL(x)}" alt="Photo ${k+1}"><button type="button" data-k="${k}" aria-label="Retirer cette photo">×</button></figure>`).join("")}
+$("f-ph").onchange=()=>{FPH=FPH.concat([...$("f-ph").files]).slice(0,12);$("f-ph").value="";drawFph()};
+$("f-ph-sel").onclick=e=>{const b=e.target.closest("[data-k]");if(b){FPH.splice(+b.dataset.k,1);drawFph()}};
 $("fcancel").onclick=()=>EDIT?ouvrir(EDIT.id):DEMSRC?show("dfiche"):show("liste");
 let AVIS_TOUCHE=false;$("f-avis").addEventListener("change",()=>{AVIS_TOUCHE=true});
 $("f-mail").oninput=()=>{const v=$("f-mail").value.trim();if(!v)$("f-avis").checked=false;else if(!AVIS_TOUCHE&&!EDIT&&/\S+@\S+\.\S+/.test(v))$("f-avis").checked=true};
@@ -418,17 +445,23 @@ $("vform").addEventListener("submit",async e=>{e.preventDefault();
   if($("f-avis").checked&&!$("f-mail").value.trim()){flash("Indiquez l’e-mail du client pour lui envoyer le suivi.",false);$("f-mail").focus();return}
   const d={nom:$("f-nom").value,telephone:$("f-tel").value,email:$("f-mail").value,avis_email:$("f-avis").checked,appareil:$("f-app").value,panne:$("f-panne").value,prix:$("f-prix").value,note_interne:$("f-int").value,garantie_mois:Math.max(0,Math.min(120,parseInt($("f-gar").value,10)||0)),demande_id:EDIT?undefined:DEMSRC||undefined};
   $("fsave").disabled=true;
-  try{const j=EDIT?await api("modifier",{id:EDIT.id,...d}):await api("creer",{...d,note:$("f-note").value});
+  try{const j=EDIT?await api("modifier",{id:EDIT.id,...d}):FPH.length?await envoyerPhotos("creer",{...d,note:$("f-note").value},FPH):await api("creer",{...d,note:$("f-note").value});
     rendre(j.fiche);show("fiche");flash((EDIT?"Modifications enregistrées.":"Réparation "+j.fiche.numero+" créée.")+(j.mail?" E-mail de suivi envoyé au client.":""))}
   catch(err){flash(err.message,false)}finally{$("fsave").disabled=false}});
 
+/* Photos de la fiche */
+function drawPh(f){const p=f.photos||[];$("fph").innerHTML=p.map(x=>`<figure><a href="${esc(x.url)}" target="_blank" rel="noopener"><img src="${esc(x.url)}" alt="${esc(x.nom)}" loading="lazy"></a><button type="button" data-i="${x.i}" aria-label="Supprimer cette photo">×</button></figure>`).join("")}
+$("fph-add").onchange=async()=>{if(!FICHE)return;const fs=[...$("fph-add").files];$("fph-add").value="";if(!fs.length)return;flash("Envoi des photos…");
+  try{const j=await envoyerPhotos("photos_ajouter",{id:FICHE.id},fs);FICHE=j.fiche;drawPh(j.fiche);flash(fs.length+" photo"+(fs.length>1?"s":"")+" ajoutée"+(fs.length>1?"s":"")+".")}catch(err){flash(err.message,false)}};
+$("fph").onclick=async e=>{const b=e.target.closest("[data-i]");if(!b||!FICHE)return;if(!b.dataset.ok){b.dataset.ok="1";b.textContent="?";b.setAttribute("aria-label","Confirmer la suppression");setTimeout(()=>{if(b.isConnected){delete b.dataset.ok;b.textContent="×"}},3000);return}
+  try{const j=await api("photo_retirer",{id:FICHE.id,i:+b.dataset.i});FICHE=j.fiche;drawPh(j.fiche);flash("Photo supprimée.")}catch(err){flash(err.message,false)}};
 /* Fiche */
 async function ouvrir(id){try{const j=await api("fiche",{id});rendre(j.fiche);show("fiche")}catch(err){flash(err.message,false)}}
 function prixNum(p){const m=String(p||"").replace(/\s/g,"").match(/(\d+(?:[.,]\d{1,2})?)/);return m?m[1].replace(",","."):""}
 function rendre(f){
   FICHE=f;SEL=null;$("fnum").textContent=f.numero;$("fapp").textContent=f.appareil;$("ftag").className="tag "+f.etape;$("ftag").textContent=f.libelle;
   $("finfo").innerHTML=`<dt>Client</dt><dd>${esc(f.nom)}</dd>${f.telephone?`<dt>Téléphone</dt><dd><a href="tel:${esc(f.telephone.replace(/[^\d+]/g,""))}">${esc(f.telephone)}</a></dd>`:""}${f.email?`<dt>E-mail</dt><dd>${esc(f.email)}${f.avis_email?" · suivi par e-mail ✓":" · pas d’e-mails"}</dd>`:""}${f.prix?`<dt>Prix</dt><dd>${esc(f.prix)}</dd>`:""}${f.etape==="devis"?`<dt>Devis</dt><dd>${f.devis_etat==="accepte"?"<b style='color:var(--ok)'>✓ Accepté par le client</b>":f.devis_etat==="refuse"?"<b style='color:var(--bad)'>✗ Refusé par le client</b>":"En attente de la réponse du client"}</dd>`:""}${f.garantie_mois?`<dt>Garantie</dt><dd>${f.garantie_mois} mois${f.garantie_fin?" · jusqu’au "+new Date(f.garantie_fin+"T12:00").toLocaleDateString("fr-FR"):""}</dd>`:""}${f.panne?`<dt>Panne</dt><dd>${esc(f.panne)}</dd>`:""}${f.note_interne?`<dt>Note interne</dt><dd>${esc(f.note_interne)}</dd>`:""}<dt>Code client</dt><dd class="code">${esc(f.code)}</dd><dt>Créée</dt><dd>${dt(f.cree_le)}</dd>`;
-  $("bresend").hidden=!f.avis_email;gps($("fgps"),f.adresse);tvInit(f);
+  $("bresend").hidden=!f.avis_email;gps($("fgps"),f.adresse);tvInit(f);drawPh(f);
   payPanel($("fpay"),"r:"+f.id,f.paiements||[],f.email,prixNum(f.prix),"Réparation "+f.appareil+" ("+f.numero+")",()=>ouvrir(f.id));
   $("steps").innerHTML=PARCOURS.map(k=>{const e=ETAPES.find(x=>x.etape===k);return `<button type="button" data-e="${k}" aria-pressed="false" class="${k===f.etape?"cur":""}">${esc(e?e.libelle:k)}</button>`}).join("");
   $("snote").value="";$("smail").checked=!!f.avis_email;$("smail").disabled=!f.email;$("smail-l").textContent=!f.email?"Pas d’e-mail pour ce client : il verra l’étape dans son suivi":f.avis_email?"Envoyer l’e-mail au client ("+f.email+")":"Envoyer quand même un e-mail ("+f.email+") : le client n’a pas coché le suivi par e-mail";SEL=null;sMaj();
@@ -446,7 +479,7 @@ $("steps").onclick=e=>{const b=e.target.closest("button");if(!b)return;SEL=SEL==
 let TV0="";
 const tvSig=()=>JSON.stringify(TV.map(x=>[String(x.l).trim(),tvNum(x.p)]).filter(x=>x[0]||x[1]));
 function sMaj(){if(!FICHE)return;const m=(document.querySelector('input[name="tvm"]:checked')||{}).value||"interne",chg=tvSig()!==TV0,f=FICHE,L=[];
-  if(chg||m!=="interne")L.push(m==="interne"?"💶 Nouveau prix "+$("tvtot").textContent+" (pas montré au client)":m==="accord"?"💶 Nouveau devis "+$("tvtot").textContent+" : le client doit l’accepter":"💶 Prix "+$("tvtot").textContent+" : le client est informé");
+  if(chg||m!=="interne")L.push(m==="interne"?"💶 Prix "+$("tvtot").textContent+" enregistré sans prévenir le client (visible dans son suivi)":m==="accord"?"💶 Nouveau devis "+$("tvtot").textContent+" : le client doit l’accepter":"💶 Prix "+$("tvtot").textContent+" : le client est prévenu du changement");
   if(SEL){const e=ETAPES.find(x=>x.etape===SEL);L.push("🔧 Nouvelle étape : "+(e?e.libelle:SEL))}
   const vu=!!SEL||m!=="interne",mail=vu&&$("smail").checked&&!!f.email;
   $("ssum").innerHTML=L.length?L.map(x=>"<li>"+esc(x)+"</li>").join(""):"<li class='muted'>Changez le prix ou choisissez une étape.</li>";

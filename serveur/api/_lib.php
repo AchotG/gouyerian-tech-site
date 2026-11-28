@@ -79,7 +79,7 @@ function db(): PDO {
   return $pdo;
 }
 
-const SCHEMA_VERSION = 10;
+const SCHEMA_VERSION = 11;
 
 function schema(PDO $pdo): void {
   /* La structure n'est vérifiée qu'une fois par version (table gt_meta), pas à chaque visite. */
@@ -212,6 +212,8 @@ function schema(PDO $pdo): void {
   ajouter_colonne($pdo, 'gt_paiements', 'rembourse', 'DECIMAL(10,2) NOT NULL DEFAULT 0');
   /* v10 : détail du prix d'une réparation (lignes de travaux, JSON) */
   ajouter_colonne($pdo, 'gt_reparations', 'travaux', 'TEXT NULL');
+  /* v11 : photos de l'état de l'appareil prises au dépôt (JSON, fichiers dans /prive/pj, jamais montrées au client) */
+  ajouter_colonne($pdo, 'gt_reparations', 'photos', 'TEXT NULL');
   /* v7 : les conversations des demandes devenues réparations rejoignent la conversation de la réparation */
   foreach ($pdo->query('SELECT id, reparation_id FROM gt_demandes WHERE reparation_id IS NOT NULL AND reparation_id > 0')->fetchAll() as $x) {
     $pdo->prepare('UPDATE gt_messages SET reparation_id = ?, demande_id = 0 WHERE reparation_id = 0 AND demande_id = ?')->execute([(int)$x['reparation_id'], (int)$x['id']]);
@@ -475,7 +477,7 @@ function envoyer_fichier(string $path, string $type, string $nom): void {
   exit;
 }
 
-function recevoir_pj(int $max = 6): array {
+function recevoir_pj(int $max = 6, bool $images_seulement = false): array {
   $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif', 'image/heic' => 'heic', 'image/heif' => 'heif',
     'video/mp4' => 'mp4', 'video/quicktime' => 'mov', 'video/webm' => 'webm', 'video/3gpp' => '3gp', 'application/pdf' => 'pdf'];
   $pj = [];
@@ -492,7 +494,7 @@ function recevoir_pj(int $max = 6): array {
     $total += $size;
     if ($size > 30 * 1048576 || $total > 80 * 1048576) fail('Fichiers trop lourds.', 413);
     $mime = $fi ? (string)$fi->file($tmp) : (string)($_FILES['f']['type'][$i] ?? '');
-    if (!isset($types[$mime])) fail('Type de fichier refusé : photos, vidéos ou PDF seulement.', 415);
+    if (!isset($types[$mime]) || ($images_seulement && strncmp($mime, 'image/', 6) !== 0)) fail($images_seulement ? 'Type de fichier refusé : photos seulement.' : 'Type de fichier refusé : photos, vidéos ou PDF seulement.', 415);
     $fichier = date('Ym') . '-' . bin2hex(random_bytes(12)) . '.' . $types[$mime];
     if (!move_uploaded_file($tmp, "$dir/$fichier") && !rename($tmp, "$dir/$fichier")) fail('Pièce jointe impossible à enregistrer.', 500);
     @chmod("$dir/$fichier", 0600);
@@ -894,6 +896,9 @@ function entretien(): void {
 /* Efface une réparation avec son historique, ses messages et leurs pièces jointes */
 function supprimer_reparation(int $id): void {
   $pdo = db();
+  $ph = $pdo->prepare('SELECT photos FROM gt_reparations WHERE id = ?');
+  $ph->execute([$id]);
+  foreach (json_decode((string)$ph->fetchColumn(), true) ?: [] as $f) { $p = prive_dir() . '/pj/' . basename($f['fichier'] ?? ''); if (is_file($p)) @unlink($p); }
   $s = $pdo->prepare('SELECT pj FROM gt_messages WHERE reparation_id = ?');
   $s->execute([$id]);
   foreach ($s->fetchAll(PDO::FETCH_COLUMN) as $pj) {
