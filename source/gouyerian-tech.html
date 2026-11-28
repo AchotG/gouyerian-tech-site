@@ -3172,7 +3172,7 @@ function closeDD(except){document.querySelectorAll(".has.open").forEach(li=>{if(
 document.querySelectorAll(".has").forEach(li=>{
   const b=li.querySelector(".mb-t");let to;
   /* sur téléphone, chaque rubrique du menu ouvre directement sa page */
-  const dd=li.querySelector(".dd"),GOTO={"dd-services":'[data-cat="Tous"]',"dd-shop":'[data-bcat="Tout"]',"dd-pro":".dd-foot .lnk","dd-infos":".mi","dd-contact":'.mi[href*="contact"]'},go=dd&&dd.querySelector(GOTO[dd.id]||".mi");
+  const dd=li.querySelector(".dd"),GOTO={"dd-services":'[data-cat="Tous"]',"dd-shop":'[data-bcat="Tout"]',"dd-pro":".dd-foot .lnk","dd-infos":".mi","dd-contact":'.mi[href="#contact"],.mi[href="/contact/"]'},go=dd&&dd.querySelector(GOTO[dd.id]||".mi");
   b.addEventListener("click",e=>{e.stopPropagation();if(!desk()&&go){closeDD();setDrawer(false);go.click();return}const o=desk()&&hov()&&Date.now()-(li._h||0)<700||!li.classList.contains("open");closeDD(li);li.classList.toggle("open",o);b.setAttribute("aria-expanded",String(o))});
   li.addEventListener("mouseenter",()=>{if(!desk()||!hov())return;clearTimeout(to);if(!li.classList.contains("open"))li._h=Date.now();closeDD(li);li.classList.add("open");b.setAttribute("aria-expanded","true")});
   li.addEventListener("mouseleave",()=>{if(!desk()||!hov())return;to=setTimeout(()=>{li.classList.remove("open");b.setAttribute("aria-expanded","false")},200)});
