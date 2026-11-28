@@ -1,4 +1,11 @@
-# Site Gouyerian Tech : découpe en pages statiques et référencement (mis à jour le 2 nov. 2026)
+# Site Gouyerian Tech : notes de travail
+
+## Règles en vigueur (courtes, propres au projet)
+- Cohérence complète du site (prix, textes, formulaires, panier) seulement lors d'ajouts de pages ou de gros changements.
+- Actualités : sujets tech variés, rien qui dessert l'activité, deux sources fiables, rien publié en cas de doute.
+- Pas de blocs en double côte à côte ; e-mails lisibles en mode sombre (jamais le nom en noir sur fond foncé).
+- Avant de toucher SV, SHOP, PRIX, ARTS ou NEWS dans la source : lire `https://gouyerian-tech.fr/api/site.php?c=1` (Achot peut les modifier depuis la gestion).
+- Le reste du fichier est l'historique des choix techniques.
 
 ## Source unique
 - Aperçu publié : https://claude.ai/artifact/N8VVo3rxStGMYbLexxwQ7U (fichier unique, navigation par #).
@@ -25,7 +32,6 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - Actualités : 16 résumés vérifiés à leur source, 8 thèmes (snapshot du 3 nov. 2026, à rafraîchir 1 à 2 fois par mois). Règle d'Achot : écarter les sujets qui desservent l'activité (auto-réparation, programmes de réparation des fabricants, bonus réparation réservé aux labellisés, critiques du reconditionné, promotions de concurrents).
 - Accueil (3 nov.) : fil d'actualités défilant en haut du diaporama, 6 diapositives dont une « Professionnels », accès directs sur la 1re, trois portes d'entrée (réparation, boutique, pros), bandeau pros, dernières actualités.
 - Menu (3 nov.) : Services et tarifs, Boutique, Pros, « Actus et infos » (libellé complet « Actualités et infos pratiques » dans le menu mobile), Contact (rendez-vous, atelier, zone, communes) ; accès rapides Rendez-vous et Appeler en tête du menu mobile.
-- Contrôle de cohérence à chaque modification (demande d'Achot) : prix, garanties, CGV, FAQ, assistant, formulaires, panier, liens.
 - Application installable (PWA) : bouton « Installer l'application », aide iPhone, pages vues relisibles hors connexion.
 
 ## Choix de référencement
@@ -59,9 +65,8 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - Dimanche (3 nov.) : rappel uniquement entre 9h et 13h (créneau unique, « Peu importe (9h-13h le dimanche) », e-mail « Dimanche, entre 9h et 13h ») ; après 13h le dimanche, premier jour possible = lundi.
 
 ## Actualités automatiques (3 nov.)
-- Deux tâches programmées mettent à jour les actualités DANS L'APERÇU (artefact, slug ab1bae07-fef2-464a-9555-3ac0b02136b3) : « Actualités tech du site Gouyerian Tech (toutes les 5 h) » (jusqu'à 4 actualités) et « Alertes urgentes du site Gouyerian Tech (toutes les heures) » (urg:1, épinglées 3 jours avec un badge « Alerte »).
+- (Ancien, remplacé le 14 nov. : voir « Actualités ».) Deux tâches programmées mettaient à jour les actualités dans l'aperçu (artefact, slug ab1bae07-fef2-464a-9555-3ac0b02136b3) : « Actualités tech du site Gouyerian Tech (toutes les 5 h) » (jusqu'à 4 actualités) et « Alertes urgentes du site Gouyerian Tech (toutes les heures) » (urg:1, épinglées 3 jours avec un badge « Alerte »).
 - Elles insèrent les entrées après `const NEWS=[` et mettent à jour `const NEWS_UPD`. 40 actualités au plus. Filtre : sujets qui desservent l'activité écartés.
-- IMPORTANT avant toute modification locale du site : relire l'artefact (read_artifact) et reprendre son tableau NEWS, sinon on écrase les actualités ajoutées automatiquement. Le zip (vrai site) n'est à jour qu'à la dernière reconstruction : à brancher sur GitHub + Netlify quand le site sera en ligne.
 - Hébergeur (3 nov.) : IONOS (IONOS SARL, 7 place de la Gare, BP 70109, 57201 Sarreguemines Cedex, 09 70 80 89 11) indiqué dans les mentions légales ; LISEZMOI réécrit pour une mise en ligne chez IONOS (SFTP/FileZilla, SSL inclus, .htaccess). Pour les actualités automatiques sur le vrai site : piste IONOS Deploy Now + GitHub.
 - Page /infos-pratiques/ (3 nov.) : recentrée sur les infos pratiques (h1 « Infos pratiques ») ; une seule petite case discrète montre l'actualité la plus récente ou l'alerte en cours (#hubMini). Avant de publier, l'aperçu a été resynchronisé avec les actualités ajoutées par les tâches programmées.
 - Boutons retour (3 nov.) : pastille « ‹ Infos pratiques / Actualités / Communes desservies » en haut des articles, actualités et pages de ville (backTo, data-back : revient en arrière avec filtres et position si la page d'avant est la page parente, sinon ouvre la page parente) ; navigation précédent / suivant en fin d'article et d'actualité (pnHTML) ; bouton « haut de page » (#totop) sur les pages longues. Panier et rendez-vous avaient déjà leurs boutons Retour.
@@ -131,7 +136,6 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 - Correctif après mise en ligne : bloc « Faire réparer » de l'accueil → « Téléphone, tablette, ordinateur, console » (seul index.html remplacé).
 - Fiche Google : site Web passé de Facebook à https://gouyerian-tech.fr/ (Facebook reste dans les réseaux sociaux).
 - Pour une mise à jour : reconstruire, comparer dist avec la version envoyée, et n'envoyer que les fichiers modifiés (WebTransfert, « écraser : Oui »), ou une archive complète à extraire dans `/public`.
-- Attention : les tâches automatiques d'actualités modifient l'aperçu (artifact), pas le site en ligne. Les actualités du site IONOS ne changent que lors d'un nouvel envoi.
 
 ## Google Search Console (4 novembre 2026)
 - Propriété « préfixe d'URL » https://gouyerian-tech.fr/ validée par fichier HTML `googlec2ee2d1354c69554.html` (à la racine du site, généré par build.py — ne jamais le supprimer).
@@ -140,10 +144,9 @@ Le script a besoin de quelques fichiers, à recréer s'ils manquent :
 
 ## Passage sur GitHub (7 novembre 2026)
 - Dépôt public AchotG/gouyerian-tech-site : `source/gouyerian-tech.html` (tout le site), `outils/` (build.py, test_dist.py, gen_*.py, polices, images, données logo/adresses), `.github/workflows/publier.yml`.
-- À chaque push sur main et chaque nuit à 3 h 17 UTC : construction (Playwright), tests (aucune publication s'il y a un problème), publication GitHub Pages. Domaine personnalisé gouyerian-tech.fr déclaré dans les réglages Pages.
+- À chaque push sur main : construction (Playwright), tests (`test_dist.py` doit afficher PROBLÈMES : 0, sinon rien n'est publié), envoi par SFTP chez IONOS (workflow « Publier le site »). IONOS reste l'hébergeur ; GitHub ne sert qu'aux mises à jour.
 - Piège corrigé : dans la construction et les tests, le service worker du site allait chercher l'ancien site en ligne (Internet ouvert sur GitHub) → `service_workers="block"`. Test de l'ancre Wi-Fi : tolérance de -20 px.
 - Les 3 tâches d'actualités écrivent maintenant dans le dépôt (add_repo + clone + commit + push), puis recopient la modification dans l'aperçu claude.ai.
-- Reste à faire par Achot chez IONOS (DNS) : A @ → 185.199.108.153 / .109 / .110 / .111 ; supprimer AAAA @ (IONOS) ; www → CNAME achotg.github.io (supprimer A/AAAA www). Garder MX/SPF/DKIM (e-mail). Puis cocher « Enforce HTTPS » dans GitHub Pages.
 
 ## Mode clair retravaillé (v98, 7 nov.)
 - Jetons du mode clair seulement (bloc « v98 » en fin de CSS) : fond bleuté #f4f7fc, encre bleu nuit #0b1426, gris #4f5b6e, lignes #d9e1ec, ombre douce des cartes `--elev`, en-tête blanc translucide `--hdr`, boutons secondaires et boutons ronds sur fond blanc `--ghost`, halo de l'en-tête plus visible (`--hero-w1/w2/p2`), bande des avis `--band-bg`.
