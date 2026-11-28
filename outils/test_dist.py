@@ -280,7 +280,7 @@ with sync_playwright() as p:
     pg.screenshot(path=str(SHOTS / "mobile-telephones.png"))
     pg.click("#burger"); pg.wait_for_timeout(300)
     pg.screenshot(path=str(SHOTS / "mobile-menu.png"))
-    pg.click("button[aria-controls=dd-contact]"); pg.wait_for_timeout(200); pg.click("#dd-contact a.mi:has-text(\"Téléphone et e-mail\")"); pg.wait_for_load_state()
+    pg.click("button[aria-controls=dd-contact]"); pg.wait_for_load_state(); pg.wait_for_timeout(200)
     print("mobile menu → ", pg.url)
     if not pg.url.endswith("/contact/"): bad("menu mobile Contact")
     pg.goto(SITE + "/professionnels/"); pg.wait_for_timeout(200); pg.screenshot(path=str(SHOTS / "mobile-pros.png"), full_page=True)
