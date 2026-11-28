@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" id="vp" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#0b1530">
 <title>Gestion du site · Gouyerian Tech</title>
@@ -264,7 +264,7 @@ $("fed").addEventListener("load",()=>{
   try{const p=w.location.pathname;LPATH=p;const o=[...$("lpage").options].find(x=>x.value===p);$("lpage").value=o?p:""}catch(e){}
   const st=doc.createElement("style");
   st.textContent=`.gted-h{outline:2px dashed #2563eb!important;outline-offset:2px;cursor:text}img.gted-h{cursor:copy}[data-gted]{outline:2px solid #f59e0b!important;outline-offset:2px;background:rgba(245,158,11,.10)!important}
-  .gted-done{outline:2px solid #16a34a!important;outline-offset:2px}#cookie,.gt-ad,.bot,#bot,#botb,.chatb,#insth{display:none!important}`;
+  [data-gted]{font-size:max(16px,1em)!important}.gted-done{outline:2px solid #16a34a!important;outline-offset:2px}#cookie,.gt-ad,.bot,#bot,#botb,.chatb,#insth{display:none!important}`;
   doc.head.appendChild(st);
   const pick=t=>{if(!t||!t.closest)return null;const im=t.closest("img");if(im)return im;return t.closest(w.GT_BLOCK||"h1,h2,h3,h4,h5,p,li,summary,figcaption,blockquote,td,th,dt,dd,legend,caption,label")||t.closest("a,button,.btn,small,.eyebrow,b,strong,span,em")};
   let hov=null;
@@ -281,6 +281,8 @@ $("fed").addEventListener("load",()=>{
   doc.addEventListener("keydown",e=>{if(!LCUR)return;if(e.key==="Escape"){LCUR.blur()}if(e.key==="Enter"&&!e.shiftKey&&!/^(LI|P|BLOCKQUOTE|DD|TD)$/.test(LCUR.tagName)){e.preventDefault();LCUR.blur()}},true);
   doc.addEventListener("paste",e=>{if(!LCUR)return;e.preventDefault();const t=(e.clipboardData||w.clipboardData).getData("text/plain");doc.execCommand("insertText",false,t)},true);
 });
+/* iPhone : un texte touché fait zoomer la page ; on revient toujours à l'échelle normale */
+function dezoom(){const m=$("vp"),c="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover";m.setAttribute("content",c+",user-scalable=no");setTimeout(()=>m.setAttribute("content",c),300)}
 function zoneDe(el){for(const [sel,l,v] of ZONES)if(el.closest(sel))return [l,v];return null}
 const SIMPLE=new Set(["B","STRONG","I","EM","U","A","BR","SMALL","SPAN","SUP","SUB","MARK"]);
 /* bloc « simple » (texte, gras, liens sans mise en forme) : modifié en entier ; sinon seulement ses mots (icônes, champs et styles gardés) */
@@ -301,7 +303,7 @@ function lText(el,w,doc){
   $("lorig").hidden=!el.dataset.gto&&!(el.dataset.gtk in (CONT.textes||{}))&&!((el.dataset.gtk+"#t") in (CONT.textes||{}));
   document.querySelectorAll('#lsel [data-x]:not([data-x="orig"])').forEach(b=>b.hidden=el.dataset.gtm==="t");
   if(el.dataset.gtm==="t")lHint("Ce texte contient une icône ou une mise en forme : modifiez seulement les mots, sans effacer l’icône.");
-  el.onblur=()=>{el.contentEditable="false";delete el.dataset.gted;if(LCUR===el)LCUR=null;
+  el.onblur=()=>{dezoom();el.contentEditable="false";delete el.dataset.gted;if(LCUR===el)LCUR=null;
     if(el.innerHTML===el.dataset.gt0){lCount();return}
     if(el.dataset.gtm==="h"){LCH["t:"+el.dataset.gtk]=el.innerHTML;delete LCH["t:"+el.dataset.gtk+"#t"]}
     else{const tn=w.GT_TN(el);if(squelette(el)!==el.dataset.gts||tn.length!==+el.dataset.gtn){el.innerHTML=el.dataset.gt0;lHint("Modification annulée : gardez l’icône et la mise en forme, changez seulement les mots (sans vider complètement une partie).");lCount();return}
