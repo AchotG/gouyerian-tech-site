@@ -139,7 +139,10 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box
 .kv dt{color:var(--muted)}.kv dd{margin:0;overflow-wrap:anywhere}
 .code{font:700 1.15rem ui-monospace,Consolas,monospace;letter-spacing:.08em}
 .msg{padding:10px 14px;border-radius:10px;font-size:.92rem}
-#flash{position:sticky;top:8px;z-index:70}#flash .msg{display:flex;align-items:flex-start;gap:10px;box-shadow:0 10px 30px -14px rgba(0,0,0,.45)}#flash .msg span{flex:1}
+#flash{position:sticky;top:8px;z-index:70}
+@media(max-width:700px){#flash{position:fixed;top:auto;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom))}}
+@media(max-width:700px){body:has(#vchat:not([hidden])) #flash{bottom:auto;top:calc(70px + env(safe-area-inset-top))}}
+.wrap>*{min-width:0}.chat-hd small,.chk span{overflow-wrap:anywhere;min-width:0}#flash .msg{display:flex;align-items:flex-start;gap:10px;box-shadow:0 10px 30px -14px rgba(0,0,0,.45)}#flash .msg span{flex:1}
 #flash .fx{flex:none;border:0;background:transparent;color:inherit;font-size:1.3rem;line-height:1;cursor:pointer;padding:0 4px}
 .msg.ok{background:var(--ok-bg);color:var(--ok)}.msg.err{background:var(--bad-bg);color:var(--bad)}
 .empty{padding:28px 16px;text-align:center;color:var(--muted)}
@@ -387,6 +390,7 @@ async function api(action,data={}){
    l'erreur (rouge) reste jusqu'à ce qu'on retape dans un champ, qu'une nouvelle action réussisse, ou la croix (un simple clic ne l'efface pas) */
 let FLASH_ERR=0,FLASH_OK=0,ECRAN="";
 function flash(t,ok=true){FLASH_ERR=t&&!ok?Date.now():0;FLASH_OK=t&&ok?Date.now():0;$("flash").innerHTML=t?`<div class="msg ${ok?"ok":"err"}" role="${ok?"status":"alert"}"><span>${ok?"✓":"⚠️"} ${esc(t)}</span><button type="button" class="fx" aria-label="Fermer le message">×</button></div>`:"";
+  if(t&&ok){const t0=FLASH_OK;setTimeout(()=>{if(FLASH_OK===t0)flash("")},6000)}
 }
 $("flash").addEventListener("click",e=>{if(e.target.closest(".fx"))flash("")});
 /* une nouvelle action efface l'erreur précédente (pas le clic qui vient de la provoquer) */
@@ -418,7 +422,7 @@ $("btest").onclick=async()=>{try{const j=await api("test_mail",{to:$("tmail").va
 function formulaire(f){
   EDIT=f||null;DEMSRC=null;AVIS_TOUCHE=false;$("ftitle").textContent=f?"Modifier "+f.numero:"Nouvelle réparation";$("fsave").textContent=f?"Enregistrer":"Créer la réparation";
   $("f-nom").value=f?.nom||"";$("f-tel").value=f?.telephone||"";$("f-mail").value=f?.email||"";$("f-avis").checked=!!f?.avis_email;
-  $("f-app").value=f?.appareil||"";$("f-gar").value=String(f?.garantie_mois||0);$("f-panne").value=f?.panne||"";$("f-prix").value=f?.prix||"";$("f-int").value=f?.note_interne||"";$("f-note").value="";$("f-note-l").hidden=!!f;
+  $("f-app").value=f?.appareil||"";$("f-gar").value=String(f?.garantie_mois||0);$("f-panne").value=f?.panne||"";$("f-prix").value=f?.prix||"";$("f-prix").closest("label").hidden=!!(f&&f.travaux&&f.travaux.length);$("f-int").value=f?.note_interne||"";$("f-note").value="";$("f-note-l").hidden=!!f;
   FPH=[];drawFph();$("f-ph-w").hidden=!!f;show("form");$("f-nom").focus();
 }
 $("bnew").onclick=()=>formulaire(null);
@@ -545,7 +549,7 @@ function payPanel(box,cle,ps,email,defMontant,defLib,apres){
   box.innerHTML=liste+(SUMUP?"":`<p class="muted" style="margin:0 0 10px">⚠️ SumUp n’est pas encore configuré : le client verra « paiement en ligne pas encore ouvert ». Ajoutez le secret SUMUP_API_KEY sur GitHub.</p>`)
    +`<div class="payf"><label><span>Montant (€)</span><input type="number" inputmode="decimal" min="1" max="5000" step="0.01" class="pm" value="${defMontant||""}" placeholder="89,00"></label><label><span>Objet</span><input class="pl" maxlength="200" value="${esc(defLib||"")}" placeholder="Ex. : Remplacement écran iPhone 13"></label></div>
     <label class="chk"><input type="checkbox" class="pmail" ${email?"checked":"disabled"}><span>${email?"Envoyer le lien par e-mail ("+esc(email)+")":"Pas d’e-mail : le lien est mis dans la conversation"}</span></label>
-    <button class="btn" type="button" data-pnew>Demander le paiement</button>`;
+    <button class="btn" type="button" data-pnew${SUMUP?"":" disabled"}>Demander le paiement</button>`;
   box.onclick=async e=>{const b=e.target.closest("button");if(!b)return;
     try{if(b.dataset.pdet){ouvrirPay(b.dataset.pdet);return}
       if(b.dataset.pcopy){await navigator.clipboard.writeText(b.dataset.pcopy).catch(()=>{});flash("Lien de paiement copié.");return}
@@ -622,7 +626,7 @@ $("bcopy").onclick=async()=>{try{await navigator.clipboard.writeText(FICHE.lien)
 $("bresend").onclick=async()=>{try{const j=await api("renvoyer",{id:FICHE.id});flash(j.mail?"E-mail de suivi renvoyé.":"L’e-mail n’a pas pu partir.",j.mail)}catch(err){flash(err.message,false)}};
 $("bdel").onclick=()=>{$("delc").hidden=false;$("bdel").hidden=true};
 $("bdel0").onclick=()=>{$("delc").hidden=true;$("bdel").hidden=false};
-$("bdel2").onclick=async()=>{try{await api("supprimer",{id:FICHE.id});flash("Réparation supprimée.");show("liste");liste()}catch(err){flash(err.message,false)}};
+$("bdel2").onclick=async()=>{try{await api("supprimer",{id:FICHE.id});show("liste");flash("Réparation supprimée.");liste()}catch(err){flash(err.message,false)}};
 
 
 /* Demandes (formulaires du site et espace client) */
@@ -658,7 +662,7 @@ $("dmkrep").onclick=()=>{const d=DEM,x=d.details,app=[x["Appareil"],x["Marque et
   formulaire(null);DEMSRC=d.id;$("ftitle").textContent="Réparation depuis "+d.ref;$("f-nom").value=d.nom;$("f-tel").value=d.telephone;$("f-mail").value=d.email;
   $("f-avis").checked=/oui/i.test(x["Suivi par e-mail"]||"")||d.type==="devis";$("f-app").value=app;$("f-panne").value=[x["Besoin"],x["Détail"],x["Panne"]].filter(v=>v&&v!=="-").join(" · ")};
 $("ddel").onclick=()=>{$("ddelc").hidden=false;$("ddel").hidden=true};$("ddel0").onclick=()=>{$("ddelc").hidden=true;$("ddel").hidden=false};
-$("ddel2").onclick=async()=>{try{await api("demande_supprimer",{id:DEM.id});flash("Demande supprimée.");await compteurs();await demandes();show("dem")}catch(err){flash(err.message,false)}};
+$("ddel2").onclick=async()=>{try{await api("demande_supprimer",{id:DEM.id});await compteurs();await demandes();show("dem");flash("Demande supprimée.")}catch(err){flash(err.message,false)}};
 $("notif").onchange=async()=>{try{const j=await api("reglages",{notif:$("notif").value});flash(j.notif==="jamais"?"Plus d’e-mails : pensez à ouvrir cette page.":j.notif==="regroupe"?"Au plus un e-mail toutes les 3 heures.":"Un e-mail court à chaque nouvelle demande.")}catch(err){flash(err.message,false)}};
 $("f-garq").onclick=e=>{const b=e.target.closest("button");if(b)$("f-gar").value=b.dataset.g};
 setInterval(()=>{if(!$("vdem").hidden||!$("vliste").hidden)compteurs().then(()=>{if(!$("vdem").hidden)demandes()}).catch(()=>{})},120000);

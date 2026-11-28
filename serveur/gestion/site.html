@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" id="vp" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="viewport" id="vp" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#0b1530">
 <title>Gestion du site · Gouyerian Tech</title>
@@ -287,7 +287,7 @@ $("fed").addEventListener("load",()=>{
   doc.addEventListener("paste",e=>{if(!LCUR)return;e.preventDefault();const t=(e.clipboardData||w.clipboardData).getData("text/plain");doc.execCommand("insertText",false,t)},true);
 });
 /* iPhone : un texte touché fait zoomer la page ; on revient toujours à l'échelle normale */
-function dezoom(){const m=$("vp"),c="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover";m.setAttribute("content",c+",user-scalable=no");setTimeout(()=>m.setAttribute("content",c),300)}
+function dezoom(){const m=$("vp"),c="width=device-width,initial-scale=1,viewport-fit=cover";m.setAttribute("content",c+",maximum-scale=1,user-scalable=no");setTimeout(()=>m.setAttribute("content",c),300)}
 function zoneDe(el){for(const [sel,l,v] of ZONES)if(el.closest(sel))return [l,v];return null}
 const SIMPLE=new Set(["B","STRONG","I","EM","U","A","BR","SMALL","SPAN","SUP","SUB","MARK"]);
 /* bloc « simple » (texte, gras, liens sans mise en forme) : modifié en entier ; sinon seulement ses mots (icônes, champs et styles gardés) */
@@ -377,7 +377,7 @@ $("shlist").addEventListener("click",e=>{const b=e.target.closest("[data-a]");if
   if(b.dataset.a==="phx")delete SHE[i].ph;else if(b.dataset.a==="del"){if(!confirm("Supprimer « "+SHE[i].n+" » de la boutique ?"))return;SHE.splice(i,1)}
   else{const t=b.dataset.a==="up"?i-1:i+1;if(t<0||t>=SHE.length)return;[SHE[i],SHE[t]]=[SHE[t],SHE[i]]}shDraw()});
 $("shadd").onclick=()=>{SHE.push({c:D.BCATS[1]||"Appareils",n:"Nouvel article",d:"",ic:"bag",need:"Acheter un accessoire"});shDraw();$("shlist").lastElementChild.scrollIntoView({behavior:"smooth",block:"center"})};
-$("shsave").onclick=async()=>{try{await poser("shop",SHE);drawShop()}catch(err){flash(err.message,false)}};
+$("shsave").onclick=async()=>{if(SHE.some(s=>!String(s.n||"").trim()))return flash("Chaque article doit avoir un nom.",false);try{await poser("shop",SHE);drawShop()}catch(err){flash(err.message,false)}};
 $("shreset").onclick=async()=>{if(!confirm("Revenir à la boutique d’origine ?"))return;try{await poser("shop",null,"Boutique d’origine rétablie.");drawShop()}catch(err){flash(err.message,false)}};
 const PL={chargeur:"Chargeurs",apple:"iPhone (Lightning)",android:"Android",cable:"Câble seul",prise:"Prise seule",kit:"Câble + prise",usb:"USB-A",typec:"USB-C",adaptateur:"Adaptateurs",hub4:"Hub 4 ports",hub7:"Hub 7 ports",cjack:"USB-C vers jack",cusb:"USB-C vers USB",chdmi:"USB-C vers HDMI",ceth:"USB-C vers Ethernet",ljack:"Lightning vers jack",lusb:"Lightning vers USB",tv:"Câbles télé",hdmi:"HDMI",antenne:"Antenne",batterie:"Batteries externes",w10:"10 W",w20:"20 W",w65:"65 W",cle:"Clés USB",capacite:"Capacité",connecteur:"Supplément connecteur",double:"Double (USB + USB-C)",microsd:"Cartes micro SD",graveur:"Graveurs",bluray:"Blu-ray"};
 const UNIT={tv:" m",batterie:" mAh",cle:" Go",microsd:" Go"};
@@ -486,7 +486,7 @@ $("pfile").onchange=async()=>{const f=$("pfile").files[0];if(!f||!PCUR)return;tr
 /* ================= Modifications ================= */
 const VUES={"v-home":"Accueil","v-services":"Services","v-boutique":"Boutique","v-pro":"Professionnels","v-demande":"Rendez-vous","v-conseils":"Infos pratiques","v-actus":"Actualités","v-faq":"FAQ","v-contact":"Contact","v-zone":"Zone","v-secteurs":"Communes","v-apropos":"À propos","v-cgv":"CGV","v-legal":"Mentions légales",commun:"Toutes les pages (menu, pied de page)"};
 function drawHist(){const T=CONT.textes||{},I=CONT.images||{},N=NP(),A=AP(),L=[];
-  for(const [k,h] of Object.entries(T)){const v=k.split("|")[0];L.push(`<div class="it" style="cursor:default"><b>${esc(String(h).replace(/<[^>]+>/g,"").replace(/\u241e/g," ").replace(/&amp;/g,"&").slice(0,140))}</b><button class="btn g sm" type="button" data-t="${esc(k)}">Rétablir</button><small>Texte · ${esc(VUES[v]||v.replace(/^v-/,""))}</small></div>`)}
+  for(const [k,h] of Object.entries(T)){const v=k.split("|")[0];L.push(`<div class="it" style="cursor:default"><b>${esc(new DOMParser().parseFromString(String(h).replace(/\u241e/g," "),"text/html").body.textContent.slice(0,140))}</b><button class="btn g sm" type="button" data-t="${esc(k)}">Rétablir</button><small>Texte · ${esc(VUES[v]||v.replace(/^v-/,""))}</small></div>`)}
   for(const [k,u] of Object.entries(I))L.push(`<div class="it" style="cursor:default"><span class="row"><img src="${esc(u)}" alt="" style="width:64px;height:40px;object-fit:cover;border-radius:6px"><b>${esc(k.replace(/^ill:/,"Illustration ").replace(/^src:/,"Image "))}</b></span><button class="btn g sm" type="button" data-i="${esc(k)}">Rétablir</button></div>`);
   const parts=[["sv","Prix et services modifiés"],["tel","Prix des écrans et batteries modifiés"],["shop","Boutique modifiée"],["prix","Prix des accessoires modifiés"]].filter(([k])=>CONT[k]).map(([k,l])=>`<div class="it" style="cursor:default"><b>${l}</b><button class="btn g sm" type="button" data-p="${k}">Rétablir l’original</button></div>`);
   const nb=[N.add.length&&N.add.length+" actualité(s) ajoutée(s)",Object.keys(N.edit).length&&Object.keys(N.edit).length+" modifiée(s)",N.hide.length&&N.hide.length+" masquée(s)",A.add.length&&A.add.length+" article(s) ajouté(s)",Object.keys(A.edit).length&&Object.keys(A.edit).length+" modifié(s)",A.hide.length&&A.hide.length+" masqué(s)"].filter(Boolean);

@@ -21,6 +21,7 @@ if (!is_array($data)) fail('Demande illisible.');
 if (!empty($data['_honey']) || !empty($data['_gotcha'])) out(['ok' => true]);  // robot : on fait comme si
 
 limite('demande:' . ip(), 15, 60);
+essai('demande:' . ip());
 
 /* Champs : on garde au plus 40 champs texte, sans les réglages internes de FormSubmit */
 $sujet = txt($data['_subject'] ?? 'Demande', 250);

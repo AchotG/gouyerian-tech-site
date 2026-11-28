@@ -791,6 +791,8 @@ function lignes_travaux($in): array {
   $lignes = [];
   foreach (array_slice(is_array($in) ? $in : [], 0, 20) as $x) {
     $l = txt((string)($x['l'] ?? ''), 120);
+    $p0 = str_replace(' ', '', (string)($x['p'] ?? ''));
+    if ($l !== '' && !preg_match('/^\d+([.,]\d{1,2})?$/', $p0)) fail("Indiquez le prix de « $l » (un nombre, ex. 49 ou 49,90).");
     $p = round((float)str_replace([',', ' '], ['.', ''], (string)($x['p'] ?? '')), 2);
     if ($l === '' && !$p) continue;
     if ($l === '') fail('Donnez un nom à chaque ligne (ex. : Remplacement de l’écran).');
@@ -907,6 +909,7 @@ function supprimer_reparation(int $id): void {
     foreach (json_decode((string)$pj, true) ?: [] as $f) { $p = prive_dir() . '/pj/' . basename($f['fichier'] ?? ''); if (is_file($p)) @unlink($p); }
   }
   foreach (['gt_messages', 'gt_historique'] as $t) $pdo->prepare("DELETE FROM $t WHERE reparation_id = ?")->execute([$id]);
+  $pdo->prepare("UPDATE gt_demandes SET reparation_id = NULL, statut = 'en_cours' WHERE reparation_id = ?")->execute([$id]);
   $pdo->prepare('DELETE FROM gt_reparations WHERE id = ?')->execute([$id]);
 }
 
@@ -944,6 +947,7 @@ function nettoyer_demandes(): void {
   $s->execute([$lim]);
   foreach ($s->fetchAll() as $d) {
     foreach (json_decode((string)$d['pj'], true) ?: [] as $f) { $p = prive_dir() . '/pj/' . basename($f['fichier'] ?? ''); if (is_file($p)) @unlink($p); }
+    effacer_messages('reparation_id = 0 AND demande_id = ?', [(int)$d['id']]);
     $pdo->prepare('DELETE FROM gt_demandes WHERE id = ?')->execute([$d['id']]);
   }
 }

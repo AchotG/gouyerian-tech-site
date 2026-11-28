@@ -1704,13 +1704,13 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
 .msg-pay{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:9px 14px;border-radius:12px;background:var(--grad);color:#fff!important;font-weight:700;text-decoration:none;box-shadow:0 6px 16px -8px color-mix(in srgb,var(--acc) 80%,transparent)}
 .msg-r.c .msg-pay{background:#fff;color:var(--acc)!important}
 /* Illustrations des articles (forme exacte des prises) */
-.art{display:block;width:100%;height:auto;--art-t:var(--muted);--art-bg:var(--surface);--art-c:var(--c,var(--acc))}
-:root[data-theme="dark"] .art,:root[data-theme="dark"] .art-f{--art-h:#59657a;--art-hl:#738099;--art-w:#e8edf3;--art-o:#8995a8}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .art,:root:not([data-theme="light"]) .art-f{--art-h:#59657a;--art-hl:#738099;--art-w:#e8edf3;--art-o:#8995a8}}
+svg.art{display:block;width:100%;height:auto;--art-t:var(--muted);--art-bg:var(--surface);--art-c:var(--c,var(--acc))}
+:root[data-gt="dark"] svg.art,:root[data-gt="dark"] .art-f{--art-h:#59657a;--art-hl:#738099;--art-w:#e8edf3;--art-o:#8995a8}
+@media (prefers-color-scheme:dark){:root:not([data-gt="light"]) svg.art,:root:not([data-gt="light"]) .art-f{--art-h:#59657a;--art-hl:#738099;--art-w:#e8edf3;--art-o:#8995a8}}
 .cf-art{margin:0 0 4px;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .cf-art figcaption{font-size:.72rem;color:var(--muted);text-align:center;margin-top:4px}.cf-art figcaption b{display:block;font:600 .8rem/1.35 var(--f-mono);color:var(--fg);margin-bottom:3px}
 .cf-thumb{margin:-6px -6px 0;padding:6px;border-radius:14px;background:color-mix(in srgb,var(--c) 6%,var(--bg));border:1px solid var(--line)}
-.cf-thumb .art{max-height:170px}
+.cf-thumb svg.art{max-height:170px}
 .cf-o button{grid-template-columns:auto}
 .cf-fc{display:flex;gap:4px;margin-bottom:2px}.art-f{width:40px;height:24px}
 .prod-art{margin:-8px -8px 0;padding:6px;border-radius:14px;background:color-mix(in srgb,var(--c) 6%,var(--bg));border:1px solid var(--line)}
@@ -1849,7 +1849,7 @@ html.acc-lock,html.acc-lock body{overflow:hidden}
   <div><h2 id="cookieh">Un site adapté à votre commune ?</h2><p id="cookiep">Avec votre accord, votre commune est mémorisée sur votre appareil pendant 6 mois : distance, déplacement et livraison s’affichent pour chez vous, et les formulaires se pré-remplissent. Rien n’est transmis sans votre demande. <a href="#legal" data-ckinfo="1">En savoir plus</a></p></div>
   <div class="ck-act"><button type="button" class="btn sm ghost" id="ckno">Refuser</button><button type="button" class="btn sm" id="ckyes">Accepter</button></div>
 </div>
-<main id="main">
+<main id="main" tabindex="-1">
 
 <!-- ACCUEIL -->
 <div class="view" id="v-home">
@@ -4326,8 +4326,7 @@ if(sv)sv.addEventListener("pointermove",e=>{
 });
 if(sv)["pointerup","pointercancel"].forEach(t=>sv.addEventListener(t,e=>{ptr.delete(e.pointerId);pd=0}));
 function verdict(n,km){const N=esc(n);
-  if(km<=36)return `<span class="chip ok">${svg("check")}Dans la zone</span><p><b>${N}</b> est à environ ${km} km de Saint-Fort-sur-le-Né. Déplacement gratuit (distance à vol d’oiseau). Pour une intervention à domicile, appelez le 06 05 79 48 94.</p>`;
-  if(km<=44)return `<span class="chip warn">Limite des 40 km</span><p><b>${N}</b> est à environ ${km} km. Appelez le 06 05 79 48 94 pour confirmer.</p>`;
+  if(km<=LIV.max)return `<span class="chip ok">${svg("check")}Dans la zone</span><p><b>${N}</b> est à environ ${km} km de Saint-Fort-sur-le-Né. Déplacement gratuit (distance à vol d’oiseau). Pour une intervention à domicile, appelez le 06 05 79 48 94.</p>`;
   return `<span class="chip out">Au-delà de 40 km · sur devis</span><p><b>${N}</b> est à environ ${km} km : l’intervention est possible sur devis. Appelez le 06 05 79 48 94.</p>`}
 function showPt(p,isExt){sel=isExt?null:p;ext=isExt?p:null;vb={x:p.x-15,y:p.y-15,w:30};drawMap();$("zr").innerHTML=verdict(p.n,p.km)}
 async function find(){
@@ -4345,7 +4344,7 @@ async function find(){
   }catch(e){
     const d0=zIsAdr(raw)&&await loadBan(),ad=d0?zLocal(d0,raw):[];
     if(ad.length){showPt(ad[0].p,true);ad.slice(1,6).forEach(a=>{const b=document.createElement("button");b.type="button";b.textContent=a.label+" · "+a.p.km+" km";b.onclick=()=>showPt(a.p,true);box.appendChild(b)});return}
-    const p=LOC.find(p=>p.k===q)||LOC.find(p=>p.k.startsWith(q))||LOC.find(p=>p.k.includes(q));
+    const p=LOC.find(p=>p.k===q)||LOC.find(p=>p.cp===q)||LOC.find(p=>p.k.startsWith(q))||LOC.find(p=>p.k.includes(q));
     const d=!p&&await loadBan(),ld=d?matchLd(d,q):[];
     if(!p&&ld.length){const mk=l=>{const pr=proj(l[2],l[3]);return{n:l[0]+" ("+l.c.n+")",x:pr.x,y:pr.y,km:l.km}};showPt(mk(ld[0]),true);ld.slice(1,6).forEach(l=>{const b=document.createElement("button");b.type="button";b.textContent=l[0]+" ("+l.c.n+") · "+l.km+" km";b.onclick=()=>showPt(mk(l),true);box.appendChild(b)});return}
     if(p){showPt(p,false);out.insertAdjacentHTML("beforeend",`<p style="color:var(--muted);font-size:.86rem"></p>`)}
@@ -4671,7 +4670,7 @@ function route(){
     if(h==="404"){const m=location.pathname.match(/^\/infos-pratiques\/([^/]+)\/?$/),m2=location.pathname.match(/^\/actualites\/([^/]+)\/?$/);
       if(m&&$("v-article"))ap=ARTS.find(a=>a.s===m[1])||null;else if(m2&&$("v-actu"))np=NEWS.find(n=>n.id===m2[1])||null;
       if(ap||np){h=ap?"article":"actu";const z=$("v-404");if(z)z.hidden=true;document.title=(ap||np).t+" · Gouyerian Tech"}}}
-  else{h0=decodeURIComponent(location.hash.slice(1))||"home";h=h0;if(ALIAS[h])[h,anc]=ALIAS[h];
+  else{h0=decodeURIComponent(location.hash.slice(1))||"home";if(h0==="main"){const m=$("main");if(m)m.focus();return}h=h0;if(ALIAS[h])[h,anc]=ALIAS[h];
     cp0=CPG.find(p=>p.s===h)||null;ap=cp0?null:ARTS.find(a=>a.s===h)||null;np=h.startsWith("actu-")?NEWS.find(n=>"actu-"+n.id===h)||null:null;
     if(cp0)h="commune";else if(ap)h="article";else if(np)h="actu";else if(!VIEWS.includes(h)||h==="commune"||h==="article"||h==="actu")h=h.startsWith("actu-")?"actus":"home";
     document.title=cp0?ctitle(cp0):ap?ap.t+" · Gouyerian Tech":np?np.t+" · Gouyerian Tech":TITLE[h]}
@@ -4748,8 +4747,8 @@ rachat:"Gouyerian Tech peut racheter votre téléphone, votre tablette ou votre 
 salut:"Bonjour ! Que souhaitez-vous savoir ?",
 merci:"Avec plaisir. N’hésitez pas si vous avez une autre question.",
 fallback:"Je n’ai pas la réponse à cette question. Le plus simple est d’appeler le 06 05 79 48 94 ou de demander un rappel."},
-act:{accessoires:["Voir la boutique","#boutique"],rachat:["Demander une estimation","#demande"],tarifs:["Voir les tarifs","#services"],zone:["Trouver ma commune","#zone"],rdv:["Demander un rappel","#demande"],atelier:["Voir l’adresse","#atelier"],contact:["Copier le numéro","copy"],ecran:["Demander un devis","#demande"],delai:["Demander un devis","#demande"],devis:["Demander un devis","#demande"],pro:["Demander un devis pro","#pro-devis"],cgv:["Lire les CGV","#cgv"],conseil:["Voir les infos pratiques","#conseils"],actu:["Voir les actualités","#actus"],faq:["Voir la FAQ","#faq"],assistance:["Voir les services","#services"],garantie:["Voir les garanties","#services"],fallback:["Copier le numéro","copy"]},
-k:[["salut",/^(bonjour|bonsoir|salut|hello|coucou)/],["cgv",/cgv|conditions generales|retractation|retracter/],["eau",/tombe dans l eau|dans l eau|mouill|oxyd|liquide|renverse|piscine/],["whatsapp",/whats ?app/],["suivi",/suivi|suivre (ma|mon|la|le)|avancement|ou en est/],["appli",/appli|installer le site|ecran d accueil/],["actu",/actualit|news|nouveaute/],["faq",/\bfaq\b|questions? frequentes?/],["conseil",/conseil|astuce|tuto|comment faire/],["rachat",/rachat|rachet|revend|vendre mon|\breprise\b/],["garantie",/garanti|\bsav\b/],["consoles",/console|\bps ?[345]\b|playstation|xbox|nintendo|\bswitch\b(?! (reseau|ethernet|poe))|joy ?con|manette|dualsense|dualshock|steam deck|(port|prise) hdmi/],["accessoires",/vendez|vente d|chargeur|accessoire|cable|cordon|adaptateur|hub|jack|hdmi|tnt|antenne|micro ?sd|graveur|lecteur (cd|dvd)|blu ?ray|coque|etui|protection|verre trempe|batterie externe|souris|clavier|cle usb|carte memoire|boutique|reconditionn|acheter un|neuf/],["merci",/merci/],["delai",/delai|rapide|longtemps|duree|combien de temps|quand (sera|est)/],["atelier",/atelier|deposer|depot|apporter|ou etes|etes ou|c est ou|ou se trouve|ou vous trouver|situe|itineraire/],["rdv",/rdv|rendez|reserv|prendre|planifi/],["paiement",/acompte|arrhes|paie|payer|carte bancaire|especes|cheque|reglement|regler|\bcb\b/],["recup",/recuperation de donnees|recuperer (mes|des|les) donnees|disque dur|cle usb|carte memoire/],["ecran",/ecran|batterie|casse|fissur|vitre/],["donnees",/donnee|sauvegard|fichier|photo|perdre|conserv/],["pro",/professionnel|entreprise|societe|\bpro\b|\bpros\b|deux sevres|gironde|nouvelle aquitaine/],["zone",/deplac|domicile|chez moi|venez|zone|km|secteur|rayon|loin|commune/],["tarifs",/tarif|prix|combien|cout|cher|virus|windows|reinstall|nettoy/],["horaires",/horaire|heure|ouvert|ferme|dimanche|samedi|lundi|disponib/],["contact",/contact|appel|numero|joindre|mail|adresse|telephoner|localis/],["devis",/devis|gratuit/],["assistance",/a distance|prise en main|prise de controle|box|wifi|wi fi|imprimante|senior|personnes agees/],["marques",/\bmac\b|macbook|imac|iphone|ipad|samsung|xiaomi|huawei|honor|oppo|oneplus|pixel|motorola|lenovo|asus|acer|\bhp\b|dell|surface|toshiba|marque/],["services",/service|repar|jeu video|jeux video|vend|achat|achet|propos|faites|tablette|ordinateur|smartphone/]]};
+act:{suivi:["Suivre ma réparation","#suivi"],accessoires:["Voir la boutique","#boutique"],rachat:["Demander une estimation","#demande"],tarifs:["Voir les tarifs","#services"],zone:["Trouver ma commune","#zone"],rdv:["Demander un rappel","#demande"],atelier:["Voir l’adresse","#atelier"],contact:["Copier le numéro","copy"],ecran:["Demander un devis","#demande"],delai:["Demander un devis","#demande"],devis:["Demander un devis","#demande"],pro:["Demander un devis pro","#pro-devis"],cgv:["Lire les CGV","#cgv"],conseil:["Voir les infos pratiques","#conseils"],actu:["Voir les actualités","#actus"],faq:["Voir la FAQ","#faq"],assistance:["Voir les services","#services"],garantie:["Voir les garanties","#services"],fallback:["Copier le numéro","copy"]},
+k:[["salut",/^(bonjour|bonsoir|salut|hello|coucou)/],["cgv",/cgv|conditions generales|retractation|retracter/],["eau",/tombe dans l eau|dans l eau|mouill|oxyd|liquide|renverse|piscine/],["whatsapp",/whats ?app/],["suivi",/suivi|suivre (ma|mon|la|le)|avancement|ou en est/],["appli",/appli|installer le site|ecran d accueil/],["actu",/actualit|news|nouveaute/],["faq",/\bfaq\b|questions? frequentes?/],["conseil",/conseil|astuce|tuto|comment faire/],["rachat",/rachat|rachet|revend|vendre mon|\breprise\b|repren/],["garantie",/garanti|\bsav\b/],["consoles",/console|\bps ?[345]\b|playstation|xbox|nintendo|\bswitch\b(?! (reseau|ethernet|poe))|joy ?con|manette|dualsense|dualshock|steam deck|(port|prise) hdmi/],["accessoires",/vendez|vente d|chargeur|accessoire|cable|cordon|adaptateur|hub|jack|hdmi|tnt|antenne|micro ?sd|graveur|lecteur (cd|dvd)|blu ?ray|coque|etui|protection|verre trempe|batterie externe|(acheter|vendez|prix d) (une |un )?(souris|clavier)|cle usb|carte memoire|boutique|reconditionn|acheter un|neuf/],["merci",/merci/],["delai",/delai|rapide|longtemps|duree|combien de temps|quand (sera|est)/],["atelier",/atelier|deposer|depot|apporter|\bou etes\b|\betes ou\b|\bc est ou\b|ou se trouve|ou vous trouver|situe|itineraire/],["rdv",/rdv|rendez|reserv|prendre|planifi/],["paiement",/acompte|arrhes|paie|payer|carte bancaire|especes|cheque|reglement|regler|\bcb\b/],["recup",/recuperation de donnees|recuperer (mes|des|les) donnees|disque dur|cle usb|carte memoire/],["ecran",/ecran|batterie|casse|fissur|vitre/],["donnees",/donnee|sauvegard|fichier|photo|perdre|conserv/],["pro",/professionnel|entreprise|societe|\bpro\b|\bpros\b|deux sevres|gironde|nouvelle aquitaine/],["zone",/deplac|domicile|chez moi|venez|zone|km|secteur|rayon|loin|commune/],["tarifs",/tarif|prix|combien|cout|cher|virus|windows|reinstall|nettoy/],["horaires",/horaire|heure|ouvert|ferme|dimanche|samedi|lundi|disponib/],["contact",/contact|appel|numero|joindre|mail|adresse|telephoner|localis/],["devis",/devis|gratuit/],["assistance",/a distance|prise en main|prise de controle|box|wifi|wi fi|imprimante|senior|personnes agees/],["marques",/\bmac\b|macbook|imac|iphone|ipad|samsung|xiaomi|huawei|honor|oppo|oneplus|pixel|motorola|lenovo|asus|acer|\bhp\b|dell|surface|toshiba|marque/],["services",/service|repar|jeu video|jeux video|vend|achat|achet|propos|faites|tablette|ordinateur|smartphone/]]};
 const cm=$("cm"),cq=$("cq"),cp=$("cp"),cb=$("cb");
 function botFind(t){let n=t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[’']/g," ");/* « Bonjour, mon téléphone… » : on répond à la question, pas seulement au bonjour */
   const g=n.replace(/^\s*(bonjour|bonsoir|salut|hello|coucou)\b[\s,!.]*/,"");if(g&&g!==n)n=g;
@@ -4882,10 +4881,10 @@ Object.assign(BOT.a,{
   paiement:"Le paiement se fait à la restitution de l’appareil, au retrait ou à la livraison, par carte bancaire ou en espèces. Les chèques ne sont pas acceptés. Si une pièce doit être commandée spécialement, un acompte ou la totalité du prix peut être demandé à la commande.",
   eau:"Éteignez l’appareil tout de suite, ne le chargez pas et ne le rallumez pas pour vérifier. Le riz ne sert à rien : apportez-le vite à l’atelier pour un diagnostic et un nettoyage de l’oxydation, sur devis gratuit. Le résultat ne peut pas être garanti à l’avance.",
   whatsapp:"Gouyerian Tech n’utilise pas WhatsApp pour le moment. Appelez le 06 05 79 48 94, écrivez à contact@gouyerian-tech.fr, ou demandez un rappel avec le formulaire.",
-  suivi:"Le suivi en ligne n’est pas encore disponible : Gouyerian Tech vous prévient dès que votre appareil ou votre commande est prêt. Pour connaître l’avancement, appelez le 06 05 79 48 94.",
+  suivi:"Suivez votre réparation en ligne avec le numéro et le code de votre bon de dépôt (page Suivre ma réparation), ou dans votre espace client. Vous pouvez aussi appeler le 06 05 79 48 94.",
   marques:"Toutes marques : iPhone, Samsung, Xiaomi, Huawei, Google Pixel et les autres pour les téléphones et les tablettes ; PC portables et fixes, et Mac (MacBook, iMac) pour les ordinateurs ; Nintendo, PlayStation et Xbox pour les consoles. Le devis est gratuit.",
   consoles:"Oui, les consoles de jeux sont réparées à l’atelier : connecteur de charge (Nintendo Switch, manettes), port HDMI (PS5, PS4, Xbox Series, Xbox One), joysticks qui bougent tout seuls, surchauffe et nettoyage, écran et batterie des consoles portables. Le devis est gratuit : le prix dépend du modèle et vous est annoncé avant les travaux."});
-Object.assign(BOT.act,{eau:["Lire les bons gestes","#telephone-tombe-dans-l-eau"],whatsapp:["Demander un rappel","#demande"],suivi:["Copier le numéro","copy"],marques:["Voir les tarifs","#services"],consoles:["Voir les réparations de consoles","#services","Consoles"]});BOT.k.splice(1,0,["livraison",/livr|frais de port|expedi|envoi (du|de mon) colis/]);
+Object.assign(BOT.act,{eau:["Lire les bons gestes","#telephone-tombe-dans-l-eau"],whatsapp:["Demander un rappel","#demande"],suivi:["Suivre ma réparation","#suivi"],marques:["Voir les tarifs","#services"],consoles:["Voir les réparations de consoles","#services","Consoles"]});BOT.k.splice(1,0,["livraison",/livr|frais de port|expedi|envoi (du|de mon) colis/]);
 if($("cart")){loadCart();badge();attDraw("cart");
   {const l=$("cgvl");l.href=link("#cgv");if(PG){l.target="_blank";l.rel="noopener"}else l.dataset.cclose="1"}
   $("cartb").onclick=e=>openCart(e.currentTarget);$("cartx").onclick=closeCart;$("cartov").onclick=closeCart;
@@ -5127,6 +5126,7 @@ function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,co
   $("accdf").onsubmit=async e=>{e.preventDefault();const m=$("adq-m2"),b=$("adq-go");m.textContent="";
     const nom=$("adq-n").value.trim(),tel=$("adq-t").value.trim(),pan=$("adq-p").value.trim(),fs=[...$("adq-f").files].slice(0,6);
     if(!nom||!tel){m.textContent="Indiquez votre nom et votre téléphone pour être rappelé.";return}
+    if(!telOk(tel)){m.textContent=TELMSG;$("adq-t").focus();return}
     if(!pan){m.textContent="Décrivez la panne ou votre besoin.";$("adq-p").focus();return}
     if(fs.some(f=>f.size>30*1048576)){m.textContent="Un fichier dépasse 30 Mo : choisissez une photo plus légère.";return}
     const ap=$("adq-a").value,data={_subject:"Demande de devis (espace client) : "+ap+($("adq-m").value.trim()?" "+$("adq-m").value.trim():""),Nom:nom,"Téléphone":tel,"E-mail":ACC.client.email,Appareil:ap,"Marque et modèle":$("adq-m").value.trim()||"-","Panne":pan,"Lieu":$("adq-l").value,"Commune":$("adq-c").value.trim()||"-"};
@@ -5139,7 +5139,7 @@ function accDraw(){const p=ACC;if(!p)return;const c=p.client,rs=p.reparations,co
     catch(err){m.textContent=err.message;b.disabled=false;b.textContent="Envoyer ma demande"}};
   $("accout").onclick=async()=>{try{await accApi("deconnexion")}catch(e){}accSet(null);accView()};
   if($("acccart"))$("acccart").onclick=()=>$("cartb").click();
-  $("accpf").onsubmit=async e=>{e.preventDefault();try{const j=await accApi("profil",{nom:$("accn").value,telephone:$("acct").value});ACC.client=j.client;S.nom=CF.nom=j.client.nom;S.tel=CF.tel=j.client.telephone;$("accpm").textContent="Enregistré."}catch(err){$("accpm").textContent=err.message}};
+  $("accpf").onsubmit=async e=>{e.preventDefault();if(!telOk($("acct").value)){$("accpm").textContent=TELMSG;$("acct").focus();return}try{const j=await accApi("profil",{nom:$("accn").value,telephone:$("acct").value});ACC.client=j.client;S.nom=CF.nom=j.client.nom;S.tel=CF.tel=j.client.telephone;$("accpm").textContent="Enregistré."}catch(err){$("accpm").textContent=err.message}};
   $("accdel").onclick=()=>{$("accdelc").hidden=false;$("accdel").hidden=true};$("accdel0").onclick=()=>{$("accdelc").hidden=true;$("accdel").hidden=false};
   $("accdel2").onclick=async()=>{try{await accApi("supprimer");accSet(null);accView()}catch(err){$("accdelc").querySelector("b").textContent=err.message}};
   $("accin").querySelectorAll("[data-conv]").forEach(b=>b.onclick=()=>accConvOpen(b.dataset.conv));

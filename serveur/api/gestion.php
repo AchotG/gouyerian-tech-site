@@ -151,7 +151,7 @@ function fil_gestion(array $x): ?array {
 function fil_ouvrir(string $cle): array {
   if (!preg_match('/^([rdc]):(\d+)$/', $cle, $m)) fail('Conversation inconnue.');
   if ($m[1] === 'd') {  /* demande devenue réparation : on ouvre la conversation de la réparation */
-    $q = db()->prepare('SELECT reparation_id FROM gt_demandes WHERE id = ?'); $q->execute([(int)$m[2]]); $rid = (int)$q->fetchColumn();
+    $q = db()->prepare('SELECT d.reparation_id FROM gt_demandes d JOIN gt_reparations r ON r.id = d.reparation_id WHERE d.id = ?'); $q->execute([(int)$m[2]]); $rid = (int)$q->fetchColumn();
     if ($rid > 0) $m = [0, 'r', (string)$rid];
   }
   $x = ['reparation_id' => $m[1] === 'r' ? $m[2] : 0, 'demande_id' => $m[1] === 'd' ? $m[2] : 0, 'client_id' => $m[1] === 'c' ? $m[2] : 0];
@@ -277,6 +277,7 @@ switch ($action) {
 
   /* ---------- Paiement en ligne (SumUp) ---------- */
   case 'paiement_creer':
+    if (!sumup_actif()) fail('Le paiement en ligne n’est pas encore configuré (clé SumUp manquante) : aucune demande n’a été envoyée au client.', 503);
     [$fil, $ctx] = fil_ouvrir(txt($d['fil'] ?? '', 20));
     $montant = round((float)str_replace(',', '.', (string)($d['montant'] ?? 0)), 2);
     if ($montant < 1 || $montant > 5000) fail('Montant entre 1 € et 5 000 €.');
@@ -407,6 +408,7 @@ switch ($action) {
   case 'demande_supprimer':
     $dm = demande((int)($d['id'] ?? 0));
     foreach (json_decode((string)$dm['pj'], true) ?: [] as $f) { $p = prive_dir() . '/pj/' . basename($f['fichier']); if (is_file($p)) @unlink($p); }
+    effacer_messages('reparation_id = 0 AND demande_id = ?', [(int)$dm['id']]);
     $pdo->prepare('DELETE FROM gt_demandes WHERE id = ?')->execute([$dm['id']]);
     out(['ok' => true]);
 
@@ -539,7 +541,7 @@ switch ($action) {
     $r = fiche((int)($d['id'] ?? 0));
     $f = champs($d);
     $pdo->prepare('UPDATE gt_reparations SET nom = ?, telephone = ?, email = ?, avis_email = ?, appareil = ?, panne = ?, prix = ?, note_interne = ?, garantie_mois = ?, maj_le = ? WHERE id = ?')
-      ->execute([$f['nom'], $f['telephone'], strtolower($f['email']), $f['avis_email'], $f['appareil'], $f['panne'], $f['prix'], $f['note_interne'], $f['garantie_mois'], now(), $r['id']]);
+      ->execute([$f['nom'], $f['telephone'], strtolower($f['email']), $f['avis_email'], $f['appareil'], $f['panne'], json_decode((string)($r['travaux'] ?? ''), true) ? $r['prix'] : $f['prix'], $f['note_interne'], $f['garantie_mois'], now(), $r['id']]);
     $r2 = fiche((int)$r['id']);
     $mail = (!(int)$r['avis_email'] || $r['email'] !== $r2['email']) && (int)$r2['avis_email'] ? mail_bienvenue($r2) : false;
     out(['ok' => true, 'fiche' => vue($r2, true), 'mail' => $mail]);
