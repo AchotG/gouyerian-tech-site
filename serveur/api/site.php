@@ -128,6 +128,12 @@ function valider(string $cle, $v) {
         if (plain($s['t'] ?? '', 60) !== '') $x['t'] = plain($s['t'], 60);
         if (plain($s['need'] ?? '', 60) !== '') $x['need'] = plain($s['need'], 60);
         foreach (['w', 'mac'] as $f) if (!empty($s[$f])) $x[$f] = 1;
+        foreach (['bd' => 600, 'bn' => 140] as $f => $m) if (!empty($s[$f]) && is_array($s[$f])) {  /* texte selon la marque choisie */
+          $y = [];
+          foreach (array_slice($s[$f], 0, 30, true) as $k => $tx) { $k = plain($k, 60); $tx = plain($tx, $m); if ($k !== '' && $tx !== '') $y[$k] = $tx; }
+          if ($y) $x[$f] = $y;
+        }
+        if (!empty($s['bo']) && is_array($s['bo'])) $x['bo'] = array_values(array_filter(array_map(fn($b) => plain($b, 60), array_slice($s['bo'], 0, 30))));
         if (!empty($s['b']) && is_array($s['b'])) $x['b'] = array_values(array_filter(array_map(fn($b) => plain($b, 40), array_slice($s['b'], 0, 40))));
         $o[] = $x;
       }

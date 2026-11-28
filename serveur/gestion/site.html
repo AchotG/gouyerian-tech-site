@@ -334,10 +334,13 @@ function drawSv(){SVE=clone(D.SV);svDraw()}
 function svDraw(){const cats=[...new Set(SVE.map(s=>s.c))];
   $("svlist").innerHTML=cats.map(c=>`<details class="grp" open><summary>${esc(c)} <span class="tag">${SVE.filter(s=>s.c===c).length}</span></summary><div style="display:grid;gap:10px">${SVE.map((s,i)=>[s,i]).filter(([s])=>s.c===c).map(([s,i])=>`<div class="sv" data-i="${i}">
     <div class="grid2"><label>Prestation<input data-f="n" value="${esc(s.n)}"></label><div class="grid2"><label>Prix<input data-f="p" value="${esc(s.p||"")}" placeholder="Sur devis"></label><label>Délai<input data-f="t" value="${esc(s.t||"")}" placeholder="facultatif"></label></div></div>
-    <label>Description<textarea data-f="d" style="min-height:60px">${esc(s.d||"")}</textarea></label>
+    <label>Description <small>(toutes marques)</small><textarea data-f="d" style="min-height:60px">${esc(s.d||"")}</textarea></label>
+    ${Object.entries(s.bd||{}).map(([b,t])=>`<label>Description si « ${esc(b)} » est choisi<textarea data-bd="${esc(b)}" style="min-height:60px">${esc(t)}</textarea></label>`).join("")}
+    ${s.bo&&s.bo.length?`<p class="muted" style="font-size:.85rem">Affichée seulement pour : ${esc(s.bo.join(", "))}</p>`:""}
     <div class="bar"><button type="button" class="ib" data-a="up" title="Monter">↑</button><button type="button" class="ib" data-a="dn" title="Descendre">↓</button><button type="button" class="ib" data-a="del" title="Supprimer">🗑</button></div></div>`).join("")}
     <button class="btn g sm" type="button" data-add="${esc(c)}">+ Ajouter une prestation « ${esc(c)} »</button></div></details>`).join("")}
-$("svlist").addEventListener("input",e=>{const r=e.target.closest(".sv"),f=e.target.dataset.f;if(r&&f){const s=SVE[+r.dataset.i];s[f]=e.target.value;if(f==="t"&&!e.target.value)delete s.t}});
+$("svlist").addEventListener("input",e=>{const r=e.target.closest(".sv"),bd=e.target.dataset.bd;if(r&&bd){const s=SVE[+r.dataset.i];s.bd=s.bd||{};if(e.target.value.trim())s.bd[bd]=e.target.value;else delete s.bd[bd];return}
+  const f=e.target.dataset.f;if(r&&f){const s=SVE[+r.dataset.i];s[f]=e.target.value;if(f==="t"&&!e.target.value)delete s.t}});
 $("svlist").addEventListener("click",e=>{const a=e.target.closest("[data-add]");if(a){const c=a.dataset.add,last=SVE.map(s=>s.c).lastIndexOf(c);SVE.splice(last+1,0,{c,n:"Nouvelle prestation",d:"",p:"Sur devis"});svDraw();return}
   const b=e.target.closest("[data-a]");if(!b)return;const i=+b.closest(".sv").dataset.i,s=SVE[i];
   if(b.dataset.a==="del"){if(!confirm("Supprimer « "+s.n+" » ?"))return;SVE.splice(i,1)}
